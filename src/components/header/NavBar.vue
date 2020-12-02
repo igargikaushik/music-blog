@@ -36,10 +36,21 @@ export default {
 nav {
   background-color: transparent;
   transition: background-color 0.2s ease-in-out, box-shadow 0.2s;
+  opacity: 1.0;
 }
 
-:not(.hero-head) nav, .sticky nav {
+:not(.hero-head) > nav, nav.sticky {
+  display: block;
   background-color: #504A41;
-  box-shadow: 3px 0px 5px 3px #443f38;
+  box-shadow: 2px 0px 5px 3px #443f38;
+}
+
+@media screen and (max-width: $tablet) {
+  .hero-head > nav:not(.sticky) {
+    display: none;
+  }
+  nav {
+    box-shadow: none !important;
+  }
 }
 </style>
