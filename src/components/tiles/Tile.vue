@@ -23,17 +23,12 @@
       <div id="tags" class="field is-grouped is-grouped-multiline">
         <div class="control">
           <div class="tags has-addons">
-            <a class="tag is-link">Article</a>
+            <a :class="['tag', category_colors[category] || 'is-dark']">{{ category }}</a>
           </div>
         </div>
-        <div class="control">
+        <div class="control" v-for="tag in tags" :key=tag>
           <div class="tags has-addons">
-            <a class="tag is-light">Sonata</a>
-          </div>
-        </div>
-        <div class="control">
-          <div class="tags has-addons">
-            <a class="tag is-light">Classical</a>
+            <a class="tag is-light">{{ tag }}</a>
           </div>
         </div>
       </div>
@@ -48,6 +43,16 @@ export default {
     title: String,
     imgSrc: { type: String, default: null },
     content: String,
+    category: String,
+    tags: Array,
+  },
+  data() {
+    return {
+      category_colors: {
+        "Article": "is-link",
+        "Listening Guide": "is-success",
+      },
+    }
   },
 };
 </script>
@@ -63,7 +68,18 @@ export default {
   height: 100%;
 }
 
+.image {
+  overflow: hidden;
+}
+
 #tags {
-  margin-top: auto;
+  margin-top: 4px;
+}
+
+@media screen and (min-width: $tablet) {
+  .title {
+    font-size: 1.1em !important;
+    margin: 0;
+  }
 }
 </style>
