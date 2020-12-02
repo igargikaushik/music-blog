@@ -10,14 +10,19 @@
             <div class="content" v-html="content"></div>
 
             <div class="columns" id="media-tags">
-              <div class="column">
+              <div class="column is-one-third">
                 <div class="box">
-                  <p class="subtitle is-5">
-                    <strong>Share:</strong>
-                    <span class="icon has-text-info">
-                      <i class="fab fa-twitter"></i>
-                    </span>
-                  </p>
+                  <strong class="title is-5">Share:</strong>
+                  <br />
+                  <span class="icon has-text-info mt-3 ml-2 mr-3">
+                    <i class="fab fa-twitter-square fa-3x"></i>
+                  </span>
+                  <span class="icon has-text-info mt-3 ml-5 mr-3">
+                    <i class="fab fa-facebook-square fa-3x"></i>
+                  </span>
+                  <span class="icon has-text-info mt-3 ml-5">
+                    <i class="fab fa-reddit-square fa-3x"></i>
+                  </span>
                 </div>
               </div>
 
@@ -43,6 +48,16 @@
                         <a class="tag is-light">Classical</a>
                       </div>
                     </div>
+                    <div class="control">
+                      <div class="tags has-addons">
+                        <a class="tag is-light">Romantic</a>
+                      </div>
+                    </div>
+                    <div class="control">
+                      <div class="tags has-addons">
+                        <a class="tag is-light">Modern</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -50,7 +65,6 @@
           </div>
           <div class="column"></div>
         </div>
-
       </div>
     </section>
   </div>
@@ -80,9 +94,6 @@ export default {
 }
 
 #media-tags {
-  display: flex;
-  align-items: stretch;
-
   .column {
     display: flex;
     align-items: stretch;
@@ -91,6 +102,7 @@ export default {
 
   .box {
     height: 100%;
+    vertical-align: middle;
   }
 }
 </style>
