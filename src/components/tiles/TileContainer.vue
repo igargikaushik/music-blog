@@ -19,21 +19,18 @@ import Tile from './Tile.vue'
 export default {
   name: 'TileContainer',
   components: {
-    Tile
+    Tile,
   },
   data() {
     return {
       tiles: [
       {
         title: "Beethoven's Hammerklavier Sonata",
-        hasImg: true,
         imgSrc: "https://bulma.io/images/placeholders/128x128.png",
         content: "Ludwig van Beethoven's Piano Sonata No. 29 in B♭ major, Op. 106 (known as the Große Sonate für das Hammerklavier, or more simply as the Hammerklavier)"
       },
       {
         title: "Beethoven's Hammerklavier Sonata",
-        hasImg: true,
-        imgSrc: "https://bulma.io/images/placeholders/128x128.png",
         content: "Ludwig van Beethoven's Piano Sonata No. 29 in B♭ major, Op. 106 (known as the Große Sonate für das Hammerklavier, or more simply as the Hammerklavier)"
       },
       {

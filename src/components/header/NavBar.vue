@@ -34,27 +34,6 @@ export default {
 @import "~bulma/sass/utilities/_all";
 
 nav {
-  height: auto;
-  background-color: transparent;
-  opacity: 1.0;
-  transition: height 0s 0.2s, background-color 0.2s ease-in-out, box-shadow 0.2s;
-}
-
-:not(.hero-head) > nav, nav.sticky {
   background-color: #504A41;
-  box-shadow: 2px 0px 5px 3px #443f38;
-}
-
-@media screen and (max-width: $tablet) {
-  .hero-head > nav:not(.sticky) {
-    opacity: 0;
-    min-height: 0;
-    height: 0;
-    overflow: hidden;
-    transition: min-height 0s linear 0.2s, height 0s 0.2s, background-color 0.2s ease-in-out, opacity 0.2s;
-  }
-  nav {
-    box-shadow: none !important;
-  }
 }
 </style>

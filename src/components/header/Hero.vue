@@ -1,9 +1,6 @@
 <template>
   <section class="hero is-medium">
     <div class="blurred-background"></div>
-    <div class="hero-head">
-      <NavBar />
-    </div>
     <div class="hero-body">
       <div class="container">
         <h1 class="title is-1">Classical for Everyone</h1>
@@ -14,12 +11,12 @@
 </template>
 
 <script>
-import NavBar from './NavBar.vue'
+// import NavBar from './NavBar.vue'
 
 export default {
   name: "Hero",
   components: {
-    NavBar
+    // NavBar,
   }
 };
 </script>
