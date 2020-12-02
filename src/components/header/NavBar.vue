@@ -36,15 +36,10 @@ export default {
 nav {
   background-color: transparent;
   transition: background-color 0.2s ease-in-out, box-shadow 0.2s;
-  opacity: 1.0;
 }
-.sticky {
+
+:not(.hero-head) nav, .sticky nav {
   background-color: #504A41;
   box-shadow: 3px 0px 5px 3px #443f38;
-  // transition: box-shadow 0.3s ease-in-out;
-  // -webkit-transition: background 0.3s ease-in-out;
-  // -moz-transition: background 0.33 ease-in-out;
-  // -o-transition: background 0.3s ease-in-out;
-  // -ms-transition: background 0.3s ease-in-out;
 }
 </style>
