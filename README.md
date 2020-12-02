@@ -1,4 +1,4 @@
-# music_blog
+# Classical for Everyone
 
 ## Project setup
 ```
