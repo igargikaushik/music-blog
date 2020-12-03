@@ -1,8 +1,28 @@
 <template>
-  <div id="app">
+  <body id="app" :class="{ 'has-navbar-fixed-top': notHome() }">
+    <NavBar v-if="notHome()" />
     <router-view />
-  </div>
+    <Footer />
+  </body>
 </template>
+
+<script>
+import NavBar from './components/header/NavBar.vue'
+import Footer from './components/Footer.vue'
+
+export default {
+  name: 'TileContainer',
+  components: {
+    NavBar,
+    Footer,
+  },
+  methods: {
+    notHome: function() {
+      return this.$router.history.current['path'] !== '/';
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 @import "~bulma/sass/utilities/_all";
@@ -15,18 +35,5 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
 }
 </style>
