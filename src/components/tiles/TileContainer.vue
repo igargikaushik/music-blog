@@ -21,6 +21,7 @@ export default {
       tiles: [
       {
         title: "What is a Sonata?",
+        slug: "what-sonata",
         imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Wolfgang-amadeus-mozart_1.jpg/256px-Wolfgang-amadeus-mozart_1.jpg",
         content: "Many of the most popular classical works are \"Sonatas\". Let's look at what that means, and how we can navigate this vast genre.",
         category: "Article",
@@ -28,6 +29,7 @@ export default {
       },
       {
         title: "Beethoven's Moonlight Sonata",
+        slug: "beethoven-moonlight-sonata",
         imgSrc: "https://snappygoat.com/b/6b9de9d8a0092d952602a6faa452e3c32e2a87c0",
         content: "This work is one of classical music's most famous masterpieces. In fact, it's two of them!",
         category: "Listening Guide",
@@ -35,7 +37,7 @@ export default {
       },
       {
         title: "Bach's Prelude in C, Well Tempered Clavier",
-        hasImg: true,
+        slug: "bach-prelude-c-wtc-I",
         imgSrc: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Johann_Sebastian_Bach.jpg",
         content: "Simplicity is bliss; This famous piece opens the \"Old Testament\" of piano repertoire, yet you could probably learn it in an hour!",
         category: "Listening Guide",
@@ -44,8 +46,7 @@ export default {
       },
       {
         title: "Beethoven's Hammerklavier Sonata",
-        hasImg: true,
-        imgSrc: "https://bulma.io/images/placeholders/128x128.png",
+        slug: "beethoven-hammerklavier-sonata",
         content: "Ludwig van Beethoven's Piano Sonata No. 29 in B♭ major, Op. 106 (known as the Große Sonate für das Hammerklavier, or more simply as the Hammerklavier)",
         category: "Listening Guide",
         tags: ["Sonata", "Classical"]

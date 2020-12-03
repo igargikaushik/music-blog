@@ -1,6 +1,7 @@
 <template>
     <article class="column">
       <div class="box">
+        <router-link :to="'/article/' + slug">
         <p class="is-size-5 title has-text-left mb-3">
           {{ title }}
         </p>
@@ -19,14 +20,16 @@
         <section v-else class="has-text-left mb-1">
           {{ content }}
         </section>
+        </router-link>
 
+        <hr class="my-1" />
         <div id="tags" class="field is-grouped is-grouped-multiline">
-          <div class="control">
+          <div class="control mb-1">
             <div class="tags has-addons">
               <a :class="['tag', category_colors[category] || 'is-dark']">{{ category }}</a>
             </div>
           </div>
-          <div class="control" v-for="tag in tags" :key=tag>
+          <div class="control mb-1" v-for="tag in tags" :key=tag>
             <div class="tags has-addons">
               <a class="tag is-light">{{ tag }}</a>
             </div>
@@ -41,6 +44,7 @@ export default {
   name: "Tile",
   props: {
     title: String,
+    slug: String,
     imgSrc: { type: String, default: null },
     content: String,
     category: String,
@@ -67,6 +71,8 @@ export default {
   flex-direction: column;
   height: 100%;
 }
+
+a { color: inherit; } 
 
 .image {
   overflow: hidden;
