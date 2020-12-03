@@ -2,7 +2,7 @@
   <section class="section">
     <div class="container">
       <div class="columns is-multiline">
-        <Tile v-for="(tile, i) in tiles" :key="i" v-bind="tile" class="is-one-third-widescreen is-half-desktop is-half-tablet" />
+        <Tile v-for="(tile, i) in tiles" :key="i" v-bind="tile" class=" is-half-tablet is-half-desktop is-one-third-widescreen" />
       </div>
     </div>
   </section>
@@ -37,7 +37,7 @@ export default {
         title: "Bach's Prelude in C, Well Tempered Clavier",
         hasImg: true,
         imgSrc: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Johann_Sebastian_Bach.jpg",
-        content: "Simplicity is bliss; This famous piece opens the \"Old Testiment\" of piano repertoire, yet you could probably learn it is an hour!",
+        content: "Simplicity is bliss; This famous piece opens the \"Old Testament\" of piano repertoire, yet you could probably learn it in an hour!",
         category: "Listening Guide",
         tags: ["Sonata", "Classical"]
 

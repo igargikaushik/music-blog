@@ -73,7 +73,8 @@ export default {
 }
 
 #tags {
-  margin-top: 4px;
+  padding-top: 4px;
+  margin-top: auto; // 4px;
 }
 
 @media screen and (min-width: $tablet) {
