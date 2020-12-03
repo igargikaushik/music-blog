@@ -1,39 +1,39 @@
 <template>
-  <div class="tile is-parent">
-    <article class="tile is-child box">
-      <p class="is-size-5 title has-text-left">
-        {{ title }}
-      </p>
+    <article class="column">
+      <div class="box">
+        <p class="is-size-5 title has-text-left mb-3">
+          {{ title }}
+        </p>
 
-      <article v-if="imgSrc != null" class="media mb-1">
-        <figure class="media-left">
-          <p class="image is-128x128">
-            <img :src="imgSrc" />
-          </p>
-        </figure>
-        <section class="media-content has-text-left">
+        <article v-if="imgSrc != null" class="media mb-1">
+          <figure class="media-left">
+            <p class="image is-128x128">
+              <img :src="imgSrc" />
+            </p>
+          </figure>
+          <section class="media-content has-text-left">
+            {{ content }}
+          </section>
+        </article>
+
+        <section v-else class="has-text-left mb-1">
           {{ content }}
         </section>
-      </article>
 
-      <section v-else class="has-text-left mb-1">
-        {{ content }}
-      </section>
-
-      <div id="tags" class="field is-grouped is-grouped-multiline">
-        <div class="control">
-          <div class="tags has-addons">
-            <a :class="['tag', category_colors[category] || 'is-dark']">{{ category }}</a>
+        <div id="tags" class="field is-grouped is-grouped-multiline">
+          <div class="control">
+            <div class="tags has-addons">
+              <a :class="['tag', category_colors[category] || 'is-dark']">{{ category }}</a>
+            </div>
           </div>
-        </div>
-        <div class="control" v-for="tag in tags" :key=tag>
-          <div class="tags has-addons">
-            <a class="tag is-light">{{ tag }}</a>
+          <div class="control" v-for="tag in tags" :key=tag>
+            <div class="tags has-addons">
+              <a class="tag is-light">{{ tag }}</a>
+            </div>
           </div>
         </div>
       </div>
     </article>
-  </div>
 </template>
 
 <script>

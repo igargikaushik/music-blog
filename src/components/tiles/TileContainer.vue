@@ -1,13 +1,8 @@
 <template>
   <section class="section">
     <div class="container">
-      <div class="tile is-ancestor is-vertical">
-        <div v-for="(_, i) in Math.ceil(tiles.length / 3)" :key="i" class="tile is-ancestor">
-          <div v-for="(_, j) in 3" :key="j" class="tile is-parent">
-            <Tile v-if="3*i + j < tiles.length" v-bind="tiles[3*i + j]" />
-            <div v-else class="tile is-parent"></div>
-          </div>
-        </div>
+      <div class="columns is-multiline">
+        <Tile v-for="(tile, i) in tiles" :key="i" v-bind="tile" class="is-one-third-widescreen is-half-desktop is-half-tablet" />
       </div>
     </div>
   </section>
