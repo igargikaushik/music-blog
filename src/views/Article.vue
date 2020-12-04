@@ -15,8 +15,12 @@
         <div class="columns">
           <div class="column"></div>
           <div class="column is-three-quarters has-text-left">
-            <!--markdown-content class="content" /!-->
-            <markdown-it-vue class="content md-body" ref="markdownIt" :content="content" :options="options" />
+            <markdown-it-vue
+              class="content md-body"
+              ref="markdownIt"
+              :content="content"
+              :options="options"
+            />
             <div class="columns" id="media-tags">
               <div class="column is-one-third">
                 <div class="box">
@@ -79,30 +83,38 @@
 </template>
 
 <script>
-import axios from 'axios';
-/* import MarkdownContent from 'D:/Henry/dev/music_blog/test.md'
-
-import Tile from '@/components/tiles/Tile.vue'
-MarkdownContent.vue.component.components = {
-  Tile
-} */
-import MarkdownItVue from 'markdown-it-vue'
-// import 'markdown-it-vue/dist/markdown-it-vue.css'
-const markdownItClass = require('@toycode/markdown-it-class')
-const markdownItToc = require('markdown-it-table-of-contents')
+import axios from "axios";
+import MarkdownItVue from "markdown-it-vue";
+const markdownItClass = require("@toycode/markdown-it-class");
+const markdownItToc = require("markdown-it-table-of-contents");
 
 export default {
-  name: 'Home',
+  name: "Home",
   data() {
     return {
       title: "What is a Sonata?",
       test: "",
       author: "Henry Sloan",
-      description: "Many of the most popular classical works are \"Sonatas\". Let's look at what that means, and how we can navigate this vast genre.",
-      contentb: "<p>&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp;Hello, world! Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p><p>&nbsp;&nbsp;&nbsp;&nbspOne morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin.</p><p>&nbsp;&nbsp;&nbsp;&nbspHe lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections.</p><p>&nbsp;&nbsp;&nbsp;&nbspThe bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked.</p><p>&nbsp;&nbsp;&nbsp;&nbsp'What's happened to me? ' he thought. It wasn't a dream. His room, a proper human room although a little too small, lay peacefully between its four familiar walls.</p><p>&nbsp;&nbsp;&nbsp;&nbspA collection of textile samples lay spread out on the table - Samsa was a travelling salesman - and above it there hung a picture that he had recently cut out of an illustrated magazine and housed in a nice, gilded frame.</p><p>&nbsp;&nbsp;&nbsp;&nbspIt showed a lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards the viewer. Gregor then turned to look out the window at the dull weather.</p><p>&nbsp;&nbsp;&nbsp;&nbspDrops of rain could be heard hitting the pane, which made him feel quite sad.</p><p>&nbsp;&nbsp;&nbsp;&nbsp'How about if I sleep a little bit longer and forget all this nonsense', he thought, but that was something he was unable to do because he was used to sleeping on his right, and in his present state couldn't get into that position.</p><p>&nbsp;&nbsp;&nbsp;&nbspHowever hard he threw himself onto his right, he always rolled back to where he was.</p><p>&nbsp;&nbsp;&nbsp;&nbspHe must have tried it a hundred times, shut his eyes so that he wouldn't have to look at the floundering legs, and only stopped when he began to feel a mild, dull pain there that he had never felt before. 'Oh, God', he thought, 'what a strenuous career it is that I've chosen!</p><p>&nbsp;&nbsp;&nbsp;&nbspTravelling day in and day out.</p><p>&nbsp;&nbsp;&nbsp;&nbspDoing business like this takes much more effort than doing your own business at home, and on top of that there's the curse of travelling, worries about making train connections, bad and irregular food, contact with different people all the time so that you can never get to know anyone or become friendly with them. It can all go to Hell!</p><p>&nbsp;&nbsp;&nbsp;&nbsp' He felt a slight itch up on his belly; pushed himself slowly up on his back towards the headboard so that he could lift his head better; found where the itch was, and saw that it was covered with lots of little white spots which he didn't know what to make of; and when he tried to feel the place with one of his legs he drew it quickly back because as soon as he touched it he was overcome by a cold shudder. He slid back into his former position. 'Getting up early all the time', he thought, 'it makes you stupid. You've got</p>",
+      description:
+        'Many of the most popular classical works are "Sonatas". Let\'s look at what that means, and how we can navigate this vast genre.',
       options: { markdownIt: { html: true } },
       content: `
 [[toc]]
+
+# Introduction
+What do Mozart and Beethoven have in common? Well, among other things, they both have "sonatas" among their most famous works. I'll bet you've heard this piece by Mozart:
+
+<audio controls="controls" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Wolfgang_Amadeus_Mozart_-_sonata_no._16_in_c_major%2C_k.545_%27sonata_facile%27_-_i._allegro.ogg"></audio>
+
+And this wild work of Beethoven:
+
+<audio controls="controls" src="https://upload.wikimedia.org/wikipedia/commons/1/1d/Moonlight_Sonata_Presto.ogg"></audio>
+
+These two pieces are about as different as you can get within the classical-era piano repertoire, but they have **two things** in common.
+1. They're movements in "piano sonatas"
+2. They're in sonata form
+
+That's right, "sonata" means two different, but closely related, things. This might seem confusing, but learning the meanings of these two ideas will do wonders to open your ears to classical music. Let's look at the definitions of "sonata" and see how this abstract idea leads us through the past 400 years of musical evolution.
 
 # Sonata vs. Sonata Form
 What is the difference? There is a difference. What is it. It is.
@@ -112,46 +124,67 @@ There is history. What is it? It is.
 
 # Suggestions
 Listen! To what? Well, listen, and I'll tell you! It is.
-`
-    }
+`,
+    };
   },
   created() {
     this.fetchTest();
   },
   mounted() {
-    const mapping = { h1: 'title' };
-    const toc_options = { containerClass: 'box markdown-toc', containerHeaderHtml: '<strong>Contents</strong>', listType: 'ol' };
+    const mapping = { h1: "title" };
+    const toc_options = {
+      containerClass: "box markdown-toc",
+      containerHeaderHtml: "<strong>Contents</strong>",
+      listType: "ol",
+      slugify: (s) =>
+        encodeURIComponent(
+          String(s)
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[./]+/g, "")
+        ),
+    };
     this.$refs.markdownIt.use(markdownItClass, mapping);
     this.$refs.markdownIt.use(markdownItToc, toc_options);
   },
   watch: {
-    '$route': 'fetchTest'
+    $route: "fetchTest",
   },
   methods: {
-    fetchTest: function() {
-      const API_URL = '/api';
+    fetchTest: function () {
+      const API_URL = "/api";
       let uri = `${API_URL}`;
-      axios.get(uri).then(response => {
+      axios.get(uri).then((response) => {
         this.test = response.data;
       });
-    }
+    },
   },
   components: {
-    MarkdownItVue 
-    // MarkdownContent: MarkdownContent.vue.component
-  }
-}
+    MarkdownItVue,
+  },
+};
 </script>
 
 <style lang="scss">
 // Unscoped styles for markdown
 .markdown-toc ol {
   margin: 0;
-  padding-left: 16px; 
+  padding-left: 16px;
 }
 
-.markdown-body p:empty {
-  display: none;
+.markdown-body {
+  p:empty {
+    display: none;
+  }
+
+  h1::before {
+    content: '';
+    display: block;
+    height:      75px;
+    margin-top: -75px;
+    visibility: hidden;
+  }
 }
 </style>
 
