@@ -58,9 +58,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "~bulma/sass/utilities/_all";
-@import "~bulma";
-@import "~buefy/src/scss/buefy";
+@import "~bulma/sass/utilities/initial-variables";
 
 @media screen and (max-width: $tablet) {
   .section {

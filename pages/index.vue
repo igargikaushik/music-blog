@@ -22,10 +22,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "~bulma/sass/utilities/_all";
-@import "~bulma";
-@import "~buefy/src/scss/buefy";
-
 .home {
   margin-top: -3.25rem;
 }
