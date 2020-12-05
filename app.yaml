@@ -1,10 +1,17 @@
 runtime: nodejs12
 handlers:
-  # Serve all static files with urls ending with a file extension
-- url: /(.*\..+)$ 
-  static_files: dist/\1
-  upload: dist/(.*\..+)$
-  # catch all handler to index.html
-- url: /.*
-  static_files: dist/index.html
-  upload: dist/index.html
+  - url: /_nuxt
+    static_dir: .nuxt/dist/client
+    secure: always
+
+  - url: /(.*\.(gif|png|jpg|ico|txt))$
+    static_files: static/\1
+    upload: static/.*\.(gif|png|jpg|ico|txt)$
+    secure: always
+
+  - url: /.*
+    script: auto
+    secure: always
+
+env_variables:
+  HOST: '0.0.0.0'

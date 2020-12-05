@@ -1,7 +1,7 @@
 <template>
     <article class="column">
       <div class="box">
-        <router-link :to="'/article/' + slug">
+        <NuxtLink :to="'/article/' + slug">
         <p class="is-size-5 title has-text-left mb-3">
           {{ title }}
         </p>
@@ -20,7 +20,7 @@
         <section v-else class="has-text-left mb-1">
           {{ content }}
         </section>
-        </router-link>
+        </NuxtLink>
 
         <hr class="my-1" />
         <div id="tags" class="field is-grouped is-grouped-multiline">

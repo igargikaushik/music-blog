@@ -15,26 +15,15 @@
         <div class="columns">
           <div class="column"></div>
           <div class="column is-three-quarters has-text-left">
-            <markdown-it-vue
-              class="content md-body"
-              ref="markdownIt"
-              :content="content"
-              :options="options"
-            />
+            <div class="content md-body" v-html="$md.render(content)"></div>
             <div class="columns" id="media-tags">
               <div class="column is-one-third">
                 <div class="box">
                   <strong class="title is-5">Share:</strong>
                   <br />
-                  <span class="icon has-text-info mt-3 ml-2 mr-3">
-                    <i class="fab fa-twitter-square fa-3x"></i>
-                  </span>
-                  <span class="icon has-text-info mt-3 ml-5 mr-3">
-                    <i class="fab fa-facebook-square fa-3x"></i>
-                  </span>
-                  <span class="icon has-text-info mt-3 ml-5">
-                    <i class="fab fa-reddit-square fa-3x"></i>
-                  </span>
+                  <font-awesome-icon size="3x" :icon="['fab', 'twitter-square']" class="has-text-info mr-3" />
+                  <font-awesome-icon size="3x" :icon="['fab', 'facebook-square']" class="has-text-info mr-3" />
+                  <font-awesome-icon size="3x" :icon="['fab', 'reddit-square']" class="has-text-info mr-3" />
                 </div>
               </div>
 
@@ -84,9 +73,6 @@
 
 <script>
 import axios from "axios";
-import MarkdownItVue from "markdown-it-vue";
-const markdownItClass = require("@toycode/markdown-it-class");
-const markdownItToc = require("markdown-it-table-of-contents");
 
 export default {
   name: "Home",
@@ -97,7 +83,7 @@ export default {
       author: "Henry Sloan",
       description:
         'Many of the most popular classical works are "Sonatas". Let\'s look at what that means, and how we can navigate this vast genre.',
-      options: { markdownIt: { html: true } },
+      // options: { markdownIt: { html: true } },
       content: `
 [[toc]]
 
@@ -145,8 +131,6 @@ Listen! To what? Well, listen, and I'll tell you! It is.
             .replace(/[./]+/g, "")
         ),
     };
-    this.$refs.markdownIt.use(markdownItClass, mapping);
-    this.$refs.markdownIt.use(markdownItToc, toc_options);
   },
   watch: {
     $route: "fetchTest",
@@ -160,9 +144,6 @@ Listen! To what? Well, listen, and I'll tell you! It is.
       });
     },
   },
-  components: {
-    MarkdownItVue,
-  },
 };
 </script>
 
@@ -173,7 +154,7 @@ Listen! To what? Well, listen, and I'll tell you! It is.
   padding-left: 16px;
 }
 
-.markdown-body {
+.md-body {
   p:empty {
     display: none;
   }
@@ -190,6 +171,8 @@ Listen! To what? Well, listen, and I'll tell you! It is.
 
 <style scoped lang="scss">
 @import "~bulma/sass/utilities/_all";
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
 
 #title-area {
   display: flex;
