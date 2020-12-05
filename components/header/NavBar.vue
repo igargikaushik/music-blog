@@ -2,9 +2,9 @@
   <b-navbar :class="[{sticky: scroll > 40}, 'is-fixed-top']">
     <template slot="brand">
       <b-navbar-item>
-        <router-link to="/" class="navbar-item">
+        <NuxtLink to="/" class="navbar-item">
           <h1 class="title" style="color: white">LOGO</h1>
-        </router-link>
+        </NuxtLink>
       </b-navbar-item>
     </template>
   </b-navbar>

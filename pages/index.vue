@@ -17,12 +17,21 @@ export default {
     NavBar,
     Hero,
     TileContainer,
+  },
+  head() {
+    return { 
+      bodyAttrs: { 
+        class: "has-navbar-fixed-top"
+      }
+    }
   }
 }
 </script>
 
 <style scoped lang="scss">
 @import "~bulma/sass/utilities/_all";
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
 
 nav {
   height: auto;
