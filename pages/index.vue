@@ -18,13 +18,6 @@ export default {
     Hero,
     TileContainer,
   },
-  head() {
-    return { 
-      bodyAttrs: { 
-        class: "has-navbar-fixed-top"
-      }
-    }
-  }
 }
 </script>
 
@@ -33,24 +26,15 @@ export default {
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
 
-nav {
-  height: auto;
-  background-color: transparent !important;
-  opacity: 1.0;
-  transition: height 0s 0.2s, background-color 0.2s ease-in-out, box-shadow 0.2s;
+.home {
+  margin-top: -3.25rem;
 }
 
 nav.sticky {
   background-color: #504A41 !important;
 }
 
-@media screen and (max-width: $tablet) {
-  nav:not(.sticky) {
-    opacity: 0;
-    min-height: 0;
-    height: 0;
-    overflow: hidden;
-    transition: min-height 0s linear 0.2s, height 0s 0.2s, background-color 0.2s ease-in-out, opacity 0.2s;
-  }
+body {
+  padding-top: 0 !important;
 }
 </style>

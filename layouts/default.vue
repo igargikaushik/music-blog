@@ -8,6 +8,7 @@
 
 <style lang="scss">
 body {
+  padding-top: 3.25rem;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
