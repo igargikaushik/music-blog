@@ -170,9 +170,7 @@ Listen! To what? Well, listen, and I'll tell you! It is.
 </style>
 
 <style scoped lang="scss">
-@import "~bulma/sass/utilities/_all";
-@import "~bulma";
-@import "~buefy/src/scss/buefy";
+@import "~bulma/sass/utilities/initial-variables";
 
 #title-area {
   display: flex;

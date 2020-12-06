@@ -22,7 +22,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/utilities/initial-variables";
+
 .hero {
   position: relative;
   overflow: hidden;

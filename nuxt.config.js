@@ -1,24 +1,20 @@
 export default {
   components: true,
   head: {
-    titleTemplate: '%s',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     ],
   },
+  css: [{ src: 'assets/styles.scss', lang: 'scss' }],
   modules: [
     'nuxt-buefy',
     '@nuxtjs/markdownit',
     ['nuxt-fontawesome', {
       imports: [
         {
-          set: '@fortawesome/free-solid-svg-icons',
-          icons: ['fas']
-        },
-        {
           set: '@fortawesome/free-brands-svg-icons',
-          icons: ['fab']
+          icons: ['faTwitterSquare', 'faFacebookSquare', 'faRedditSquare']
         },
       ]
     }],

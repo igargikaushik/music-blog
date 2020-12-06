@@ -29,7 +29,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/utilities/initial-variables";
 
 nav {
   background-color: #504A41;
