@@ -6,9 +6,14 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     ],
   },
+  proxy: {
+    // Dev server proxy
+    '/api': 'http://localhost:8080',
+  },
   css: [{ src: 'assets/styles.scss', lang: 'scss' }],
   modules: [
     'nuxt-buefy',
+    '@nuxtjs/proxy',
     '@nuxtjs/markdownit',
     ['nuxt-fontawesome', {
       imports: [

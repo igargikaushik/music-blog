@@ -137,8 +137,7 @@ Listen! To what? Well, listen, and I'll tell you! It is.
   },
   methods: {
     fetchTest: function () {
-      const API_URL = "/api";
-      let uri = `${API_URL}`;
+      let uri = `/api`;
       axios.get(uri).then((response) => {
         this.test = response.data;
       });

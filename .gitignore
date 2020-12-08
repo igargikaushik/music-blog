@@ -23,3 +23,5 @@ pnpm-debug.log*
 *.sw?
 
 .nuxt
+
+**/env_variables.yaml
