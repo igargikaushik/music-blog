@@ -97,7 +97,7 @@ app.get("/api/create_post", async (req, res) => {
     RETURNING *;`;
   const values = [
     "What is a Sonata?",
-    "what-sonata",
+    "what-is-a-sonata",
     "Henry Sloan",
     'Many of the most popular classical works are "Sonatas". Let\'s look at what that means, and how we can navigate this vast genre.',
     `[[toc]]
