@@ -14,6 +14,7 @@ export default {
   modules: [
     'nuxt-buefy',
     '@nuxtjs/proxy',
+    '@nuxtjs/axios',
     '@nuxtjs/markdownit',
     ['nuxt-fontawesome', {
       imports: [

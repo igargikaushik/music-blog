@@ -1,16 +1,85 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const session = require("express-session");
 
 const { Pool } = require('pg');
 const pool = new Pool();
 
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+passport.use(new GoogleStrategy({
+    clientID: '1081413117266-1egpnvljjqu6lnsiafjhfv0fovqak1p5.apps.googleusercontent.com',
+    clientSecret: process.env.CLIENTSECRET,
+    callbackURL: '/api/admin/auth/callback'
+  },
+  async function(accessToken, refreshToken, profile, done) {
+    const is_admin = await pool
+      .query("SELECT id FROM admins WHERE user_id = $1;", [profile.id])
+      .then(db_res => db_res.rows.length > 0)
+      .catch(_ => false);
+    profile.admin = is_admin;
+    return done(undefined, profile);
+  }
+));
+passport.serializeUser(function(user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+});
+
 const app = express();
+
+app.use(require('cookie-parser')());
+const pgSession = require('connect-pg-simple')(session)
+app.use(session({
+  store: new pgSession({
+    pool: pool,
+    tableName: 'session'
+  }),
+  secret: process.env.CLIENTSECRET, resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+function requiresAdmin() {
+  return [
+    ensureLoggedIn('/api/admin/login'),
+    async function(req, res, next) {
+      if (req.user && req.user.admin)
+        next();
+      else
+        res.status(403).send('Unauthorized');
+    }
+  ]
+};
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.get("/", (req, res) => {
-  res.json({ message: "Root path." });
+app.get("/", requiresAdmin(), (req, res) => {
+  res.json({ message: "Root path.", user: req.user });
+});
+
+app.get("/api/test", requiresAdmin(), (req, res) => {
+  res.json({ message: "This is a test!", user: req.user });
+});
+
+app.get('/api/admin/login',
+  passport.authenticate('google', { scope: ['profile'] }));
+app.get('/api/admin/auth/callback', 
+  passport.authenticate('google', { failureRedirect: '/api/admin/login' }),
+  function(req, res) {
+    res.redirect('/');
+  });
+app.get('/api/admin/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+app.get('/api/admin/user', function(req, res){
+  res.json({user: req.user});
 });
 
 app.get("/api", async (req, res) => {

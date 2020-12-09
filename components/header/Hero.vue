@@ -5,14 +5,37 @@
       <div class="container">
         <h1 class="title is-1">Classical for Everyone</h1>
         <h2 class="subtitle is-4">Understand music with listening guides</h2>
+        <h2 class="subtitle is-5">abc {{ user }} def</h2>
+        <h2 class="subtitle is-5">gg {{ test }} gg</h2>
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Hero",
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  },
+  data() {
+    return { test: "" }
+  },
+  created() {
+    this.fetchTest();
+  },
+  methods: {
+    fetchTest: function () {
+      let uri = `/api/test`;
+      axios.get(uri).then((response) => {
+        this.test = response.data;
+      });
+    },
+  }
 };
 </script>
 
