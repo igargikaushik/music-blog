@@ -1,7 +1,7 @@
 <template>
-    <article class="column">
+    <article class="article-tile column">
       <div class="box">
-        <NuxtLink :to="'/article/' + slug">
+        <NuxtLink :to="'/article/' + slug" :event="disabled ? '' : 'click'">
         <p class="is-size-5 title has-text-left mb-3">
           {{ title }}
         </p>
@@ -24,16 +24,8 @@
 
         <hr class="my-1" />
         <div id="tags" class="field is-grouped is-grouped-multiline">
-          <div class="control mb-1">
-            <div class="tags has-addons">
-              <a :class="['tag', category_colors[category] || 'is-dark']">{{ category }}</a>
-            </div>
-          </div>
-          <div class="control mb-1" v-for="tag in tags" :key=tag>
-            <div class="tags has-addons">
-              <a class="tag is-light">{{ tag }}</a>
-            </div>
-          </div>
+          <Tag category :text="category" class="mb-1" />
+          <Tag v-for="tag in tags" :key="tag" :text="tag" class="mb-1" />
         </div>
       </div>
     </article>
@@ -49,14 +41,7 @@ export default {
     content: String,
     category: String,
     tags: Array,
-  },
-  data() {
-    return {
-      category_colors: {
-        "Article": "is-link",
-        "Listening Guide": "is-success",
-      },
-    }
+    disabled: Boolean
   },
 };
 </script>

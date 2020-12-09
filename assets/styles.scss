@@ -1,2 +1,15 @@
 @import "~bulma/sass/utilities/_all";
 @import "~bulma/sass/elements/tag";
+
+html {
+  overflow-y: auto;
+}
+
+body {
+  padding-top: 68px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}

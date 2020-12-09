@@ -23,7 +23,7 @@ export default {
 
 <style scoped lang="scss">
 .home {
-  margin-top: -3.25rem;
+  margin-top: -68px;
 }
 
 nav.sticky {
