@@ -7,6 +7,7 @@
             <th>Title</th>
             <th>Creation date</th>
             <th>Author</th>
+            <th>Status</th>
             <th>
               <b-button type="is-success" icon-left="plus" @click="click_new">New</b-button>
             </th>
@@ -17,12 +18,15 @@
             <td>{{ article.title }}</td>
             <td>{{ date(article.creation_time) }}</td>
             <td>{{ article.author }}</td>
+            <td class="is-narrow">{{ article.is_draft ? "Draft" : "Published" }}</td>
             <td v-if="article.is_draft">
-              <b-button tag="nuxt-link" :to="'/admin/draft/' + article.id">Edit as draft</b-button>
+              <div class="buttons">
+                <b-button tag="nuxt-link" :to="'/admin/article/' + article.id">Edit</b-button>
+                <b-button type="is-success">Publish</b-button>
+              </div>
             </td>
             <td v-else>
-              <b-button tag="nuxt-link" :to="'/admin/article/' + article.id">Edit</b-button>
-              <b-button type="is-success">Publish</b-button>
+              <b-button tag="nuxt-link" :to="'/admin/draft/' + article.id">Edit as draft</b-button>
             </td>
           </tr>
         </tbody>

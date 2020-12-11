@@ -2,47 +2,37 @@
   <div id="edit-article">
         <b-navbar>
         <template slot="brand">
-            <b-navbar-item tag="router-link" :to="{ path: '/' }">
-                <img
-                    src="https://raw.githubusercontent.com/buefy/buefy/dev/static/img/buefy-logo.png"
-                    alt="Lightweight UI components for Vue.js based on Bulma"
-                >
+            <b-navbar-item tag="nuxt-link" to="/admin">
+                <h2 class="subtitle">Dashboard</h2>
             </b-navbar-item>
         </template>
         <template slot="start">
-            <b-navbar-item href="#">
-                Home
-            </b-navbar-item>
-            <b-navbar-item href="#">
-                Documentation
-            </b-navbar-item>
-            <b-navbar-dropdown label="Info">
-                <b-navbar-item href="#">
-                    About
-                </b-navbar-item>
-                <b-navbar-item href="#">
-                    Contact
-                </b-navbar-item>
-            </b-navbar-dropdown>
+          <div class="tabs is-toggle is-fullwidth">
+            <ul>
+              <li :class="{'is-active': tab == 'meta'}"><a @click="tab = 'meta'">Meta</a></li>
+              <li :class="{'is-active': tab == 'content'}"><a @click="tab = 'content'">Content</a></li>
+            </ul>
+          </div>
         </template>
 
         <template slot="end">
             <b-navbar-item tag="div">
                 <div class="buttons">
-                    <a class="button is-primary">
-                        <strong>Sign up</strong>
-                    </a>
                     <a class="button is-light">
-                        Log in
+                        Save
+                    </a>
+                    <a class="button is-success">
+                        <strong>Publish</strong>
                     </a>
                 </div>
             </b-navbar-item>
         </template>
     </b-navbar>
 
-    <section class="section">
-      <div class="columns is-gapless is-fullheight panes">
-        <div class="column content-editor">
+    <section v-if="tab == 'meta'" class="section">
+      <div class="columns is-gapless is-fullheight">
+        <div class="column"></div>
+        <div class="column is-three-fifths">
           <article class="column">
             <div class="box has-text-left">
               <ArticleMetaInput label="Title" v-model="title"/>
@@ -57,6 +47,15 @@
               </b-taginput>
             </div>
           </article>
+          <Tile disabled v-bind="tile" />
+        </div>
+        <div class="column"></div>
+      </div>
+    </section>
+
+    <section v-if="tab == 'content'" class="section">
+      <div class="columns is-gapless is-fullheight panes">
+        <div class="column content-editor">
           <b-input
             custom-class="content-input"
             v-model="content"
@@ -68,7 +67,6 @@
           ></b-input>
         </div>
         <div class="column has-text-left content-preview">
-          <Tile disabled v-bind="tile" />
           <ArticleHeader preview class="header" :title="title" :test="test" :author="author" :description="description" />
           <ArticleContent :content="content" />
           <ShareTags :category="category" :tags="tags" />
@@ -90,6 +88,7 @@ export default {
       author: "Author Lastname",
       description: "This is the description!", 
       content: "[[toc]]\n# Header\nTest content",
+      tab: "meta",
     }
   },
   computed: {
@@ -105,14 +104,13 @@ export default {
     }
   },
   beforeRouteLeave (to, from , next) {
-  const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-  if (answer) {
-    next()
-  } else {
-    next(false)
+    const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+    if (answer) {
+      next()
+    } else {
+      next(false)
+    }
   }
-}
-
 };
 </script>
 
@@ -125,6 +123,10 @@ export default {
   -webkit-box-shadow: none;
   height: 100%;
   max-height: unset !important;
+}
+
+#edit-article nav {
+  z-index: 1;
 }
 </style>
 
@@ -149,11 +151,13 @@ export default {
   margin-top: 16px;
 }
 
-.panes, .content-editor {
+.panes {
   min-height: calc(100vh - 68px*2);
+  padding: 0 8px;
 }
 
 .content-editor {
+  min-height: calc(100vh - 68px*2);
   display: flex;
   flex-flow: column;
 }
