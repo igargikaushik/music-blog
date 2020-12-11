@@ -13,6 +13,7 @@ import TileContainer from '@/components/tiles/TileContainer.vue'
 
 export default {
   name: 'Home',
+  layout: 'home',
   components: {
     NavBar,
     Hero,

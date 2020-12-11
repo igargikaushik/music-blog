@@ -6,7 +6,8 @@
     <div class="field-body">
       <div class="field">
         <p class="control">
-          <input class="input" :value="value" v-on:input="$emit('input', $event.target.value)" />
+          <textarea v-if="textarea" class="textarea" rows="1" :value="value" v-on:input="$emit('input', $event.target.value)" />
+          <input v-else class="input" :value="value" v-on:input="$emit('input', $event.target.value)" />
         </p>
       </div>
     </div>
@@ -19,6 +20,7 @@ export default {
   props: {
     label: String,
     value: String,
+    textarea: Boolean
   }
 }
 </script>

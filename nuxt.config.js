@@ -9,6 +9,9 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     ],
   },
+  axios: {
+    proxy: true,
+  },
   proxy: {
     // Dev server proxy
     '/api': 'http://localhost:8080',

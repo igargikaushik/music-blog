@@ -11,11 +11,12 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 passport.use(new GoogleStrategy({
     clientID: '1081413117266-1egpnvljjqu6lnsiafjhfv0fovqak1p5.apps.googleusercontent.com',
     clientSecret: process.env.CLIENTSECRET,
-    callbackURL: '/api/admin/auth/callback'
+    callbackURL: '/api/admin/auth/callback',
+    scope: ['profile'],
   },
   async function(accessToken, refreshToken, profile, done) {
     const is_admin = await pool
-      .query("SELECT id FROM admins WHERE user_id = $1;", [profile.id])
+      .query("SELECT id FROM admins WHERE user_id = $1 LIMIT 1;", [profile.id])
       .then(db_res => db_res.rows.length > 0)
       .catch(_ => false);
     profile.admin = is_admin;
@@ -46,7 +47,15 @@ app.use(passport.session());
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
 function requiresAdmin() {
   return [
-    ensureLoggedIn('/api/admin/login'),
+    // ensureLoggedIn('/api/admin/login'),
+    // passport.authenticate('google'),
+    /* passport.authenticate('google', { scope: ['profile' ], failWithError: true }, function(err, user, info) {
+      if (err || !user || _.isEmpty(user)) {
+        return next(err);
+      } else {
+        return next();
+      }
+    }), */
     async function(req, res, next) {
       if (req.user && req.user.admin)
         next();
@@ -54,8 +63,7 @@ function requiresAdmin() {
         res.status(403).send('Unauthorized');
     }
   ]
-};
-
+}
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -88,6 +96,145 @@ app.get("/api", async (req, res) => {
     .then(db_res => db_res.rows[0])
     .catch(e => console.error(e.stack));
   res.json({ message: "This is the API GET.", db_res: db_res });
+});
+
+app.get("/api/admin/articles", requiresAdmin(), async (req, res) => {
+  res.status(200).send([
+    {
+      id: 3,
+      title: "Beethoven's Moonlight Sonata",
+      slug: "beethoven-moonlight-sonata",
+      author: 'Henry Sloan',
+      description: "This work is one of classical music's most famous masterpieces. In fact, it's two of them!",
+      imgSrc: "https://snappygoat.com/b/6b9de9d8a0092d952602a6faa452e3c32e2a87c0",
+      tags: ["Sonata", "Classical"],
+      creation_time: '2020-12-09T15:56:48.754Z',
+      category: "Listening Guide",
+      is_draft: true,
+    },
+    {
+      id: 6,
+      title: 'What is a Sonata?',
+      slug: 'what-is-a-sonata',
+      author: 'Henry Sloan',
+      description: `Many of the most popular classical works are "Sonatas". Let's look at what that means, and how we can navigate this vast genre.`,
+      creation_time: '2020-12-07T19:56:48.754Z',
+      category: 'Article',
+      tags: [
+        'Sonata',
+        'Classical',
+        'Romantic',
+        'Baroque'
+      ],
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Wolfgang-amadeus-mozart_1.jpg/256px-Wolfgang-amadeus-mozart_1.jpg',
+      is_draft: false,
+    },
+  ]);
+});
+
+app.post("/api/admin/draft", requiresAdmin(), async (req, res) => {
+  const new_query = `INSERT INTO
+    drafts(article_id, title, author, description, creation_time, content, category, tags, image)
+    VALUES(NULL, '', '', '', CURRENT_TIMESTAMP, '', '', ARRAY[]::VARCHAR[], '')
+    RETURNING id;`;
+  await pool
+    .query(new_query)
+    .then(db_res => res.status(200).send(db_res.rows[0]))
+    .catch(e => res.status(500).send(e.stack));
+});
+
+app.get("/api/admin/draft", requiresAdmin(), async (req, res) => {
+  const article_query = `SELECT *
+    FROM articles
+    WHERE id = $1;`
+  const transfer_query = `INSERT INTO
+    drafts(article_id, title, author, description, creation_time, content, category, tags, image)
+    SELECT id, title, author, description, CURRENT_TIMESTAMP, content, category, tags, image
+    FROM articles
+    WHERE id = $1
+    ON CONFLICT DO NOTHING;`;
+  const article_id_select_query = `SELECT *
+    FROM drafts
+    WHERE article_id = $1;`;
+  const id_select_query = `SELECT *
+    FROM drafts
+    WHERE id = $1;`;
+
+  if (req.query.id) {
+    const id = parseInt(req.query.id);
+    if (!id) {
+      res.status(400).send("Bad draft ID");
+      return;
+    }
+
+    const draft = await pool
+      .query(id_select_query, [id])
+      .then(db_res => {
+        if (db_res.rows.length == 0) {
+          res.status(404).send(`Draft with ID ${id} does not exist`);
+        } else {
+          res.status(200).send(db_res.rows[0]);
+        }
+      })
+      .catch(e => res.status(500).send(e.stack));
+  } else if (req.query.article_id) {
+    const article_id = parseInt(req.query.article_id);
+    if (!article_id) {
+      res.status(400).send("Bad article ID");
+      return;
+    }
+    const article_exists = await pool
+      .query(article_query, [article_id])
+      .then(db_res => db_res.rows.length != 0)
+      .catch(e => res.status(500).send(e.stack));
+    if (!article_exists) {
+      res.status(404).send(`Article with ID ${article_id} does not exist`);
+      return;
+    }
+
+    await pool
+      .query(transfer_query, [article_id])
+      .catch(e => res.status(500).send(e.stack));
+    await pool
+      .query(article_id_select_query, [article_id])
+      .then(db_res => res.status(200).send(db_res.rows[0]))
+      .catch(e => res.status(500).send(e.stack));
+  } else {
+    res.status(400).send("Requires parameter for 'id' or 'article_id");
+  }
+});
+
+app.get("/api/articles", async (req, res) => {
+  res.status(200).send([
+    {
+      title: 'What is a Sonata?',
+      slug: 'what-is-a-sonata',
+      author: 'Henry Sloan',
+      description: `Many of the most popular classical works are "Sonatas". Let's look at what that means, and how we can navigate this vast genre.`,
+      creation_time: '2020-12-07T19:56:48.754Z',
+      category: 'Article',
+      tags: [
+        'Sonata',
+        'Classical',
+        'Romantic',
+        'Baroque'
+      ],
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Wolfgang-amadeus-mozart_1.jpg/256px-Wolfgang-amadeus-mozart_1.jpg',
+    }
+  ]);
+  return;
+  const query = `SELECT
+    title, slug, author, description, creation_time, category, tags, image
+    FROM articles
+    ORDER BY creation_time
+    LIMIT $1 OFFSET $2;`
+  // Pages start at 1
+  const count = Math.max(req.query.page || 10, 40);
+  const page = req.query.page || 1;
+  await pool
+    .query(query, [count, count * (page - 1)])
+    .then(db_res => res.status(200).send(db_res.rows))
+    .catch(e => res.status(500).send(e.stack));
 });
 
 app.get("/api/create_post", async (req, res) => {
