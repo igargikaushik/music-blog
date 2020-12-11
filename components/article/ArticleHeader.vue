@@ -3,7 +3,6 @@
     <div class="column"></div>
     <div :class="['column', preview ? 'is-four-fifths' : 'is-two-fifths']">
       <p class="title">{{ title }}</p>
-      <p class="title">{{ test }}</p>
       <p class="subtitle mb-2">by {{ author }}</p>
       <i>{{ description }}</i>
     </div>
@@ -16,7 +15,6 @@ export default {
   name: "ArticleHeader",
   props: {
     title: String,
-    test: String,
     author: String,
     description: String,
     preview: Boolean,

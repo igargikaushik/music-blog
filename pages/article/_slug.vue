@@ -2,7 +2,7 @@
   <div class="article">
     <section class="section">
       <div class="container">
-        <ArticleHeader :title="title" :test="test" :author="author" :description="description" />
+        <ArticleHeader :title="title" :author="author" :description="description" />
         <div class="columns">
           <div class="column"></div>
           <div class="column is-three-quarters has-text-left">
@@ -64,20 +64,6 @@ There is history. What is it? It is.
 Listen! To what? Well, listen, and I'll tell you! It is.
 `,
     };
-  },
-  created() {
-    this.fetchTest();
-  },
-  watch: {
-    $route: "fetchTest",
-  },
-  methods: {
-    fetchTest: function () {
-      let uri = `/api`;
-      axios.get(uri).then((response) => {
-        this.test = response.data;
-      });
-    },
   },
 };
 </script>
