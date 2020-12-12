@@ -11,13 +11,10 @@
 </template>
 
 <script>
-// import NavBar from './NavBar.vue'
+import axios from "axios";
 
 export default {
   name: "Hero",
-  components: {
-    // NavBar,
-  }
 };
 </script>
 

@@ -13,6 +13,7 @@ import TileContainer from '@/components/tiles/TileContainer.vue'
 
 export default {
   name: 'Home',
+  layout: 'home',
   components: {
     NavBar,
     Hero,
@@ -23,7 +24,7 @@ export default {
 
 <style scoped lang="scss">
 .home {
-  margin-top: -3.25rem;
+  margin-top: -68px;
 }
 
 nav.sticky {

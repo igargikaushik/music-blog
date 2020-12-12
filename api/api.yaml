@@ -1,2 +1,8 @@
 runtime: nodejs10
 service: api
+
+vpc_access_connector:
+  name: "projects/classical-for-everyone/locations/us-east1/connectors/vpc-connector"
+
+includes:
+  - env_variables.yaml

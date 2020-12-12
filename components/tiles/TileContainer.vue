@@ -2,7 +2,7 @@
   <section class="section">
     <div class="container">
       <div class="columns is-multiline">
-        <Tile v-for="(tile, i) in tiles" :key="i" v-bind="tile" class=" is-half-tablet is-half-desktop is-one-third-widescreen" />
+        <Tile v-for="(tile, i) in tiles" :key="i" v-bind="tile" class="is-half-tablet is-half-desktop is-one-third-widescreen" />
       </div>
     </div>
   </section>

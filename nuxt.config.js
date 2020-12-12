@@ -1,4 +1,7 @@
 export default {
+  server: {
+    host: '0.0.0.0',
+  },
   components: true,
   head: {
     meta: [
@@ -6,9 +9,18 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     ],
   },
+  axios: {
+    proxy: true,
+  },
+  proxy: {
+    // Dev server proxy
+    '/api': 'http://localhost:8080',
+  },
   css: [{ src: 'assets/styles.scss', lang: 'scss' }],
   modules: [
     'nuxt-buefy',
+    '@nuxtjs/proxy',
+    '@nuxtjs/axios',
     '@nuxtjs/markdownit',
     ['nuxt-fontawesome', {
       imports: [
