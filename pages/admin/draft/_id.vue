@@ -18,7 +18,7 @@
         <template slot="end">
             <b-navbar-item tag="div">
                 <div class="buttons">
-                    <a class="button is-light">
+                    <a class="button is-light" @click='save'>
                         Save
                     </a>
                     <a class="button is-success">
@@ -38,6 +38,8 @@
               <ArticleMetaInput label="Title" v-model="title"/>
               <ArticleMetaInput label="Author" v-model="author"/>
               <ArticleMetaInput textarea label="Description" v-model="description"/>
+              <ArticleMetaInput textarea label="Image URL" v-model="image"/>
+              <ArticleMetaInput textarea label="Category" v-model="category"/>
               <b-taginput
                   v-model="tags"
                   ellipsis
@@ -67,7 +69,7 @@
           ></b-input>
         </div>
         <div class="column has-text-left content-preview">
-          <ArticleHeader preview class="header" :title="title" :test="test" :author="author" :description="description" />
+          <ArticleHeader preview class="header" :title="title" :author="author" :description="description" />
           <ArticleContent :content="content" />
           <ShareTags :category="category" :tags="tags" />
         </div>
@@ -81,13 +83,13 @@ export default {
   layout: 'admin',
   data() {
     return {
-      title: "Title",
-      test: "",
-      category: "Article",
-      tags: ["Tag 1", "Loooong tag"],
-      author: "Author Lastname",
-      description: "This is the description!", 
-      content: "[[toc]]\n# Header\nTest content",
+      title: '',
+      category: '',
+      tags: [],
+      image: '',
+      author: '',
+      description: '', 
+      content: '',
       tab: "meta",
     }
   },
@@ -95,8 +97,9 @@ export default {
     tile() {
       return {
         title: this.title,
-        slug: "what-sonata",
-        imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Wolfgang-amadeus-mozart_1.jpg/256px-Wolfgang-amadeus-mozart_1.jpg",
+        // slug: "what-sonata",
+        // imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Wolfgang-amadeus-mozart_1.jpg/256px-Wolfgang-amadeus-mozart_1.jpg",
+        imgSrc: this.image,
         content: this.description,
         category: this.category,
         tags: this.tags,
@@ -110,7 +113,28 @@ export default {
     } else {
       next(false)
     }
-  }
+  },
+  async fetch() {
+    const id = this.$route.params.id;
+    const draft = await this.$axios
+      .$get(`/api/admin/draft/${id}`)
+      .catch((e) => console.log(e.stack));
+    for (const key in draft) {
+      this[key] = draft[key];
+    }
+  },
+  methods: {
+    async save() {
+      const id = this.$route.params.id;
+      const body = { id, title: this.title, author: this.author,
+        description: this.description, content: this.content,
+        category: this.category, tags: this.tags, image: this.imgSrc };
+      await this.$axios
+        .$put(`/api/admin/draft/${id}`, body)
+        .then(res => this.$buefy.toast.open({message: 'Draft saved', type: 'is-success', duration: 3000}))
+        .catch(e => this.$buefy.toast.open({message: 'There was an error', type: 'is-danger', duration: 3000}))
+    }
+  },
 };
 </script>
 

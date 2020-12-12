@@ -17,6 +17,12 @@ const transfer_query = `INSERT INTO
   WHERE id = $1
   ON CONFLICT DO NOTHING;`;
 
+const save_query = `UPDATE drafts
+  SET title = $2, author = $3, description = $4,
+    modified_time = CURRENT_TIMESTAMP,
+    content = $5, category = $6, tags = $7, image = $8
+  WHERE id = $1;`;
+
 // Returns the draft associated with the article with the given ID
 // First creating a draft if one does not exist
 draft.get('/article/:id', requiresAdmin, async (req, res) =>{
@@ -47,7 +53,7 @@ draft.get('/article/:id', requiresAdmin, async (req, res) =>{
 draft.post('/', requiresAdmin, async (req, res) => {
   await pool
     .query(new_draft_query)
-    .then(db_res => res.status(200).send(db_res.rows[0]))
+    .then(db_res => res.status(201).send(db_res.rows[0]))
     .catch(e => res.status(500).send(e.stack));
 });
 
@@ -55,8 +61,11 @@ draft.route('/:id')
   .all(requiresAdmin)
   .put(async (req, res) => {
     // Corresponds to saving the draft
-    console.log(req.body);
-    res.status(200).send("Did PUT");
+    const {id, title, author, description, content, category, tags, image} = req.body;
+    await pool
+      .query(save_query, [id, title, author, description, content, category, tags, image])
+      .then(_ => res.status(200).send())
+      .catch(e => res.status(500).send(e.stack));
   })
   .get(async (req, res) => {
     const id = parseInt(req.params.id);
@@ -73,7 +82,7 @@ draft.route('/:id')
     if (db_rows.length == 0) {
       res.status(404).send(`Draft with ID ${id} does not exist`);
     } else {
-      res.status(200).send(db_res.rows[0]);
+      res.status(200).send(db_rows[0]);
     }
   });
 
