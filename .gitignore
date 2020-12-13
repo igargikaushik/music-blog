@@ -25,3 +25,4 @@ pnpm-debug.log*
 .nuxt
 
 **/env_variables.yaml
+**/classical-for-everyone-**.json

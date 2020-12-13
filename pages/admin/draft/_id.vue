@@ -38,8 +38,8 @@
               <ArticleMetaInput label="Title" v-model="title"/>
               <ArticleMetaInput label="Author" v-model="author"/>
               <ArticleMetaInput textarea label="Description" v-model="description"/>
-              <ArticleMetaInput textarea label="Image URL" v-model="image"/>
-              <ArticleMetaInput textarea label="Category" v-model="category"/>
+              <ArticleImageInput v-model="image"/>
+              <ArticleMetaInput label="Category" v-model="category"/>
               <b-taginput
                   v-model="tags"
                   ellipsis

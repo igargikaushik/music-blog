@@ -2,8 +2,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   async middleware(context) {
     const article_id = context.route.params.id;

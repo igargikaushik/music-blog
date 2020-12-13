@@ -4,9 +4,15 @@ export default {
   },
   components: true,
   head: {
+    title: 'Classical for Everyone',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'Understand music with listening guides',
+      }
     ],
   },
   axios: {
@@ -15,6 +21,7 @@ export default {
   proxy: {
     // Dev server proxy
     '/api': 'http://localhost:8080',
+    '/static_files': {target: 'https://storage.googleapis.com/classical-for-everyone.appspot.com/static', pathRewrite: {'^/static_files/': ''}},
   },
   css: [{ src: 'assets/styles.scss', lang: 'scss' }],
   modules: [
@@ -24,6 +31,10 @@ export default {
     '@nuxtjs/markdownit',
     ['nuxt-fontawesome', {
       imports: [
+        {
+          set: '@fortawesome/free-solid-svg-icons',
+          icons: ['faSearch', 'faArrowLeft', 'faArrowRight', 'faTimesCircle']
+        },
         {
           set: '@fortawesome/free-brands-svg-icons',
           icons: ['faTwitterSquare', 'faFacebookSquare', 'faRedditSquare']

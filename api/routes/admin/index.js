@@ -1,6 +1,5 @@
 const admin = require('express').Router();
 const { passport, requiresAdmin } = require('../../auth.js');
-const pool = require('../../pool');
 
 // Authentication Endpoints
 admin.get('/login',
@@ -53,6 +52,7 @@ admin.get("/articles", requiresAdmin, async (req, res) => {
   ]);
 });
 
-admin.use('/draft', require('./draft.js'))
+admin.use('/draft', require('./draft.js'));
+admin.use('/storage', require('./storage.js'));
 
 module.exports = admin;

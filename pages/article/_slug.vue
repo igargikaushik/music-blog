@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import ArticleContent from '@/components/article/ArticleContent.vue';
 import ArticleHeader from '@/components/article/ArticleHeader.vue';
 
@@ -30,7 +29,6 @@ export default {
   data() {
     return {
       title: "What is a Sonata?",
-      test: "",
       author: "Henry Sloan",
       description:
         'Many of the most popular classical works are "Sonatas". Let\'s look at what that means, and how we can navigate this vast genre.',
