@@ -18,7 +18,7 @@
         <template slot="end">
             <b-navbar-item tag="div">
                 <div class="buttons">
-                    <a class="button is-light" @click='save'>
+                    <a class="button is-light" @click='save' v-shortkey.once="['ctrl', 's']" @shortkey="save">
                         Save
                     </a>
                     <a class="button is-success">
