@@ -26,7 +26,7 @@ admin.get("/articles", requiresAdmin, async (req, res) => {
       slug: "beethoven-moonlight-sonata",
       author: 'Henry Sloan',
       description: "This work is one of classical music's most famous masterpieces. In fact, it's two of them!",
-      imgSrc: "https://snappygoat.com/b/6b9de9d8a0092d952602a6faa452e3c32e2a87c0",
+      image: "https://snappygoat.com/b/6b9de9d8a0092d952602a6faa452e3c32e2a87c0",
       tags: ["Sonata", "Classical"],
       creation_time: '2020-12-09T15:56:48.754Z',
       category: "Listening Guide",

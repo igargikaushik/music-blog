@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 
 // Endpoints
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/storage', require('./routes/storage.js'));
 
 app.get("/api/articles", async (req, res) => {
   const query = `SELECT

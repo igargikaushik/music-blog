@@ -25,7 +25,7 @@ export default {
   },
   css: [{ src: 'assets/styles.scss', lang: 'scss' }],
   modules: [
-    'nuxt-buefy',
+    ['nuxt-buefy', { defaultProgrammaticPromise: true }],
     '@nuxtjs/proxy',
     '@nuxtjs/axios',
     '@nuxtjs/markdownit',
@@ -33,7 +33,7 @@ export default {
       imports: [
         {
           set: '@fortawesome/free-solid-svg-icons',
-          icons: ['faSearch', 'faArrowLeft', 'faArrowRight', 'faTimesCircle']
+          icons: ['faSearch', 'faArrowLeft', 'faArrowRight', 'faTimesCircle', 'faUpload']
         },
         {
           set: '@fortawesome/free-brands-svg-icons',

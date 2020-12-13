@@ -128,7 +128,7 @@ export default {
       const id = this.$route.params.id;
       const body = { id, title: this.title, author: this.author,
         description: this.description, content: this.content,
-        category: this.category, tags: this.tags, image: this.imgSrc };
+        category: this.category, tags: this.tags, image: this.image };
       await this.$axios
         .$put(`/api/admin/draft/${id}`, body)
         .then(res => this.$buefy.toast.open({message: 'Draft saved', type: 'is-success', duration: 3000}))

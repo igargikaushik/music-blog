@@ -9,7 +9,7 @@
         <article v-if="imgSrc != null" class="media mb-1">
           <figure class="media-left">
             <p class="image is-128x128">
-              <img :src="imgSrc" />
+              <img :src="imgSrc" :alt="alt" />
             </p>
           </figure>
           <section class="media-content has-text-left">
@@ -41,7 +41,8 @@ export default {
     content: String,
     category: String,
     tags: Array,
-    disabled: Boolean
+    disabled: Boolean,
+    alt: String,
   },
 };
 </script>
