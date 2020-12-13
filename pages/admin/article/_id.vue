@@ -3,6 +3,7 @@
 
 <script>
 export default {
+  layout: 'admin',
   async middleware(context) {
     const article_id = context.route.params.id;
     const draft_id = await context.$axios
