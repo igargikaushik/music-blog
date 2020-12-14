@@ -26,7 +26,7 @@ export default {
   css: [{ src: 'assets/styles.scss', lang: 'scss' }],
   plugins: [ { src: '@/plugins/vue-shortkey.js', mode: 'client' }],
   modules: [
-    ['nuxt-buefy', { defaultProgrammaticPromise: true }],
+    ['nuxt-buefy', { css: false, defaultProgrammaticPromise: true }],
     '@nuxtjs/proxy',
     '@nuxtjs/axios',
     '@nuxtjs/markdownit',
