@@ -1,4 +1,5 @@
 const draft = require('express').Router();
+const slugify = require('slugify');
 const { requiresAdmin } = require('../../auth.js');
 const pool = require('../../pool');
 
@@ -21,7 +22,18 @@ const save_query = `UPDATE drafts
   SET title = $2, author = $3, description = $4,
     modified_time = CURRENT_TIMESTAMP,
     content = $5, category = $6, tags = $7, image = $8
-  WHERE id = $1;`;
+  WHERE id = $1
+  RETURNING *;`;
+const initial_publish_query = `INSERT INTO
+  articles(title, slug, author, description, content, category, tags, image)
+  VALUES($1, $2, $3, $4, $5, $6, $7, $8);`;
+const update_publish_query = `UPDATE articles
+  SET title = $2, slug = $3, author = $4,
+    description = $5, update_time = CURRENT_TIMESTAMP,
+    content = $6, category = $7, tags = $8, image = $9
+    WHERE id = $1;`;
+
+const delete_draft_query = `DELETE FROM drafts WHERE id = $1;`;
 
 // Returns the draft associated with the article with the given ID
 // First creating a draft if one does not exist
@@ -61,7 +73,13 @@ draft.route('/:id')
   .all(requiresAdmin)
   .put(async (req, res) => {
     // Corresponds to saving the draft
-    const {id, title, author, description, content, category, tags, image} = req.body;
+    const id = parseInt(req.params.id);
+    if (!id) {
+      res.status(400).send("Bad draft ID");
+      return;
+    }
+
+    const {title, author, description, content, category, tags, image} = req.body;
     await pool
       .query(save_query, [id, title, author, description, content, category, tags, image])
       .then(_ => res.status(200).send())
@@ -85,5 +103,49 @@ draft.route('/:id')
       res.status(200).send(db_rows[0]);
     }
   });
+
+draft.post('/publish/:id', requiresAdmin, async (req, res) => {
+  // Publish the draft with a given ID,
+  // either updating an existing article or making a new one
+  const id = parseInt(req.params.id);
+  if (!id) {
+    res.status(400).send("Bad draft ID");
+    return;
+  }
+
+  const drafts = await pool
+    .query(id_select_query, [id])
+    .then(db_res => db_res.rows)
+    .catch(e => res.status(500).send(e.stack));
+  if (drafts.length == 0) {
+    res.status(500).send("There was an error saving the draft before publishing");
+    return;
+  }
+  const draft = drafts[0];
+  const {title, author, description, content, category, tags, image} = ('title' in req.body) ? req.body : draft;
+  const slug = slugify(title, { lower: true });
+
+  var err = null;
+  if (!!draft.article_id) {
+    // If a corresponding article exists, update it
+    await pool
+      .query(update_publish_query, [draft.article_id, title, slug, author, description, content, category, tags, image])
+      .catch(e => err = e);
+  } else {
+    // Otherwise, make a new one
+    await pool
+      .query(initial_publish_query, [title, slug, author, description, content, category, tags, image])
+      .catch(e => err = e);
+  }
+
+  if (!err) {
+    await pool
+      .query(delete_draft_query, [id])
+      .then(_ => res.status(200).send(slug))
+      .catch(e => res.status(500).send(e.stack));
+  } else {
+    res.status(500).send("There was an error deleting the draft");
+  }
+});
 
 module.exports = draft;

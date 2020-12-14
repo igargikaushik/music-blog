@@ -27,7 +27,7 @@ app.get("/api/articles", async (req, res) => {
     LIMIT $1 OFFSET $2;`
 
   // Pages start at 1
-  const count = Math.max(req.query.count || 10, 40);
+  const count = Math.max(req.query.count || 12, 40);
   const page = req.query.page || 1;
   await pool
     .query(query, [count, count * (page - 1)])

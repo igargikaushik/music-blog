@@ -6,7 +6,7 @@
           {{ title }}
         </p>
 
-        <article v-if="imgSrc != null" class="media mb-1">
+        <article v-if="!!imgSrc" class="media mb-1">
           <figure class="media-left">
             <p class="image is-128x128">
               <img :src="imgSrc" :alt="alt" />
