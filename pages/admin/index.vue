@@ -25,6 +25,7 @@
     <ArticlesTable v-if="section_articles" />
     <DraftsTable v-if="section_drafts" />
     <ArchivesTable v-if="section_archives" />
+    <TrashTable v-if="section_trash" />
   </div>
 </template>
 

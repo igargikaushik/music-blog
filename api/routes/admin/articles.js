@@ -10,6 +10,11 @@ const articles_drafts_query = `SELECT
   ORDER BY modified_time DESC
   LIMIT $1 OFFSET $2;`
 
+const trash_query = `INSERT INTO
+  trash(title, author, description, creation_time, update_time, content, category, tags, image, doc_type)
+  SELECT title, author, description, creation_time, update_time, content, category, tags, image, 'article'
+  FROM articles
+  WHERE id = $1;`;
 const archive_query = `INSERT INTO
   archives(title, slug, author, description, creation_time, update_time, content, category, tags, image)
   SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image
@@ -40,6 +45,41 @@ articles.get("/", requiresAdmin, async (req, res) => {
     .query(articles_drafts_query, [count, count * (page - 1)])
     .then(db_res => res.status(200).send(db_res.rows))
     .catch(e => res.status(500).send(e.stack));
+});
+
+articles.delete("/:id", requiresAdmin, async (req, res) => {
+  // Copy an article to the trash table, then delete the article
+  const id = parseInt(req.params.id);
+  if (!id) {
+    res.status(400).send("Bad article ID");
+    return;
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const articles = await client
+      .query(id_select_query, [id])
+      .then(db_res => db_res.rows);
+    if (articles.length == 0) {
+      throw new Error(`Article with ID ${id} does not exist`);
+    }
+
+    await client.query(unlink_draft_query, [id]);
+    await client.query(trash_query, [id]);
+    await client.query(delete_article_query, [id]);
+
+    await client.query('COMMIT');
+    res.status(200).send();
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error(e.stack);
+    res.status(500).send(e.stack);
+  } finally {
+    client.release();
+  }
 });
 
 articles.post("/archive/:id", requiresAdmin, async (req, res) => {
@@ -122,7 +162,5 @@ articles.post("/unpublish/:id", requiresAdmin, async (req, res) => {
     client.release();
   }
 });
-
-// TODO: Add deletion functionality... what if there exists a draft?
 
 module.exports = articles;

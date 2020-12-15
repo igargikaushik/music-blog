@@ -107,20 +107,34 @@ export default {
   },
   mixins: [date],
   methods: {
-    reload() {
+    reload(text='') {
+      if (text) {
+        this.$buefy.toast.open({
+          message: text,
+          type: "is-success",
+          duration: 3000,
+        });
+      }
       this.page = 1;
       this.$fetch();
     },
     async archive(id) {
       await this.$axios
         .$post(`/api/admin/articles/archive/${id}`)
-        .then(res => this.reload())
-        .catch((e) => console.log(e.stack));
+        .then(res => this.reload("Article moved to archives"))
+        .catch((e) => {
+          console.log(e.stack);
+          this.$buefy.toast.open({
+            message: "There was an error",
+            type: "is-danger",
+            duration: 3000,
+          });
+        });
     },
     async unpublish(id, title) {
       await this.$axios
         .$post(`/api/admin/articles/unpublish/${id}`)
-        .then(res => this.reload())
+        .then(res => this.reload("Article moved to drafts"))
         .catch((e) => {
           if (e.response?.status === 409) {
             this.$buefy.dialog.alert({
@@ -134,10 +148,26 @@ export default {
             });
           } else {
             console.log(e.stack);
+            this.$buefy.toast.open({
+              message: "There was an error",
+              type: "is-danger",
+              duration: 3000,
+            });
           }
         });
     },
-    async delete_article(id) {},
+    async delete_article(id) {
+      await this.$axios
+        .$delete(`/api/admin/articles/${id}`)
+        .then(res => this.reload("Article moved to trash"))
+        .catch((e) => {
+          this.$buefy.toast.open({
+            message: "There was an error",
+            type: "is-danger",
+            duration: 3000,
+          });
+        });
+    },
   },
   async fetch() {
     // TODO: Potentially save visited pages and maybe use store

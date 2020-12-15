@@ -184,13 +184,14 @@ export default {
             duration: 3000,
           })
         )
-        .catch((e) =>
+        .catch((e) => {
+          console.log(e.stack);
           this.$buefy.toast.open({
             message: "There was an error",
             type: "is-danger",
             duration: 3000,
-          })
-        );
+          });
+        });
     },
   },
 };
