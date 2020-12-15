@@ -85,7 +85,29 @@ export default {
   },
   mixins: [date],
   methods: {
-    delete_draft(id) {},
+    reload(text='') {
+      if (text) {
+        this.$buefy.toast.open({
+          message: text,
+          type: "is-success",
+          duration: 3000,
+        });
+      }
+      this.page = 1;
+      this.$fetch();
+    },
+    async delete_draft(id) {
+      await this.$axios
+        .$delete(`/api/admin/drafts/${id}`)
+        .then(res => this.reload("Draft moved to trash"))
+        .catch((e) => {
+          this.$buefy.toast.open({
+            message: "There was an error",
+            type: "is-danger",
+            duration: 3000,
+          });
+        });
+    },
   },
   async fetch() {
     this.total = await this.$axios

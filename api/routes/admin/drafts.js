@@ -38,8 +38,10 @@ const redirect_query = `INSERT INTO
 // If the new from_slug is an old to_slug, update to the new to_slug
 const redirect_cascade_query = `UPDATE redirects SET to_slug = $1 WHERE to_slug = $2;`
 const publish_archive_query = `INSERT INTO
-  archives(title, slug, author, description, creation_time, update_time, content, category, tags, image)
-  SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image
+  archives(title, slug, author, description, creation_time,
+    update_time, content, category, tags, image)
+  SELECT title, slug, author, description, creation_time,
+    update_time, content, category, tags, image
   FROM articles
   WHERE id = $1`;
 
@@ -58,6 +60,13 @@ const update_publish_query = `UPDATE articles
     content = $6, category = $7, tags = $8, image = $9
     WHERE id = $1;`;
 
+const trash_query = `INSERT INTO
+  trash(title, author, description, creation_time, update_time,
+    content, category, tags, image, doc_type, draft_article_id)
+  SELECT title, author, description, creation_time, modified_time,
+    content, category, tags, image, 'draft', article_id
+  FROM drafts
+  WHERE id = $1;`;
 const delete_draft_query = `DELETE FROM drafts WHERE id = $1;`;
 
 // Returns the draft associated with the article with the given ID
@@ -143,6 +152,39 @@ drafts.route('/:id')
       res.status(404).send(`Draft with ID ${id} does not exist`);
     } else {
       res.status(200).send(db_rows[0]);
+    }
+  })
+  .delete(async (req, res) => {
+    // Copy a draft to the trash table, then delete the draft
+    const id = parseInt(req.params.id);
+    if (!id) {
+      res.status(400).send("Bad draft ID");
+      return;
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      const drafts = await client
+        .query(id_select_query, [id])
+        .then(db_res => db_res.rows);
+      if (drafts.length == 0) {
+        throw new Error(`Draft with ID ${id} does not exist`);
+      }
+
+      await client.query(trash_query, [id]);
+      await client.query(delete_draft_query, [id]);
+
+      await client.query('COMMIT');
+      res.status(200).send();
+    } catch (e) {
+      await client.query('ROLLBACK');
+      console.error(e.stack);
+      res.status(500).send(e.stack);
+    } finally {
+      client.release();
     }
   });
 
