@@ -26,17 +26,17 @@ const transfer_query = `INSERT INTO
   FROM articles
   WHERE id = $1
   ON CONFLICT DO NOTHING;`;
-// $2 and $3 should be the same, both equalling the old slug
-// They are different since they deduce to different data types
-// TODO: What if it changes multiple times? Old mappings should update, too.
 const redirect_query = `INSERT INTO
   redirects(from_slug, to_slug)
-  SELECT slug, $3
+  SELECT slug, $2::varchar
   FROM articles
   WHERE id = $1 AND slug != $2
   ON CONFLICT (from_slug)
   DO UPDATE
-    SET to_slug = $2;`;
+    SET to_slug = $2
+  RETURNING from_slug, to_slug;`;
+// If the new from_slug is an old to_slug, update to the new to_slug
+const redirect_cascade_query = `UPDATE redirects SET to_slug = $1 WHERE to_slug = $2;`
 const publish_archive_query = `INSERT INTO
   archives(title, slug, author, description, creation_time, update_time, content, category, tags, image)
   SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image
@@ -155,50 +155,53 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
     return;
   }
 
-  const drafts = await pool
-    .query(id_select_query, [id])
-    .then(db_res => db_res.rows)
-    .catch(e => res.status(500).send(e.stack));
-  if (drafts.length == 0) {
-    res.status(500).send(`Draft with ID ${id} does not exist`);
-    return;
-  }
-  const draft = drafts[0];
-  const {title, author, description, content, category, tags, image} = ('title' in req.body) ? req.body : draft;
-  const slug = slugify(title, { lower: true });
+  const client = await pool.connect();
 
-  var err = null;
-  if (!!draft.article_id) {
-    // TODO: This should all probably be a transaction, if only for error safety
+  try {
+    await client.query('BEGIN');
 
-    // If a corresponding article exists, update it
-    // First, add redirect to redirects table (if slug changed)
-    await pool
-      .query(redirect_query, [draft.article_id, slug, slug])
-      .catch(e => console.error(e.stack));
+    const drafts = await client
+      .query(id_select_query, [id])
+      .then(db_res => db_res.rows);
+    if (drafts.length == 0) {
+      throw new Error(`Draft with ID ${id} does not exist`);
+    }
+    const draft = drafts[0];
+    const {title, author, description, content, category, tags, image} = ('title' in req.body) ? req.body : draft;
+    const slug = slugify(title, { lower: true, strict: true });
 
-    // Then, make an archive
-    await pool
-      .query(publish_archive_query, [draft.article_id])
-      .catch(e => console.error(e.stack));
+    if (!!draft.article_id) {
+      // If a corresponding article exists, update it
+      // First, add redirect to redirects table (if slug changed)
+      const redirect = await client
+        .query(redirect_query, [draft.article_id, slug])
+        .then(db_res => db_res.rows[0]);
+      if (redirect) {
+        await client.query(redirect_cascade_query, [redirect.to_slug, redirect.from_slug]);
+      }
 
-    await pool
-      .query(update_publish_query, [draft.article_id, title, slug, author, description, content, category, tags, image])
-      .catch(e => err = e);
-  } else {
-    // Otherwise, make a new one
-    await pool
-      .query(initial_publish_query, [title, slug, author, description, content, category, tags, image])
-      .catch(e => err = e);
-  }
+      // Then, make an archive
+      await client.query(publish_archive_query, [draft.article_id]);
 
-  if (!err) {
-    await pool
-      .query(delete_draft_query, [id])
-      .then(_ => res.status(200).send(slug))
-      .catch(e => res.status(500).send(e.stack));
-  } else {
-    res.status(500).send("There was an error deleting the draft");
+      await client.query(update_publish_query,
+        [draft.article_id, title, slug, author, description, content, category, tags, image]);
+    } else {
+      // Otherwise, make a new one
+      await client.query(initial_publish_query,
+        [title, slug, author, description, content, category, tags, image]);
+    }
+
+    // Finally, delete the draft
+    await client.query(delete_draft_query, [id]);
+
+    await client.query('COMMIT');
+    res.status(201).send(slug);
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error(e.stack);
+    res.status(500).send(e.stack);
+  } finally {
+    client.release();
   }
 });
 

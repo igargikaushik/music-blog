@@ -115,7 +115,6 @@ export default {
       this.page = page;
       const real_page = page - 1;
       if (this.files.length <= real_page) {
-        console.log(`Getting real page ${real_page}`);
         const query =
           this.next_page_token == ""
             ? ""
