@@ -55,10 +55,12 @@ export default {
   },
   async fetch() {
     await Promise.all(this.tiles.map(async tile => {
-      await this.$axios
-        .$get(`/api/storage/alt?file=${tile.imgSrc}`)
-        .then(res => tile.alt = `${res.alt}`)
-        .catch((e) => {})
+      if (tile.imgSrc) {
+        await this.$axios
+          .$get(`/api/storage/alt?file=${tile.imgSrc}`)
+          .then(res => tile.alt = `${res.alt}`)
+          .catch((e) => {})
+      }
     }));
   }
 }

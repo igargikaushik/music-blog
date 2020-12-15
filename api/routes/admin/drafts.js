@@ -1,5 +1,4 @@
-// TODO: Refactor to plural "drafts"
-const draft = require('express').Router();
+const drafts = require('express').Router();
 const slugify = require('slugify');
 const { requiresAdmin } = require('../../auth.js');
 const pool = require('../../pool');
@@ -47,7 +46,7 @@ const delete_draft_query = `DELETE FROM drafts WHERE id = $1;`;
 
 // Returns the draft associated with the article with the given ID
 // First creating a draft if one does not exist
-draft.get('/article/:id', requiresAdmin, async (req, res) =>{
+drafts.get('/article/:id', requiresAdmin, async (req, res) =>{
   const article_id = parseInt(req.params.id);
   if (!article_id) {
     res.status(400).send("Bad article ID");
@@ -71,7 +70,7 @@ draft.get('/article/:id', requiresAdmin, async (req, res) =>{
     .catch(e => res.status(500).send(e.stack));
 });
 
-draft.route('/')
+drafts.route('/')
   .all(requiresAdmin)
   .get(async (req, res) => {
     const count = Math.max(req.query.count || 40, 120);
@@ -89,14 +88,14 @@ draft.route('/')
       .catch(e => res.status(500).send(e.stack));
   });
 
-draft.get("/count", requiresAdmin, async (req, res) => {
+drafts.get("/count", requiresAdmin, async (req, res) => {
   await pool
     .query(total_query)
     .then(db_res => res.status(200).send(db_res.rows[0]))
     .catch(e => res.status(500).send(e.stack));
 });
 
-draft.route('/:id')
+drafts.route('/:id')
   .all(requiresAdmin)
   .put(async (req, res) => {
     // Corresponds to saving the draft
@@ -131,7 +130,7 @@ draft.route('/:id')
     }
   });
 
-draft.post('/publish/:id', requiresAdmin, async (req, res) => {
+drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
   // Publish the draft with a given ID,
   // either updating an existing article or making a new one
   const id = parseInt(req.params.id);
@@ -145,7 +144,7 @@ draft.post('/publish/:id', requiresAdmin, async (req, res) => {
     .then(db_res => db_res.rows)
     .catch(e => res.status(500).send(e.stack));
   if (drafts.length == 0) {
-    res.status(500).send("There was an error saving the draft before publishing");
+    res.status(500).send(`Draft with ID ${id} does not exist`);
     return;
   }
   const draft = drafts[0];
@@ -154,6 +153,11 @@ draft.post('/publish/:id', requiresAdmin, async (req, res) => {
 
   var err = null;
   if (!!draft.article_id) {
+    // TODO: Archive old slugs in an old:new mapping table
+    // Basically, make a query that inserts {article.slug : new_slug} into redirects
+    // where article.slug != new_slug
+    // TODO: Also, make archives!
+
     // If a corresponding article exists, update it
     await pool
       .query(update_publish_query, [draft.article_id, title, slug, author, description, content, category, tags, image])
@@ -175,4 +179,4 @@ draft.post('/publish/:id', requiresAdmin, async (req, res) => {
   }
 });
 
-module.exports = draft;
+module.exports = drafts;

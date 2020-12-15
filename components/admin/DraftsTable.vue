@@ -89,11 +89,11 @@ export default {
   },
   async fetch() {
     this.total = await this.$axios
-      .$get("/api/admin/draft/count")
+      .$get("/api/admin/drafts/count")
       .then((res) => res.count)
       .catch((e) => console.log(e.stack));
     this.drafts = await this.$axios
-      .$get(`/api/admin/draft?page=${this.page}&count=40`)
+      .$get(`/api/admin/drafts?page=${this.page}&count=40`)
       .catch((e) => console.log(e.stack));
   },
 };

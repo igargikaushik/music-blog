@@ -23,7 +23,7 @@ export default {
       }
 
       await this.$axios
-        .$post(`/api/admin/draft/publish/${this.id}`, this.body)
+        .$post(`/api/admin/drafts/publish/${this.id}`, this.body)
         .then(slug => {
           this.$emit("redirect");
           this.$router.push(`/article/${slug}`);

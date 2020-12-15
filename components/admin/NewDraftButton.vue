@@ -15,7 +15,7 @@ export default {
     },
     async new_draft() {
       const new_id = await this.$axios
-        .$post("/api/admin/draft")
+        .$post("/api/admin/drafts")
         .then((draft) => draft.id)
         .catch((e) => console.log(e.stack));
       this.$router.push(`/admin/draft/${new_id}`);

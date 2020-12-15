@@ -157,7 +157,7 @@ export default {
   async fetch() {
     const id = this.$route.params.id;
     const draft = await this.$axios
-      .$get(`/api/admin/draft/${id}`)
+      .$get(`/api/admin/drafts/${id}`)
       .catch((e) => console.log(e.stack));
     for (const key in draft) {
       this[key] = draft[key];
@@ -176,7 +176,7 @@ export default {
         image: this.image,
       };
       await this.$axios
-        .$put(`/api/admin/draft/${id}`, body)
+        .$put(`/api/admin/drafts/${id}`, body)
         .then((res) =>
           this.$buefy.toast.open({
             message: "Draft saved",

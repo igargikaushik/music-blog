@@ -19,7 +19,7 @@ admin.get('/user', function (req, res) {
 
 // Authorized admin endpoints
 admin.use('/articles', require('./articles.js'));
-admin.use('/draft', require('./draft.js'));
+admin.use('/drafts', require('./drafts.js'));
 admin.use('/storage', require('./storage.js'));
 
 module.exports = admin;
