@@ -169,6 +169,8 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
     const draft = drafts[0];
     const {title, author, description, content, category, tags, image} = ('title' in req.body) ? req.body : draft;
     const slug = slugify(title, { lower: true, strict: true });
+    // TODO: What if the new slug conflicts with another article?
+    // Probably just give a special error message?
 
     if (!!draft.article_id) {
       // If a corresponding article exists, update it

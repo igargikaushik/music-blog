@@ -25,5 +25,6 @@ articles.get("/", requiresAdmin, async (req, res) => {
     .catch(e => res.status(500).send(e.stack));
 });
 
+// TODO: Add deletion functionality... what if there exists a draft?
 
 module.exports = articles;
