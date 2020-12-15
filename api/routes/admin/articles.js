@@ -2,7 +2,7 @@ const articles = require('express').Router();
 const { requiresAdmin } = require('../../auth.js');
 const pool = require('../../pool');
 
-const id_select_query = `SELECT * FROM articles WHERE id = $1;`;
+const id_select_query = `SELECT id FROM articles WHERE id = $1;`;
 const total_query = `SELECT COUNT(*) FROM articles_drafts;`
 const articles_drafts_query = `SELECT
   id, title, category, author, creation_time, modified_time, is_draft

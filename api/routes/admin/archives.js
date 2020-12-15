@@ -3,8 +3,7 @@ const slugify = require('../../slugify.js');
 const { requiresAdmin } = require('../../auth.js');
 const pool = require('../../pool');
 
-// TODO: Limit columns returned by ALL id_select_query's
-const id_select_query = `SELECT * FROM archives WHERE id = $1;`;
+const id_select_query = `SELECT id FROM archives WHERE id = $1;`;
 const total_query = `SELECT COUNT(*) FROM archives;`
 const list_query = `SELECT
   id, title, category, author, archive_time, creation_time, update_time

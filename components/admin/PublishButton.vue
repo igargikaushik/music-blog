@@ -33,7 +33,7 @@ export default {
             this.$buefy.dialog.alert({
               title: "Conflict",
               message:
-                `There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting.`,
+                `There already exists an article with the same slug. Rename this draft or the existing article to resolve the conflict. Aborting.`,
               type: "is-danger",
               hasIcon: true,
               ariaRole: "alertdialog",

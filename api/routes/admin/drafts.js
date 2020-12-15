@@ -4,7 +4,7 @@ const { requiresAdmin } = require('../../auth.js');
 const pool = require('../../pool.js');
 
 const article_query = `SELECT * FROM articles WHERE id = $1;`
-const article_id_select_query = `SELECT * FROM drafts WHERE article_id = $1;`;
+const article_id_select_query = `SELECT id FROM drafts WHERE article_id = $1;`;
 const id_select_query = `SELECT * FROM drafts WHERE id = $1;`;
 const total_query = `SELECT COUNT(*) FROM drafts;`
 const list_query = `SELECT
