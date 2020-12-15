@@ -1,3 +1,4 @@
+// TODO: Refactor to plural "drafts"
 const draft = require('express').Router();
 const slugify = require('slugify');
 const { requiresAdmin } = require('../../auth.js');
@@ -6,6 +7,15 @@ const pool = require('../../pool');
 const article_query = `SELECT * FROM articles WHERE id = $1;`
 const article_id_select_query = `SELECT * FROM drafts WHERE article_id = $1;`;
 const id_select_query = `SELECT * FROM drafts WHERE id = $1;`;
+const total_query = `SELECT COUNT(*) FROM drafts;`
+const list_query = `SELECT
+  drafts.id, drafts.title, drafts.category, drafts.author, drafts.creation_time,
+  COALESCE(drafts.modified_time, drafts.creation_time) as modified_time,
+  articles.slug as article_slug
+  FROM drafts
+  LEFT JOIN articles ON drafts.id = articles.id
+  ORDER BY modified_time DESC
+  LIMIT $1 OFFSET $2;`
 
 const new_draft_query = `INSERT INTO
   drafts(article_id, title, author, description, content, category, tags, image)
@@ -61,11 +71,28 @@ draft.get('/article/:id', requiresAdmin, async (req, res) =>{
     .catch(e => res.status(500).send(e.stack));
 });
 
-// Creates a new draft, returning its unique ID
-draft.post('/', requiresAdmin, async (req, res) => {
+draft.route('/')
+  .all(requiresAdmin)
+  .get(async (req, res) => {
+    const count = Math.max(req.query.count || 40, 120);
+    const page = req.query.page || 1;
+    await pool
+      .query(list_query, [count, count * (page - 1)])
+      .then(db_res => res.status(200).send(db_res.rows))
+      .catch(e => res.status(500).send(e.stack));
+  })
+  .post(async (req, res) => {
+    // Creates a new draft, returning its unique ID
+    await pool
+      .query(new_draft_query)
+      .then(db_res => res.status(201).send(db_res.rows[0]))
+      .catch(e => res.status(500).send(e.stack));
+  });
+
+draft.get("/count", requiresAdmin, async (req, res) => {
   await pool
-    .query(new_draft_query)
-    .then(db_res => res.status(201).send(db_res.rows[0]))
+    .query(total_query)
+    .then(db_res => res.status(200).send(db_res.rows[0]))
     .catch(e => res.status(500).send(e.stack));
 });
 

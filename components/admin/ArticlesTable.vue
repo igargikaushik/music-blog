@@ -6,13 +6,12 @@
           <tr>
             <th>Title</th>
             <th>Category</th>
-            <th>Creation date</th>
+            <th>Created</th>
+            <th>Modified</th>
             <th>Author</th>
             <th>Status</th>
             <th>
-              <b-button type="is-success" icon-left="plus" @click="click_new"
-                >New</b-button
-              >
+              <NewDraftButton />
             </th>
           </tr>
         </thead>
@@ -21,6 +20,7 @@
             <td>{{ article.title }}</td>
             <td>{{ article.category }}</td>
             <td>{{ date(article.creation_time) }}</td>
+            <td>{{ date(article.modified_time) }}</td>
             <td>{{ article.author }}</td>
             <td>{{ article.is_draft ? "Draft" : "Published" }}</td>
             <td>
@@ -38,46 +38,40 @@
                   >Edit as draft</b-button
                 >
 
-                <b-dropdown aria-role="list">
+                <b-dropdown aria-role="list" position="is-bottom-left">
                   <b-icon slot="trigger" icon="dots-vertical"></b-icon>
-                  <b-dropdown-item
-                    aria-role="listitem"
-                    @click="
-                      confirm(archive, 'archive', article.id, article.title)
-                    "
-                    >Archive</b-dropdown-item
-                  >
-                  <b-dropdown-item
-                    aria-role="listitem"
-                    @click="
-                      confirm(
-                        unpublish,
-                        'unpublish',
-                        article.id,
-                        article.title
-                      )
-                    "
-                    >Unpublish</b-dropdown-item
-                  >
-                  <b-dropdown-item
-                    aria-role="listitem"
-                    @click="
-                      confirm(
-                        delete_article,
-                        'delete',
-                        article.id,
-                        article.title
-                      )
-                    "
-                    >Delete</b-dropdown-item
-                  >
+                  <ConfirmButton
+                    verb="archive"
+                    kind="article"
+                    :title="article.title"
+                    text="Archive"
+                    @confirm="archive(article.id)"
+                  />
+                  <ConfirmButton
+                    verb="unpublish"
+                    kind="article"
+                    :title="article.title"
+                    text="Unpublish"
+                    @confirm="unpublish(article.id)"
+                  />
+                  <ConfirmButton
+                    verb="delete"
+                    kind="article"
+                    :title="article.title"
+                    text="Delete"
+                    @confirm="delete_article(article.id)"
+                  />
                 </b-dropdown>
               </span>
             </td>
           </tr>
         </tbody>
       </table>
+      <div v-if="$fetchState.pending" style="position: relative; height: 60px; margin-bottom: 1.5rem;">
+        <b-loading :is-full-page="false" v-model="$fetchState.pending"></b-loading>
+      </div>
       <b-pagination
+        v-else
         simple
         per-page="40"
         order="is-centered"
@@ -94,53 +88,33 @@
 </template>
 
 <script>
-import date from '@/mixins/date.js';
+import date from "@/mixins/date.js";
 
 export default {
+  name: "ArticlesTable",
   data() {
     return {
       total: 0,
+      temp: true,
       page: 1,
       articles: [],
     };
   },
   mixins: [date],
   methods: {
-    click_new() {
-      this.$buefy.dialog.confirm({
-        message: "Are you sure you want to make a new draft?",
-        type: "is-success",
-        onConfirm: () => this.new_draft(),
-      });
-    },
-    async new_draft() {
-      const new_id = await this.$axios
-        .$post("/api/admin/draft")
-        .then((draft) => draft.id)
-        .catch((e) => console.log(e.stack));
-      this.$router.push(`/admin/draft/${new_id}`);
-    },
-    confirm(f, verb, id, title) {
-      this.$buefy.dialog.confirm({
-        type: "is-danger",
-        hasIcon: true,
-        message: `Are you sure you want to ${verb} the article "${title}"?`,
-        type: "is-danger",
-        onConfirm: () => f(id),
-      });
-    },
-    archive() {},
-    unpublish() {},
-    delete_article() {},
+    archive(id) {},
+    unpublish(id) {},
+    delete_article(id) {},
   },
   async fetch() {
-    console.log("Fetching articles");
+    // TODO: Potentially save visited pages and maybe use store
+    // Same for drafts
     this.total = await this.$axios
       .$get("/api/admin/articles/count")
       .then((res) => res.count)
       .catch((e) => console.log(e.stack));
     this.articles = await this.$axios
-      .$get("/api/admin/articles")
+      .$get(`/api/admin/articles?page=${this.page}&count=40`)
       .catch((e) => console.log(e.stack));
   },
 };

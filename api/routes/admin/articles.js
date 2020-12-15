@@ -4,9 +4,9 @@ const pool = require('../../pool');
 
 const total_query = `SELECT COUNT(*) FROM articles_drafts;`
 const articles_drafts_query = `SELECT
-  id, title, category, author, creation_time, is_draft
+  id, title, category, author, creation_time, modified_time, is_draft
   FROM articles_drafts
-  ORDER BY creation_time DESC
+  ORDER BY modified_time DESC
   LIMIT $1 OFFSET $2;`
 
 articles.get("/count", requiresAdmin, async (req, res) => {

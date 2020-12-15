@@ -1,7 +1,5 @@
 <template>
-  <a class="button is-success" @click="publish">
-    <strong>Publish</strong>
-  </a>
+  <a class="button is-success" @click="publish">Publish</a>
 </template>
 
 
@@ -16,7 +14,8 @@ export default {
   methods: {
     async publish() {
       const { result, dialog } = await this.$buefy.dialog.confirm({
-          message: `Are you sure you want to publish the article "${this.title}"?`,
+        type: "is-success",
+        message: `Are you sure you want to publish the article "${this.title}"?`,
       });
       if (!result) {
         this.$buefy.toast.open({message: 'Cancelled publish', type: 'is-danger', duration: 3000});

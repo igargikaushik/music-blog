@@ -1,7 +1,7 @@
 export default {
   methods: {
     date(timestamp) {
-      let date_obj = new Date(timestamp + " UTC");
+      let date_obj = new Date(timestamp);
       const options = {
         year: "numeric",
         month: "short",
