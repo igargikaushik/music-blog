@@ -26,6 +26,22 @@ const transfer_query = `INSERT INTO
   FROM articles
   WHERE id = $1
   ON CONFLICT DO NOTHING;`;
+// $2 and $3 should be the same, both equalling the old slug
+// They are different since they deduce to different data types
+// TODO: What if it changes multiple times? Old mappings should update, too.
+const redirect_query = `INSERT INTO
+  redirects(from_slug, to_slug)
+  SELECT slug, $3
+  FROM articles
+  WHERE id = $1 AND slug != $2
+  ON CONFLICT (from_slug)
+  DO UPDATE
+    SET to_slug = $2;`;
+const publish_archive_query = `INSERT INTO
+  archives(title, slug, author, description, creation_time, update_time, content, category, tags, image)
+  SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image
+  FROM articles
+  WHERE id = $1`;
 
 const save_query = `UPDATE drafts
   SET title = $2, author = $3, description = $4,
@@ -153,12 +169,19 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
 
   var err = null;
   if (!!draft.article_id) {
-    // TODO: Archive old slugs in an old:new mapping table
-    // Basically, make a query that inserts {article.slug : new_slug} into redirects
-    // where article.slug != new_slug
-    // TODO: Also, make archives!
+    // TODO: This should all probably be a transaction, if only for error safety
 
     // If a corresponding article exists, update it
+    // First, add redirect to redirects table (if slug changed)
+    await pool
+      .query(redirect_query, [draft.article_id, slug, slug])
+      .catch(e => console.error(e.stack));
+
+    // Then, make an archive
+    await pool
+      .query(publish_archive_query, [draft.article_id])
+      .catch(e => console.error(e.stack));
+
     await pool
       .query(update_publish_query, [draft.article_id, title, slug, author, description, content, category, tags, image])
       .catch(e => err = e);
