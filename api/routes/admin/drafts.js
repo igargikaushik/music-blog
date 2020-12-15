@@ -15,6 +15,8 @@ const list_query = `SELECT
   LEFT JOIN articles ON drafts.article_id = articles.id
   ORDER BY modified_time DESC
   LIMIT $1 OFFSET $2;`
+const article_slug_query = `SELECT slug FROM articles
+  WHERE slug = $1 AND ($2::INTEGER IS NULL OR id != $2::INTEGER);`;
 
 const new_draft_query = `INSERT INTO
   drafts(article_id, title, author, description, content, category, tags, image)
@@ -211,8 +213,15 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
     const draft = drafts[0];
     const {title, author, description, content, category, tags, image} = ('title' in req.body) ? req.body : draft;
     const slug = slugify(title);
-    // TODO: What if the new slug conflicts with another article?
-    // Probably just give a special error message?
+
+    const conflicts = await client
+      .query(article_slug_query, [slug, draft.article_id])
+      .then(db_res => db_res.rows);
+    if (conflicts.length != 0) {
+      const err = `Article with slug ${conflicts[0].slug} already exists`;
+      res.status(409).send(err);
+      throw new Error(err);
+    }
 
     if (!!draft.article_id) {
       // If a corresponding article exists, update it
@@ -243,7 +252,9 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
   } catch (e) {
     await client.query('ROLLBACK');
     console.error(e.stack);
-    res.status(500).send(e.stack);
+    if (!res.headersSent) {
+      res.status(500).send(e.stack);
+    }
   } finally {
     client.release();
   }

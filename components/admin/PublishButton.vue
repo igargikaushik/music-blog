@@ -28,7 +28,26 @@ export default {
           this.$emit("redirect");
           this.$router.push(`/article/${slug}`);
         })
-        .catch(e => this.$buefy.toast.open({message: 'There was an error', type: 'is-danger', duration: 3000}));
+        .catch((e) => {
+          if (e.response?.status === 409) {
+            this.$buefy.dialog.alert({
+              title: "Conflict",
+              message:
+                `There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting.`,
+              type: "is-danger",
+              hasIcon: true,
+              ariaRole: "alertdialog",
+              ariaModal: true,
+            });
+          } else {
+            console.log(e.stack);
+            this.$buefy.toast.open({
+              message: "There was an error",
+              type: "is-danger",
+              duration: 3000,
+            });
+          }
+        });
     }
   },
 }
