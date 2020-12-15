@@ -52,7 +52,7 @@
                     kind="article"
                     :title="article.title"
                     text="Unpublish"
-                    @confirm="unpublish(article.id)"
+                    @confirm="unpublish(article.id, article.title)"
                   />
                   <ConfirmButton
                     verb="delete"
@@ -67,8 +67,14 @@
           </tr>
         </tbody>
       </table>
-      <div v-if="$fetchState.pending" style="position: relative; height: 60px; margin-bottom: 1.5rem;">
-        <b-loading :is-full-page="false" v-model="$fetchState.pending"></b-loading>
+      <div
+        v-if="$fetchState.pending"
+        style="position: relative; height: 60px; margin-bottom: 1.5rem"
+      >
+        <b-loading
+          :is-full-page="false"
+          v-model="$fetchState.pending"
+        ></b-loading>
       </div>
       <b-pagination
         v-else
@@ -95,16 +101,43 @@ export default {
   data() {
     return {
       total: 0,
-      temp: true,
       page: 1,
       articles: [],
     };
   },
   mixins: [date],
   methods: {
-    archive(id) {},
-    unpublish(id) {},
-    delete_article(id) {},
+    reload() {
+      this.page = 1;
+      this.$fetch();
+    },
+    async archive(id) {
+      await this.$axios
+        .$post(`/api/admin/articles/archive/${id}`)
+        .then(res => this.reload())
+        .catch((e) => console.log(e.stack));
+    },
+    async unpublish(id, title) {
+      await this.$axios
+        .$post(`/api/admin/articles/unpublish/${id}`)
+        .then(res => this.reload())
+        .catch((e) => {
+          if (e.response?.status === 409) {
+            this.$buefy.dialog.alert({
+              title: "Conflict",
+              message:
+                `The article "${title}" already has a draft. If you would like to unpublish the article, delete the existing draft. Aborting.`,
+              type: "is-danger",
+              hasIcon: true,
+              ariaRole: "alertdialog",
+              ariaModal: true,
+            });
+          } else {
+            console.log(e.stack);
+          }
+        });
+    },
+    async delete_article(id) {},
   },
   async fetch() {
     // TODO: Potentially save visited pages and maybe use store

@@ -12,7 +12,7 @@ const list_query = `SELECT
   COALESCE(drafts.modified_time, drafts.creation_time) as modified_time,
   articles.slug as article_slug
   FROM drafts
-  LEFT JOIN articles ON drafts.id = articles.id
+  LEFT JOIN articles ON drafts.article_id = articles.id
   ORDER BY modified_time DESC
   LIMIT $1 OFFSET $2;`
 
