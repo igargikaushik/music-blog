@@ -25,6 +25,11 @@
               <span class="buttons">
                 <b-dropdown aria-role="list" position="is-bottom-left">
                   <b-icon slot="trigger" icon="dots-vertical"></b-icon>
+                  <b-dropdown-item
+                    aria-role="listitem"
+                    @click="rename(archive.id, archive.title)">
+                    Rename
+                  </b-dropdown-item>
                   <ConfirmButton
                     verb="republish"
                     kind="archive"
@@ -79,7 +84,68 @@ export default {
   },
   mixins: [date],
   methods: {
-    republish(id) {},
+    reload(text='') {
+      if (text) {
+        this.$buefy.toast.open({
+          message: text,
+          type: "is-success",
+          duration: 3000,
+        });
+      }
+      this.page = 1;
+      this.$fetch();
+    },
+    async rename(id, title) {
+      const { result, dialog } = await this.$buefy.dialog.prompt({
+        message: `To what would you like to rename the archive "${title}"?`,
+        inputAttrs: {
+          placeholder: "e.g. What is a Sonata?",
+        },
+        type: "is-success",
+        trapFocus: true,
+      });
+
+      if (result) {
+        await this.$axios
+          .$put(`/api/admin/archives/rename/${id}`, {title: result})
+          .then(res => this.reload("Archive renamed"))
+          .catch((e) => {
+            console.log(e.stack);
+            this.$buefy.toast.open({
+              message: "There was an error",
+              type: "is-danger",
+              duration: 3000,
+            });
+          });
+      } else {
+        this.$buefy.toast.open({message: `Cancelled rename`, type: 'is-danger', duration: 3000})
+      }
+    },
+    async republish(id) {
+      await this.$axios
+        .$post(`/api/admin/archives/republish/${id}`)
+        .then(res => this.reload("Archive moved to articles"))
+        .catch((e) => {
+          if (e.response?.status === 409) {
+            this.$buefy.dialog.alert({
+              title: "Conflict",
+              message:
+                `There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting.`,
+              type: "is-danger",
+              hasIcon: true,
+              ariaRole: "alertdialog",
+              ariaModal: true,
+            });
+          } else {
+            console.log(e.stack);
+            this.$buefy.toast.open({
+              message: "There was an error",
+              type: "is-danger",
+              duration: 3000,
+            });
+          }
+        });
+    },
     delete_archive(id) {},
   },
   async fetch() {

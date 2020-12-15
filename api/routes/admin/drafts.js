@@ -1,7 +1,7 @@
 const drafts = require('express').Router();
-const slugify = require('slugify');
+const slugify = require('../../slugify.js');
 const { requiresAdmin } = require('../../auth.js');
-const pool = require('../../pool');
+const pool = require('../../pool.js');
 
 const article_query = `SELECT * FROM articles WHERE id = $1;`
 const article_id_select_query = `SELECT * FROM drafts WHERE article_id = $1;`;
@@ -210,7 +210,7 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
     }
     const draft = drafts[0];
     const {title, author, description, content, category, tags, image} = ('title' in req.body) ? req.body : draft;
-    const slug = slugify(title, { lower: true, strict: true });
+    const slug = slugify(title);
     // TODO: What if the new slug conflicts with another article?
     // Probably just give a special error message?
 

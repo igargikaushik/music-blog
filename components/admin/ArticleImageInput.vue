@@ -138,7 +138,6 @@ export default {
       this.showModal = false;
     },
     async upload_file(e) {
-      console.log(e.target.files);
       var form_data = new FormData();
       form_data.append("file", e.target.files[0]);
       await this.$buefy.dialog.prompt({
