@@ -58,7 +58,7 @@
       <b-pagination
         v-else
         simple
-        per-page="40"
+        per-page="20"
         order="is-centered"
         :total="total"
         v-model="page"
