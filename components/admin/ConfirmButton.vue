@@ -23,7 +23,7 @@ export default {
         message: `Are you sure you want to ${verb} the ${kind} "${title}"?`,
         type: "is-danger",
         onConfirm: () => this.$emit('confirm'),
-        onCancel: () => this.$buefy.toast.open({message: `Cancelled ${verb}`, type: 'is-danger', duration: 3000}),
+        onCancel: () => this.$buefy.toast.open({message: `Canceled ${verb}`, type: 'is-danger', duration: 3000}),
       });
     },
   },

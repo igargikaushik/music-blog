@@ -18,7 +18,7 @@ export default {
         message: `Are you sure you want to publish the article "${this.title}"?`,
       });
       if (!result) {
-        this.$buefy.toast.open({message: 'Cancelled publish', type: 'is-danger', duration: 3000});
+        this.$buefy.toast.open({message: 'Canceled publish', type: 'is-danger', duration: 3000});
         return;
       }
 

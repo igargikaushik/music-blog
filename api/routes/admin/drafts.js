@@ -5,7 +5,8 @@ const pool = require('../../pool.js');
 
 const article_query = `SELECT * FROM articles WHERE id = $1;`
 const article_id_select_query = `SELECT id FROM drafts WHERE article_id = $1;`;
-const id_select_query = `SELECT * FROM drafts WHERE id = $1;`;
+const id_select_query = `SELECT id FROM drafts WHERE id = $1;`;
+const id_select_all_query = `SELECT * FROM drafts WHERE id = $1;`;
 const total_query = `SELECT COUNT(*) FROM drafts;`
 const list_query = `SELECT
   drafts.id, drafts.title, drafts.category, drafts.author, drafts.creation_time,
@@ -146,7 +147,7 @@ drafts.route('/:id')
     }
 
     const db_rows = await pool
-      .query(id_select_query, [id])
+      .query(id_select_all_query, [id])
       .then(db_res => db_res.rows)
       .catch(e => res.status(500).send(e.stack));
 
@@ -205,7 +206,7 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
     await client.query('BEGIN');
 
     const drafts = await client
-      .query(id_select_query, [id])
+      .query(id_select_all_query, [id])
       .then(db_res => db_res.rows);
     if (drafts.length == 0) {
       throw new Error(`Draft with ID ${id} does not exist`);

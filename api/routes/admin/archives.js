@@ -19,6 +19,13 @@ const republish_query = `INSERT INTO
   FROM archives
   WHERE id = $1;`;
 const delete_archive_query = `DELETE FROM archives WHERE id = $1;`;
+const trash_query = `INSERT INTO
+  trash(title, author, description, creation_time, update_time,
+    content, category, tags, image, doc_type)
+  SELECT title, author, description, creation_time, update_time,
+    content, category, tags, image, 'article'
+  FROM archives
+  WHERE id = $1;`;
 
 const rename_query = `UPDATE archives SET title = $2, slug = $3 WHERE id = $1;`
 
@@ -32,6 +39,40 @@ archives.route('/')
       .then(db_res => res.status(200).send(db_res.rows))
       .catch(e => res.status(500).send(e.stack));
   });
+
+archives.delete('/:id', requiresAdmin, async (req, res) => {
+  // Copy an archive to the trash table, then delete the archive
+  const id = parseInt(req.params.id);
+  if (!id) {
+    res.status(400).send("Bad archive ID");
+    return;
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const archives = await client
+      .query(id_select_query, [id])
+      .then(db_res => db_res.rows);
+    if (archives.length == 0) {
+      throw new Error(`Archive with ID ${id} does not exist`);
+    }
+
+    await client.query(trash_query, [id]);
+    await client.query(delete_archive_query, [id]);
+
+    await client.query('COMMIT');
+    res.status(200).send();
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error(e.stack);
+    res.status(500).send(e.stack);
+  } finally {
+    client.release();
+  }
+});
 
 archives.get("/count", requiresAdmin, async (req, res) => {
   await pool

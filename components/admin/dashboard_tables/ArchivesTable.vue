@@ -19,7 +19,7 @@
             <td>{{ archive.category }}</td>
             <td>{{ date(archive.archive_time) }}</td>
             <td>{{ date(archive.creation_time) }}</td>
-            <td>{{ date(archive.update_time) }}</td>
+            <td>{{ archive.update_time ? date(archive.update_time) : 'N/A' }}</td>
             <td>{{ archive.author }}</td>
             <td>
               <span class="buttons">
@@ -118,7 +118,7 @@ export default {
             });
           });
       } else {
-        this.$buefy.toast.open({message: `Cancelled rename`, type: 'is-danger', duration: 3000})
+        this.$buefy.toast.open({message: `Canceled rename`, type: 'is-danger', duration: 3000})
       }
     },
     async republish(id) {
@@ -146,7 +146,18 @@ export default {
           }
         });
     },
-    delete_archive(id) {},
+    async delete_archive(id) {
+      await this.$axios
+        .$delete(`/api/admin/archives/${id}`)
+        .then(res => this.reload("Archive moved to trash"))
+        .catch((e) => {
+          this.$buefy.toast.open({
+            message: "There was an error",
+            type: "is-danger",
+            duration: 3000,
+          });
+        });
+    },
   },
   async fetch() {
     this.total = await this.$axios
