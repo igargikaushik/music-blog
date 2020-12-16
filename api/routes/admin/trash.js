@@ -39,6 +39,7 @@ const restore_draft_query = `INSERT INTO
     END AS article_id
   FROM trash
   WHERE id = $1;`;
+const rename_query = `UPDATE trash SET title = $2 WHERE id = $1;`
 
 const delete_item_query = `DELETE FROM trash WHERE id = $1;`;
 
@@ -118,6 +119,32 @@ trash.post("/restore/:id", requiresAdmin, async (req, res) => {
     }
   } finally {
     client.release();
+  }
+});
+
+trash.put("/rename/:id", requiresAdmin, async (req, res) => {
+  // Rename the given item
+  const id = parseInt(req.params.id);
+  if (!id) {
+    res.status(400).send("Bad item ID");
+    return;
+  }
+  const new_title = req.body.title;
+  if (!new_title) {
+    res.status(400).send("Invalid or missing title");
+    return;
+  }
+
+  const items = await pool
+    .query(id_select_query, [id])
+    .then(db_res => db_res.rows);
+  if (items.length == 0) {
+    res.status(404).send(`Trash item with ID ${id} does not exist`);
+  } else {
+    await pool
+      .query(rename_query, [id, new_title])
+      .then(db_res => res.status(200).send())
+      .catch(e => res.status(500).send(e.stack));
   }
 });
 

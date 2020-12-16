@@ -102,7 +102,32 @@ export default {
       this.page = 1;
       this.$fetch();
     },
-    async rename(id, title) {},
+    async rename(id, title) {
+      const { result, dialog } = await this.$buefy.dialog.prompt({
+        message: `To what would you like to rename the item "${title}"?`,
+        inputAttrs: {
+          placeholder: "e.g. What is a Sonata?",
+        },
+        type: "is-success",
+        trapFocus: true,
+      });
+
+      if (result) {
+        await this.$axios
+          .$put(`/api/admin/trash/rename/${id}`, {title: result})
+          .then(res => this.reload("Item renamed"))
+          .catch((e) => {
+            console.log(e.stack);
+            this.$buefy.toast.open({
+              message: "There was an error",
+              type: "is-danger",
+              duration: 3000,
+            });
+          });
+      } else {
+        this.$buefy.toast.open({message: `Canceled rename`, type: 'is-danger', duration: 3000})
+      }
+    },
     async restore(id, type) {
       const conflict_message = (type == 'article')
         ? "There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting."
