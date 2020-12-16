@@ -15,16 +15,6 @@ export default {
       }
     ],
   },
-  axios: {
-    proxy: true,
-  },
-  proxy: {
-    // Dev server proxy
-    '/api': 'http://localhost:8080',
-    '/static_files': {target: 'https://storage.googleapis.com/classical-for-everyone.appspot.com/static', pathRewrite: {'^/static_files/': ''}},
-  },
-  css: [{ src: 'assets/styles.scss', lang: 'scss' }],
-  plugins: [ { src: '@/plugins/vue-shortkey.js', mode: 'client' }],
   modules: [
     ['nuxt-buefy', { css: false, defaultProgrammaticPromise: true }],
     '@nuxtjs/proxy',
@@ -43,6 +33,16 @@ export default {
       ]
     }],
   ],
+  axios: {
+    proxy: true,
+  },
+  proxy: {
+    // Dev server proxy
+    '/api': 'http://localhost:8080',
+    '/static_files': {target: 'https://storage.googleapis.com/classical-for-everyone.appspot.com/static', pathRewrite: {'^/static_files/': ''}},
+  },
+  css: [{ src: 'assets/styles.scss', lang: 'scss' }],
+  plugins: [ { src: '@/plugins/vue-shortkey.js', mode: 'client' }],
   markdownit: {
     injected: true,
     html: true,
