@@ -54,11 +54,16 @@ export default {
     }
   },
   async fetch() {
+    // TODO: This is buggy because it's in a component (I believe)
+    // Probably do these fetches on the home `page` when articles are fetched
+    // Or possibly make an `alts` table on DB, fetching them with a join
     await Promise.all(this.tiles.map(async tile => {
       if (tile.imgSrc) {
         await this.$axios
           .$get(`/api/storage/alt?file=${tile.imgSrc}`)
-          .then(res => tile.alt = `${res.alt}`)
+          .then(res => {
+            if (res.alt) tile.alt = `${res.alt}`
+          })
           .catch((e) => {})
       }
     }));
