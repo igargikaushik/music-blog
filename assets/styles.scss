@@ -1,6 +1,15 @@
 @import "~bulma/sass/utilities/_all";
 @import "~bulma/sass/elements/tag";
 
+$tabs-link-active-color: #504A41;
+$tabs-link-active-border-bottom-color:	#504A41;
+$tabs-toggle-link-active-background-color: #504A41;
+$tabs-toggle-link-active-border-color: #504A41;
+$menu-item-active-background-color:  #504A41;
+
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
+
 html {
   overflow-y: auto;
 }

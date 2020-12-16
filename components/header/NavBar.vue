@@ -1,5 +1,5 @@
 <template>
-  <b-navbar :class="[{sticky: scroll > 40}, {'on-home': $nuxt.$route.path == '/'}, 'is-fixed-top']">
+  <b-navbar :mobile-burger="false" :class="[{sticky: scroll > 40}, {'on-home': $nuxt.$route.path == '/'}, 'is-fixed-top']">
     <template slot="brand">
       <b-navbar-item tag="NuxtLink" :to="{ path: '/' }">
         <h1 class="title" style="color: white">LOGO</h1>

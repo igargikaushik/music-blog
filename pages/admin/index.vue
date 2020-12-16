@@ -1,75 +1,109 @@
 <template>
-  <div class="admin-dashboard container">
-    <section>
-      <table class="table is-fullwidth has-text-left">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Creation date</th>
-            <th>Author</th>
-            <th>Status</th>
-            <th>
-              <b-button type="is-success" icon-left="plus" @click="click_new">New</b-button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="article in articles" :key="article.id">
-            <td>{{ article.title }}</td>
-            <td>{{ date(article.creation_time) }}</td>
-            <td>{{ article.author }}</td>
-            <td class="is-narrow">{{ article.is_draft ? "Draft" : "Published" }}</td>
-            <td v-if="article.is_draft">
-              <div class="buttons">
-                <b-button tag="nuxt-link" :to="'/admin/article/' + article.id">Edit</b-button>
-                <b-button type="is-success">Publish</b-button>
-              </div>
-            </td>
-            <td v-else>
-              <b-button tag="nuxt-link" :to="'/admin/draft/' + article.id">Edit as draft</b-button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+  <div id="admin-dashboard">
+    <b-sidebar
+      position="static"
+      mobile="reduce"
+      type="is-light"
+      fullheight
+      open
+    >
+      <div id="padded-content">
+        <b-menu class="is-custom-mobile">
+          <b-menu-list label="Content">
+            <b-menu-item icon="text-box" label="Articles" v-model="section_articles"></b-menu-item>
+            <b-menu-item icon="pencil" label="Drafts" v-model="section_drafts"></b-menu-item>
+            <b-menu-item icon="archive" label="Archives" v-model="section_archives"></b-menu-item>
+            <b-menu-item icon="delete" label="Trash" v-model="section_trash"></b-menu-item>
+          </b-menu-list>
+          <b-menu-list label="Actions">
+            <li>
+              <a @click.prevent="logout">
+                <b-icon icon="logout" size="is-small"></b-icon>
+                <span class="pl-1">Logout</span>
+              </a>
+            </li>
+          </b-menu-list>
+        </b-menu>
+      </div>
+    </b-sidebar>
+  
+    <ArticlesTable v-if="section_articles" />
+    <DraftsTable v-if="section_drafts" />
+    <ArchivesTable v-if="section_archives" />
+    <TrashTable v-if="section_trash" />
   </div>
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
-  layout: 'admin',
+  layout: "admin",
   data() {
     return {
-      articles: [],
+      section_articles: true,
+      section_drafts: false,
+      section_archives: false,
+      section_trash: false,
     };
   },
   methods: {
-    date(timestamp) {
-      let date_obj = new Date(timestamp);
-      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return date_obj.toLocaleDateString("en-US", options);
-    },
-    click_new() {
-      this.$buefy.dialog.confirm({
-          message: 'Are you sure you want to make a new article?',
-          type: 'is-success',
-          onConfirm: () => this.new_draft()
-      });
-    },
-    async new_draft() {
-      const new_id = await this.$axios
-        .$post("/api/admin/draft")
-        .then(draft => draft.id)
+    async logout() {
+      await this.$axios
+        .$get("/api/admin/logout")
         .catch((e) => console.log(e.stack));
-      this.$router.push(`/admin/draft/${new_id}`);
+      this.$router.push("/");
     }
-  },
-  async fetch() {
-    this.articles = await this.$axios
-      .$get("/api/admin/articles")
-      .catch((e) => console.log(e.stack));
   },
 };
 </script>
+
+<style scoped lang="scss">
+@import "~bulma/sass/utilities/initial-variables";
+
+#admin-dashboard {
+  display: flex;
+  height: calc(100vh - 68px);
+  overflow: hidden;
+}
+
+#dashboard-content {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#padded-content {
+  padding: 0.75rem;
+}
+
+.b-sidebar {
+  display: flex;
+  flex-direction: row;
+  min-height: 100%;
+  text-align: left;
+  margin-right: 24px;
+  z-index: 0;
+}
+
+#dashboard-content {
+  flex-grow: 1;
+}
+
+/deep/ {
+th {
+  vertical-align: bottom;
+}
+
+tbody td {
+  vertical-align: middle;
+}
+}
+
+@media screen and (max-width: $tablet) {
+  #padded-content {
+    padding: 0.25rem;
+  }
+
+  .b-sidebar {
+    margin-right: 12px;
+  }
+}
+</style>
