@@ -130,7 +130,18 @@ export default {
           }
         });
     },
-    async delete_item(id) {},
+    async delete_item(id) {
+      await this.$axios
+        .$delete(`/api/admin/trash/${id}`)
+        .then(res => this.reload("Item has been permanently deleted"))
+        .catch((e) => {
+          this.$buefy.toast.open({
+            message: "There was an error",
+            type: "is-danger",
+            duration: 3000,
+          });
+        });
+    },
   },
   async fetch() {
     this.total = await this.$axios

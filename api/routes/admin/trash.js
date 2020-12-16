@@ -121,4 +121,25 @@ trash.post("/restore/:id", requiresAdmin, async (req, res) => {
   }
 });
 
+trash.delete('/:id', requiresAdmin, async (req, res) => {
+  // Permanently delete the given item
+  const id = parseInt(req.params.id);
+  if (!id) {
+    res.status(400).send("Bad item ID");
+    return;
+  }
+
+  const items = await pool
+    .query(id_select_query, [id])
+    .then(db_res => db_res.rows);
+  if (items.length == 0) {
+    res.status(404).send(`Trash item with ID ${id} does not exist`);
+  } else {
+    await pool
+      .query(delete_item_query, [id])
+      .then(db_res => res.status(200).send())
+      .catch(e => res.status(500).send(e.stack));
+  }
+});
+
 module.exports = trash;
