@@ -32,12 +32,17 @@
               <span class="buttons">
                 <b-dropdown aria-role="list" position="is-bottom-left">
                   <b-icon slot="trigger" icon="dots-vertical"></b-icon>
+                  <b-dropdown-item
+                    aria-role="listitem"
+                    @click="rename(item.id, item.title)">
+                    Rename
+                  </b-dropdown-item>
                   <ConfirmButton
                     verb="restore"
                     :kind="item.doc_type"
                     :title="item.title"
                     text="Restore"
-                    @confirm="restore(item.id)"
+                    @confirm="restore(item.id, item.doc_type)"
                   />
                   <ConfirmButton
                     verb="permanently delete"
@@ -86,9 +91,46 @@ export default {
   },
   mixins: [date],
   methods: {
-    restore(id) {},
-    delete_item(id) {},
-    delete_multiple(id_list) {},
+    reload(text='') {
+      if (text) {
+        this.$buefy.toast.open({
+          message: text,
+          type: "is-success",
+          duration: 3000,
+        });
+      }
+      this.page = 1;
+      this.$fetch();
+    },
+    async rename(id, title) {},
+    async restore(id, type) {
+      const conflict_message = (type == 'article')
+        ? "There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting."
+        : "There already exists a draft associated with that article. Aborting.";
+      await this.$axios
+        .$post(`/api/admin/trash/restore/${id}`)
+        .then(res => this.reload(`Item moved to ${type + 's'}`))
+        .catch((e) => {
+          if (e.response?.status === 409) {
+            this.$buefy.dialog.alert({
+              title: "Conflict",
+              message: conflict_message,
+              type: "is-danger",
+              hasIcon: true,
+              ariaRole: "alertdialog",
+              ariaModal: true,
+            });
+          } else {
+            console.log(e.stack);
+            this.$buefy.toast.open({
+              message: "There was an error",
+              type: "is-danger",
+              duration: 3000,
+            });
+          }
+        });
+    },
+    async delete_item(id) {},
   },
   async fetch() {
     this.total = await this.$axios
