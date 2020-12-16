@@ -67,6 +67,7 @@
               <b-taginput
                 v-model="tags"
                 ellipsis
+                :remove-on-keys="[]"
                 icon="label"
                 placeholder="Add a tag"
                 aria-close-label="Delete this tag"
