@@ -1,7 +1,7 @@
 const trash = require('express').Router();
 const { requiresAdmin } = require('../../auth.js');
 const slugify = require('../../slugify.js');
-const pool = require('../../pool');
+const pool = require('../../pool.js');
 
 const id_select_query = 'SELECT id, title, doc_type FROM trash WHERE id = $1;';
 const total_query = 'SELECT COUNT(*) FROM trash;';

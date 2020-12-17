@@ -1,6 +1,6 @@
 const passport = require('passport');
 const session = require('express-session');
-const pool = require('./pool');
+const pool = require('./pool.js');
 
 // Allows pure-backend authentication and authorization
 // Login redirects to and from Google auth service
