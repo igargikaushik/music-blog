@@ -178,7 +178,7 @@ export default {
       };
       await this.$axios
         .$put(`/api/admin/drafts/${id}`, body)
-        .then((res) =>
+        .then(() =>
           this.$buefy.toast.open({
             message: "Draft saved",
             type: "is-success",

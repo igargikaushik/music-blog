@@ -64,7 +64,7 @@ export default {
           .then(res => {
             if (res.alt) tile.alt = `${res.alt}`
           })
-          .catch((e) => {})
+          .catch(() => {})
       }
     }));
   }

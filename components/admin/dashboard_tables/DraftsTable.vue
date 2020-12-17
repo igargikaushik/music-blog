@@ -99,8 +99,8 @@ export default {
     async delete_draft(id) {
       await this.$axios
         .$delete(`/api/admin/drafts/${id}`)
-        .then(res => this.reload("Draft moved to trash"))
-        .catch((e) => {
+        .then(() => this.reload("Draft moved to trash"))
+        .catch(() => {
           this.$buefy.toast.open({
             message: "There was an error",
             type: "is-danger",
