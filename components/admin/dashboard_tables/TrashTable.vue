@@ -78,10 +78,10 @@
 </template>
 
 <script>
-import date from "@/mixins/date.js";
+import date from '@/mixins/date.js';
 
 export default {
-  name: "TrashTable",
+  name: 'TrashTable',
   data() {
     return {
       total: 0,
@@ -95,7 +95,7 @@ export default {
       if (text) {
         this.$buefy.toast.open({
           message: text,
-          type: "is-success",
+          type: 'is-success',
           duration: 3000,
         });
       }
@@ -103,53 +103,53 @@ export default {
       this.$fetch();
     },
     async rename(id, title) {
-      const { result, dialog } = await this.$buefy.dialog.prompt({
+      const { result } = await this.$buefy.dialog.prompt({
         message: `To what would you like to rename the item "${title}"?`,
         inputAttrs: {
-          placeholder: "e.g. What is a Sonata?",
+          placeholder: 'e.g. What is a Sonata?',
         },
-        type: "is-success",
+        type: 'is-success',
         trapFocus: true,
       });
 
       if (result) {
         await this.$axios
           .$put(`/api/admin/trash/rename/${id}`, {title: result})
-          .then(res => this.reload("Item renamed"))
+          .then(() => this.reload('Item renamed'))
           .catch((e) => {
             console.log(e.stack);
             this.$buefy.toast.open({
-              message: "There was an error",
-              type: "is-danger",
+              message: 'There was an error',
+              type: 'is-danger',
               duration: 3000,
             });
           });
       } else {
-        this.$buefy.toast.open({message: `Canceled rename`, type: 'is-danger', duration: 3000})
+        this.$buefy.toast.open({message: 'Canceled rename', type: 'is-danger', duration: 3000});
       }
     },
     async restore(id, type) {
       const conflict_message = (type == 'article')
-        ? "There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting."
-        : "There already exists a draft associated with that article. Aborting.";
+        ? 'There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting.'
+        : 'There already exists a draft associated with that article. Aborting.';
       await this.$axios
         .$post(`/api/admin/trash/restore/${id}`)
-        .then(res => this.reload(`Item moved to ${type + 's'}`))
+        .then(() => this.reload(`Item moved to ${type + 's'}`))
         .catch((e) => {
           if (e.response?.status === 409) {
             this.$buefy.dialog.alert({
-              title: "Conflict",
+              title: 'Conflict',
               message: conflict_message,
-              type: "is-danger",
+              type: 'is-danger',
               hasIcon: true,
-              ariaRole: "alertdialog",
+              ariaRole: 'alertdialog',
               ariaModal: true,
             });
           } else {
             console.log(e.stack);
             this.$buefy.toast.open({
-              message: "There was an error",
-              type: "is-danger",
+              message: 'There was an error',
+              type: 'is-danger',
               duration: 3000,
             });
           }
@@ -158,11 +158,11 @@ export default {
     async delete_item(id) {
       await this.$axios
         .$delete(`/api/admin/trash/${id}`)
-        .then(res => this.reload("Item has been permanently deleted"))
-        .catch((e) => {
+        .then(() => this.reload('Item has been permanently deleted'))
+        .catch(() => {
           this.$buefy.toast.open({
-            message: "There was an error",
-            type: "is-danger",
+            message: 'There was an error',
+            type: 'is-danger',
             duration: 3000,
           });
         });
@@ -170,7 +170,7 @@ export default {
   },
   async fetch() {
     this.total = await this.$axios
-      .$get("/api/admin/trash/count")
+      .$get('/api/admin/trash/count')
       .then((res) => res.count)
       .catch((e) => console.log(e.stack));
     this.trash = await this.$axios

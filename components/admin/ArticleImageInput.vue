@@ -93,7 +93,7 @@
 
 <script>
 export default {
-  name: "ArticleMetaInput",
+  name: 'ArticleMetaInput',
   props: {
     value: String,
   },
@@ -102,7 +102,7 @@ export default {
       showModal: false,
       page: 1,
       files: [],
-      next_page_token: "",
+      next_page_token: '',
     };
   },
   methods: {
@@ -116,8 +116,8 @@ export default {
       const real_page = page - 1;
       if (this.files.length <= real_page) {
         const query =
-          this.next_page_token == ""
-            ? ""
+          this.next_page_token == ''
+            ? ''
             : `?page_token=${this.next_page_token}`;
         this.next_page_token = null;
         await this.$axios
@@ -125,7 +125,7 @@ export default {
           .then((res) => {
             this.files.push(
               res.files.map((file) => {
-                return { url: file.url.replace(/^static\//gi, "/static_files/"), alt: file.alt } 
+                return { url: file.url.replace(/^static\//gi, '/static_files/'), alt: file.alt }; 
               })
             );
             this.next_page_token = res.next_page_query?.pageToken;
@@ -134,34 +134,34 @@ export default {
       }
     },
     select(file) {
-      this.$emit("input", file.url);
+      this.$emit('input', file.url);
       this.showModal = false;
     },
     async upload_file(e) {
       var form_data = new FormData();
-      form_data.append("file", e.target.files[0]);
+      form_data.append('file', e.target.files[0]);
       await this.$buefy.dialog.prompt({
-        message: "Enter alt (optional)",
+        message: 'Enter alt (optional)',
         inputAttrs: {
-          placeholder: "e.g. Photo of a dog",
+          placeholder: 'e.g. Photo of a dog',
         },
         trapFocus: true,
-        onConfirm: (value) => form_data.append("alt", value),
+        onConfirm: (value) => form_data.append('alt', value),
       });
 
       await this.$axios
-        .$post(`/api/admin/storage`, form_data, {
+        .$post('/api/admin/storage', form_data, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
         })
         .then((res) => {
-          const url = res.url.replace(/^static\//gi, "/static_files/");
-          this.$emit("input", url);
+          const url = res.url.replace(/^static\//gi, '/static_files/');
+          this.$emit('input', url);
           this.showModal = false;
           this.page = 1;
           this.files = [];
-          this.next_page_token = "";
+          this.next_page_token = '';
         })
         .catch((e) => console.log(e.stack));
     },

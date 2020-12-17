@@ -71,10 +71,10 @@
 </template>
 
 <script>
-import date from "@/mixins/date.js";
+import date from '@/mixins/date.js';
 
 export default {
-  name: "ArchivesTable",
+  name: 'ArchivesTable',
   data() {
     return {
       total: 0,
@@ -88,7 +88,7 @@ export default {
       if (text) {
         this.$buefy.toast.open({
           message: text,
-          type: "is-success",
+          type: 'is-success',
           duration: 3000,
         });
       }
@@ -96,51 +96,51 @@ export default {
       this.$fetch();
     },
     async rename(id, title) {
-      const { result, dialog } = await this.$buefy.dialog.prompt({
+      const { result } = await this.$buefy.dialog.prompt({
         message: `To what would you like to rename the archive "${title}"?`,
         inputAttrs: {
-          placeholder: "e.g. What is a Sonata?",
+          placeholder: 'e.g. What is a Sonata?',
         },
-        type: "is-success",
+        type: 'is-success',
         trapFocus: true,
       });
 
       if (result) {
         await this.$axios
           .$put(`/api/admin/archives/rename/${id}`, {title: result})
-          .then(res => this.reload("Archive renamed"))
+          .then(() => this.reload('Archive renamed'))
           .catch((e) => {
             console.log(e.stack);
             this.$buefy.toast.open({
-              message: "There was an error",
-              type: "is-danger",
+              message: 'There was an error',
+              type: 'is-danger',
               duration: 3000,
             });
           });
       } else {
-        this.$buefy.toast.open({message: `Canceled rename`, type: 'is-danger', duration: 3000})
+        this.$buefy.toast.open({message: 'Canceled rename', type: 'is-danger', duration: 3000});
       }
     },
     async republish(id) {
       await this.$axios
         .$post(`/api/admin/archives/republish/${id}`)
-        .then(res => this.reload("Archive moved to articles"))
+        .then(() => this.reload('Archive moved to articles'))
         .catch((e) => {
           if (e.response?.status === 409) {
             this.$buefy.dialog.alert({
-              title: "Conflict",
+              title: 'Conflict',
               message:
-                `There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting.`,
-              type: "is-danger",
+                'There already exists an article with the same slug. Rename one of them to resolve the conflict. Aborting.',
+              type: 'is-danger',
               hasIcon: true,
-              ariaRole: "alertdialog",
+              ariaRole: 'alertdialog',
               ariaModal: true,
             });
           } else {
             console.log(e.stack);
             this.$buefy.toast.open({
-              message: "There was an error",
-              type: "is-danger",
+              message: 'There was an error',
+              type: 'is-danger',
               duration: 3000,
             });
           }
@@ -149,11 +149,11 @@ export default {
     async delete_archive(id) {
       await this.$axios
         .$delete(`/api/admin/archives/${id}`)
-        .then(res => this.reload("Archive moved to trash"))
-        .catch((e) => {
+        .then(() => this.reload('Archive moved to trash'))
+        .catch(() => {
           this.$buefy.toast.open({
-            message: "There was an error",
-            type: "is-danger",
+            message: 'There was an error',
+            type: 'is-danger',
             duration: 3000,
           });
         });
@@ -161,7 +161,7 @@ export default {
   },
   async fetch() {
     this.total = await this.$axios
-      .$get("/api/admin/archives/count")
+      .$get('/api/admin/archives/count')
       .then((res) => res.count)
       .catch((e) => console.log(e.stack));
     this.archives = await this.$axios

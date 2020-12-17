@@ -1,12 +1,12 @@
 export const state = () => ({
   user: null
-})
+});
 
 export const mutations = {
   SET_USER(state, user){
     state.user = user;
   }
-}
+};
 
 export const actions = {
   // TODO: Is this calling at the right time on prod?
@@ -17,4 +17,4 @@ export const actions = {
       .then(response => commit('SET_USER', response.user))
       .catch(e => console.log(e.stack));
   }
-}
+};

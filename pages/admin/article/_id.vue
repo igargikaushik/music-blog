@@ -15,5 +15,5 @@ export default {
       return context.redirect(`/admin/draft/${draft_id}`);
     }
   }
-}
+};
 </script>

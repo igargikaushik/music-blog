@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  name: "Tile",
+  name: 'Tile',
   props: {
     title: String,
     slug: String,

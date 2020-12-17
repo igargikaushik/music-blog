@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import NavBar from '@/components/header/NavBar.vue'
-import Hero from '@/components/header/Hero.vue'
-import TileContainer from '@/components/tiles/TileContainer.vue'
+import NavBar from '@/components/header/NavBar.vue';
+import Hero from '@/components/header/Hero.vue';
+import TileContainer from '@/components/tiles/TileContainer.vue';
 
 export default {
   name: 'Home',
@@ -19,7 +19,7 @@ export default {
     Hero,
     TileContainer,
   },
-}
+};
 </script>
 
 <style scoped lang="scss">

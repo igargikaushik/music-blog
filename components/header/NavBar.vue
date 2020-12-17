@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: "NavBar",
+  name: 'NavBar',
   mounted() {
     document.addEventListener('scroll', this.handleScroll);
   },
