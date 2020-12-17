@@ -1,5 +1,5 @@
 const admin = require('express').Router();
-const { passport } = require('../../auth.js');
+const { passport } = require('../../middleware/auth.js');
 
 // Authentication Endpoints
 admin.get('/login',

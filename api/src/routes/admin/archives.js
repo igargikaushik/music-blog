@@ -1,7 +1,7 @@
 const archives = require('express').Router();
-const slugify = require('../../slugify.js');
-const { requiresAdmin } = require('../../auth.js');
-const pool = require('../../pool.js');
+const slugify = require('../../helpers/slugify.js');
+const { requiresAdmin } = require('../../middleware/auth.js');
+const pool = require('../../db/pool.js');
 
 const id_select_query = 'SELECT id FROM archives WHERE id = $1;';
 const total_query = 'SELECT COUNT(*) FROM archives;';

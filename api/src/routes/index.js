@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const pool = require('../pool.js');
+const pool = require('../db/pool.js');
 
 router.use('/admin', require('./admin'));
 router.use('/storage', require('./storage.js'));

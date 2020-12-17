@@ -4,7 +4,7 @@
   "description": "REST API for Classical for Everyone using Express and PostgreSQL",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
     "test": "jest --forceExit"
   },
   "jest": {

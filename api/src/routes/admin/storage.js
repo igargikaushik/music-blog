@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const { requiresAdmin } = require('../../auth.js');
-const { bucket } = require('../../cloud_storage.js');
+const { requiresAdmin } = require('../../middleware/auth.js');
+const { bucket } = require('../../services/cloud_storage.js');
 
 const Multer = require('multer');
 const multer = Multer({

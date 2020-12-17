@@ -1,7 +1,7 @@
 const drafts = require('express').Router();
-const slugify = require('../../slugify.js');
-const { requiresAdmin } = require('../../auth.js');
-const pool = require('../../pool.js');
+const slugify = require('../../helpers/slugify.js');
+const { requiresAdmin } = require('../../middleware/auth.js');
+const pool = require('../../db/pool.js');
 
 const article_query = 'SELECT * FROM articles WHERE id = $1;';
 const article_id_select_query = 'SELECT id FROM drafts WHERE article_id = $1;';
