@@ -3,13 +3,13 @@ const slugify = require('../../slugify.js');
 const { requiresAdmin } = require('../../auth.js');
 const pool = require('../../pool');
 
-const id_select_query = `SELECT id FROM archives WHERE id = $1;`;
-const total_query = `SELECT COUNT(*) FROM archives;`
+const id_select_query = 'SELECT id FROM archives WHERE id = $1;';
+const total_query = 'SELECT COUNT(*) FROM archives;';
 const list_query = `SELECT
   id, title, category, author, archive_time, creation_time, update_time
   FROM archives
   ORDER BY archive_time DESC
-  LIMIT $1 OFFSET $2;`
+  LIMIT $1 OFFSET $2;`;
 const article_slug_query = `SELECT slug FROM articles
   WHERE slug IN (SELECT slug FROM archives WHERE id = $1);`;
 
@@ -18,7 +18,7 @@ const republish_query = `INSERT INTO
   SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image
   FROM archives
   WHERE id = $1;`;
-const delete_archive_query = `DELETE FROM archives WHERE id = $1;`;
+const delete_archive_query = 'DELETE FROM archives WHERE id = $1;';
 const trash_query = `INSERT INTO
   trash(title, author, description, creation_time, update_time,
     content, category, tags, image, doc_type)
@@ -27,7 +27,7 @@ const trash_query = `INSERT INTO
   FROM archives
   WHERE id = $1;`;
 
-const rename_query = `UPDATE archives SET title = $2, slug = $3 WHERE id = $1;`
+const rename_query = 'UPDATE archives SET title = $2, slug = $3 WHERE id = $1;';
 
 archives.route('/')
   .all(requiresAdmin)
@@ -44,7 +44,7 @@ archives.delete('/:id', requiresAdmin, async (req, res) => {
   // Copy an archive to the trash table, then delete the archive
   const id = parseInt(req.params.id);
   if (!id) {
-    res.status(400).send("Bad archive ID");
+    res.status(400).send('Bad archive ID');
     return;
   }
 
@@ -74,18 +74,18 @@ archives.delete('/:id', requiresAdmin, async (req, res) => {
   }
 });
 
-archives.get("/count", requiresAdmin, async (req, res) => {
+archives.get('/count', requiresAdmin, async (req, res) => {
   await pool
     .query(total_query)
     .then(db_res => res.status(200).send(db_res.rows[0]))
     .catch(e => res.status(500).send(e.stack));
 });
 
-archives.put("/rename/:id", requiresAdmin, async (req, res) => {
+archives.put('/rename/:id', requiresAdmin, async (req, res) => {
   // Rename an archive and generate its new slug
   const id = parseInt(req.params.id);
   if (!id) {
-    res.status(400).send("Bad archive ID");
+    res.status(400).send('Bad archive ID');
     return;
   }
 
@@ -98,7 +98,7 @@ archives.put("/rename/:id", requiresAdmin, async (req, res) => {
 
   const new_title = req.body.title;
   if (!new_title) {
-    res.status(400).send("Invalid or missing title");
+    res.status(400).send('Invalid or missing title');
     return;
   }
   const new_slug = slugify(new_title);
@@ -109,11 +109,11 @@ archives.put("/rename/:id", requiresAdmin, async (req, res) => {
     .catch(e => res.status(500).send(e.stack));
 });
 
-archives.post("/republish/:id", requiresAdmin, async (req, res) => {
+archives.post('/republish/:id', requiresAdmin, async (req, res) => {
   // Copy an archive to the articles table, then delete the archive
   const id = parseInt(req.params.id);
   if (!id) {
-    res.status(400).send("Bad archive ID");
+    res.status(400).send('Bad archive ID');
     return;
   }
 

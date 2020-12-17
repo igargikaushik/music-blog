@@ -6,4 +6,4 @@ const bucket = storage.bucket('classical-for-everyone.appspot.com');
 module.exports = {
   storage,
   bucket,
-}
+};

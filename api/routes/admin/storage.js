@@ -10,15 +10,15 @@ const multer = Multer({
   },
 });
 
-router.get("/", requiresAdmin, async (req, res) => {
+router.get('/', requiresAdmin, async (req, res) => {
   bucket.getFiles({ autoPaginate: false, maxResults: 9, pageToken: req.query.page_token})
     .then(data => res.status(200).send({
-      files: data[0].map(file => { return { url: file.name, alt: (file.metadata.metadata) ? file.metadata.metadata.alt : undefined } }),
+      files: data[0].map(file => { return { url: file.name, alt: (file.metadata.metadata) ? file.metadata.metadata.alt : undefined }; }),
       next_page_query: data[1],
     }))
     .catch(e => res.status(500).send(e.stack));
-})
-router.post("/", [requiresAdmin, multer.single('file')], async (req, res) => {
+});
+router.post('/', [requiresAdmin, multer.single('file')], async (req, res) => {
   if (!req.file) {
     res.status(400).send('No file uploaded');
     return;

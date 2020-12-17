@@ -6,19 +6,19 @@ const pool = require('./pool');
 // Login redirects to and from Google auth service
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 passport.use(new GoogleStrategy({
-    clientID: '1081413117266-1egpnvljjqu6lnsiafjhfv0fovqak1p5.apps.googleusercontent.com',
-    clientSecret: process.env.CLIENTSECRET,
-    callbackURL: '/api/admin/auth/callback',
-    scope: ['profile'],
-  },
-  async function (accessToken, refreshToken, profile, done) {
-    const is_admin = await pool
-      .query("SELECT id FROM admins WHERE user_id = $1 LIMIT 1;", [profile.id])
-      .then(db_res => db_res.rows.length > 0)
-      .catch(() => false);
-    profile.admin = is_admin;
-    return done(undefined, profile);
-  }
+  clientID: '1081413117266-1egpnvljjqu6lnsiafjhfv0fovqak1p5.apps.googleusercontent.com',
+  clientSecret: process.env.CLIENTSECRET,
+  callbackURL: '/api/admin/auth/callback',
+  scope: ['profile'],
+},
+async function (accessToken, refreshToken, profile, done) {
+  const is_admin = await pool
+    .query('SELECT id FROM admins WHERE user_id = $1 LIMIT 1;', [profile.id])
+    .then(db_res => db_res.rows.length > 0)
+    .catch(() => false);
+  profile.admin = is_admin;
+  return done(undefined, profile);
+}
 ));
 
 passport.serializeUser(function (user, cb) {

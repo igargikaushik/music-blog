@@ -4,12 +4,12 @@ const pool = require('../pool');
 router.use('/admin', require('./admin'));
 router.use('/storage', require('./storage.js'));
 
-router.get("/articles", async (req, res) => {
+router.get('/articles', async (req, res) => {
   const query = `SELECT
     title, slug, author, description, creation_time, category, tags, image
     FROM articles
     ORDER BY creation_time
-    LIMIT $1 OFFSET $2;`
+    LIMIT $1 OFFSET $2;`;
 
   // Pages start at 1
   const count = Math.max(req.query.count || 12, 40);

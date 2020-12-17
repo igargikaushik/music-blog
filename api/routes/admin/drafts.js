@@ -3,11 +3,11 @@ const slugify = require('../../slugify.js');
 const { requiresAdmin } = require('../../auth.js');
 const pool = require('../../pool.js');
 
-const article_query = `SELECT * FROM articles WHERE id = $1;`
-const article_id_select_query = `SELECT id FROM drafts WHERE article_id = $1;`;
-const id_select_query = `SELECT id FROM drafts WHERE id = $1;`;
-const id_select_all_query = `SELECT * FROM drafts WHERE id = $1;`;
-const total_query = `SELECT COUNT(*) FROM drafts;`
+const article_query = 'SELECT * FROM articles WHERE id = $1;';
+const article_id_select_query = 'SELECT id FROM drafts WHERE article_id = $1;';
+const id_select_query = 'SELECT id FROM drafts WHERE id = $1;';
+const id_select_all_query = 'SELECT * FROM drafts WHERE id = $1;';
+const total_query = 'SELECT COUNT(*) FROM drafts;';
 const list_query = `SELECT
   drafts.id, drafts.title, drafts.category, drafts.author, drafts.creation_time,
   COALESCE(drafts.modified_time, drafts.creation_time) as modified_time,
@@ -15,7 +15,7 @@ const list_query = `SELECT
   FROM drafts
   LEFT JOIN articles ON drafts.article_id = articles.id
   ORDER BY modified_time DESC
-  LIMIT $1 OFFSET $2;`
+  LIMIT $1 OFFSET $2;`;
 const article_slug_query = `SELECT slug FROM articles
   WHERE slug = $1 AND ($2::INTEGER IS NULL OR id != $2::INTEGER);`;
 
@@ -39,7 +39,7 @@ const redirect_query = `INSERT INTO
     SET to_slug = $2
   RETURNING from_slug, to_slug;`;
 // If the new from_slug is an old to_slug, update to the new to_slug
-const redirect_cascade_query = `UPDATE redirects SET to_slug = $1 WHERE to_slug = $2;`
+const redirect_cascade_query = 'UPDATE redirects SET to_slug = $1 WHERE to_slug = $2;';
 const publish_archive_query = `INSERT INTO
   archives(title, slug, author, description, creation_time,
     update_time, content, category, tags, image)
@@ -70,14 +70,14 @@ const trash_query = `INSERT INTO
     content, category, tags, image, 'draft', article_id
   FROM drafts
   WHERE id = $1;`;
-const delete_draft_query = `DELETE FROM drafts WHERE id = $1;`;
+const delete_draft_query = 'DELETE FROM drafts WHERE id = $1;';
 
 // Returns the draft associated with the article with the given ID
 // First creating a draft if one does not exist
 drafts.get('/article/:id', requiresAdmin, async (req, res) =>{
   const article_id = parseInt(req.params.id);
   if (!article_id) {
-    res.status(400).send("Bad article ID");
+    res.status(400).send('Bad article ID');
     return;
   }
   const article_exists = await pool
@@ -116,7 +116,7 @@ drafts.route('/')
       .catch(e => res.status(500).send(e.stack));
   });
 
-drafts.get("/count", requiresAdmin, async (req, res) => {
+drafts.get('/count', requiresAdmin, async (req, res) => {
   await pool
     .query(total_query)
     .then(db_res => res.status(200).send(db_res.rows[0]))
@@ -129,7 +129,7 @@ drafts.route('/:id')
     // Corresponds to saving the draft
     const id = parseInt(req.params.id);
     if (!id) {
-      res.status(400).send("Bad draft ID");
+      res.status(400).send('Bad draft ID');
       return;
     }
 
@@ -142,7 +142,7 @@ drafts.route('/:id')
   .get(async (req, res) => {
     const id = parseInt(req.params.id);
     if (!id) {
-      res.status(400).send("Bad draft ID");
+      res.status(400).send('Bad draft ID');
       return;
     }
 
@@ -161,7 +161,7 @@ drafts.route('/:id')
     // Copy a draft to the trash table, then delete the draft
     const id = parseInt(req.params.id);
     if (!id) {
-      res.status(400).send("Bad draft ID");
+      res.status(400).send('Bad draft ID');
       return;
     }
 
@@ -196,7 +196,7 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
   // either updating an existing article or making a new one
   const id = parseInt(req.params.id);
   if (!id) {
-    res.status(400).send("Bad draft ID");
+    res.status(400).send('Bad draft ID');
     return;
   }
 
