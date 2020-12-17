@@ -136,7 +136,7 @@ drafts.route('/:id')
     const {title, author, description, content, category, tags, image} = req.body;
     await pool
       .query(save_query, [id, title, author, description, content, category, tags, image])
-      .then(_ => res.status(200).send())
+      .then(() => res.status(200).send())
       .catch(e => res.status(500).send(e.stack));
   })
   .get(async (req, res) => {
@@ -224,7 +224,7 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
       throw new Error(err);
     }
 
-    if (!!draft.article_id) {
+    if (draft.article_id) {
       // If a corresponding article exists, update it
       // First, add redirect to redirects table (if slug changed)
       const redirect = await client

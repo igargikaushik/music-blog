@@ -15,7 +15,7 @@ passport.use(new GoogleStrategy({
     const is_admin = await pool
       .query("SELECT id FROM admins WHERE user_id = $1 LIMIT 1;", [profile.id])
       .then(db_res => db_res.rows.length > 0)
-      .catch(_ => false);
+      .catch(() => false);
     profile.admin = is_admin;
     return done(undefined, profile);
   }

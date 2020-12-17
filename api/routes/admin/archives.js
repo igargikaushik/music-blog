@@ -105,7 +105,7 @@ archives.put("/rename/:id", requiresAdmin, async (req, res) => {
 
   await pool
     .query(rename_query, [id, new_title, new_slug])
-    .then(db_res => res.status(200).send())
+    .then(() => res.status(200).send())
     .catch(e => res.status(500).send(e.stack));
 });
 

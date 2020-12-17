@@ -143,7 +143,7 @@ trash.put("/rename/:id", requiresAdmin, async (req, res) => {
   } else {
     await pool
       .query(rename_query, [id, new_title])
-      .then(db_res => res.status(200).send())
+      .then(() => res.status(200).send())
       .catch(e => res.status(500).send(e.stack));
   }
 });
@@ -164,7 +164,7 @@ trash.delete('/:id', requiresAdmin, async (req, res) => {
   } else {
     await pool
       .query(delete_item_query, [id])
-      .then(db_res => res.status(200).send())
+      .then(() => res.status(200).send())
       .catch(e => res.status(500).send(e.stack));
   }
 });

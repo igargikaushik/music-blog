@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { bucket } = require('../cloud_storage.js');
+const { bucket } = require('../cloud_storage.js').default;
 
 router.get("/alt", async (req, res) => {
   if (!req.query.file) {
@@ -9,7 +9,7 @@ router.get("/alt", async (req, res) => {
 
   const file_obj = bucket.file(req.query.file.replace(/^\/static_files\//gi, "static/"));
 
-  file_obj.get(function(err, file, apiResponse) {
+  file_obj.get(function(err, file) {
     if (err) {
       if (err.code == 404) {
         res.status(200).send({})

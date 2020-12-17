@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const session = require('express-session');
 const { passport, pg_session } = require('./auth.js')
 const pool = require('./pool');
 
