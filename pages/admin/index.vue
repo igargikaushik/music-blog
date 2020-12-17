@@ -66,8 +66,7 @@ export default {
 }
 
 #dashboard-content {
-  overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 #padded-content {
@@ -88,13 +87,19 @@ export default {
 }
 
 /deep/ {
-th {
-  vertical-align: bottom;
+  th {
+    vertical-align: bottom;
+  }
+
+  tbody td {
+    vertical-align: middle;
+  }
 }
 
-tbody td {
-  vertical-align: middle;
-}
+@media screen and (min-width: $desktop) {
+  #dashboard-content {
+    overflow-x: hidden;
+  }
 }
 
 @media screen and (max-width: $tablet) {
