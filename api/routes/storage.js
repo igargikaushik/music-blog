@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { bucket } = require('../cloud_storage.js').default;
+const { bucket } = require('../cloud_storage.js');
 
 router.get("/alt", async (req, res) => {
   if (!req.query.file) {
