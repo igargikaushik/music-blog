@@ -36,7 +36,7 @@
 
 <script>
 export default {
-  layout: "admin",
+  layout: 'admin',
   data() {
     return {
       section_articles: true,
@@ -48,9 +48,9 @@ export default {
   methods: {
     async logout() {
       await this.$axios
-        .$get("/api/admin/logout")
+        .$get('/api/admin/logout')
         .catch((e) => console.log(e.stack));
-      this.$router.push("/");
+      this.$router.push('/');
     }
   },
 };

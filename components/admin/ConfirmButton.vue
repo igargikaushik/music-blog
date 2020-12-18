@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: "ConfirmButton",
+  name: 'ConfirmButton',
   props: {
     verb: String,
     kind: String,
@@ -18,10 +18,9 @@ export default {
   methods: {
     confirm(verb, kind, title) {
       this.$buefy.dialog.confirm({
-        type: "is-danger",
+        type: 'is-danger',
         hasIcon: true,
         message: `Are you sure you want to ${verb} the ${kind} "${title}"?`,
-        type: "is-danger",
         onConfirm: () => this.$emit('confirm'),
         onCancel: () => this.$buefy.toast.open({message: `Canceled ${verb}`, type: 'is-danger', duration: 3000}),
       });

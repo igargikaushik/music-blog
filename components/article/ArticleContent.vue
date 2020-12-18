@@ -4,11 +4,11 @@
 
 <script>
 export default {
-  name: "ArticleContent",
+  name: 'ArticleContent',
   props: {
     content: String,
   }
-}
+};
 </script>
 
 <style lang="scss">

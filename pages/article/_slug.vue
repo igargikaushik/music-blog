@@ -21,19 +21,19 @@ import ArticleContent from '@/components/article/ArticleContent.vue';
 import ArticleHeader from '@/components/article/ArticleHeader.vue';
 
 export default {
-  name: "Home",
+  name: 'Home',
   components: {
     ArticleContent,
     ArticleHeader,
   },
   data() {
     return {
-      title: "What is a Sonata?",
-      author: "Henry Sloan",
+      title: 'What is a Sonata?',
+      author: 'Henry Sloan',
       description:
         'Many of the most popular classical works are "Sonatas". Let\'s look at what that means, and how we can navigate this vast genre.',
-      category: "Article",
-      tags: ["Sonata", "Baroque", "Classical", "Romantic"],
+      category: 'Article',
+      tags: ['Sonata', 'Baroque', 'Classical', 'Romantic'],
       content: `
 [[toc]]
 

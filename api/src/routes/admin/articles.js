@@ -1,14 +1,14 @@
 const articles = require('express').Router();
-const { requiresAdmin } = require('../../auth.js');
-const pool = require('../../pool');
+const { requiresAdmin } = require('../../middleware/auth.js');
+const pool = require('../../db/pool.js');
 
-const id_select_query = `SELECT id FROM articles WHERE id = $1;`;
-const total_query = `SELECT COUNT(*) FROM articles_drafts;`
+const id_select_query = 'SELECT id FROM articles WHERE id = $1;';
+const total_query = 'SELECT COUNT(*) FROM articles_drafts;';
 const articles_drafts_query = `SELECT
   id, title, category, author, creation_time, modified_time, is_draft
   FROM articles_drafts
   ORDER BY modified_time DESC
-  LIMIT $1 OFFSET $2;`
+  LIMIT $1 OFFSET $2;`;
 
 const trash_query = `INSERT INTO
   trash(title, author, description, creation_time, update_time, content, category, tags, image, doc_type)
@@ -24,21 +24,21 @@ const unpublish_query = `INSERT INTO
   drafts(title, author, description, content, category, tags, image)
   SELECT title, author, description, content, category, tags, image
   FROM articles
-  WHERE id = $1;`
-const delete_article_query = `DELETE FROM articles WHERE id = $1;`;
+  WHERE id = $1;`;
+const delete_article_query = 'DELETE FROM articles WHERE id = $1;';
 
-const linked_draft_query = `SELECT id FROM drafts WHERE article_id = $1;`
+const linked_draft_query = 'SELECT id FROM drafts WHERE article_id = $1;';
 // Ensure archive/deletion doesn't create dangling pointer
-const unlink_draft_query = `UPDATE drafts SET article_id = NULL WHERE article_id = $1;`
+const unlink_draft_query = 'UPDATE drafts SET article_id = NULL WHERE article_id = $1;';
 
-articles.get("/count", requiresAdmin, async (req, res) => {
+articles.get('/count', requiresAdmin, async (req, res) => {
   await pool
     .query(total_query)
     .then(db_res => res.status(200).send(db_res.rows[0]))
     .catch(e => res.status(500).send(e.stack));
 });
 
-articles.get("/", requiresAdmin, async (req, res) => {
+articles.get('/', requiresAdmin, async (req, res) => {
   const count = Math.max(req.query.count || 20, 120);
   const page = req.query.page || 1;
   await pool
@@ -47,11 +47,11 @@ articles.get("/", requiresAdmin, async (req, res) => {
     .catch(e => res.status(500).send(e.stack));
 });
 
-articles.delete("/:id", requiresAdmin, async (req, res) => {
+articles.delete('/:id', requiresAdmin, async (req, res) => {
   // Copy an article to the trash table, then delete the article
   const id = parseInt(req.params.id);
   if (!id) {
-    res.status(400).send("Bad article ID");
+    res.status(400).send('Bad article ID');
     return;
   }
 
@@ -82,11 +82,11 @@ articles.delete("/:id", requiresAdmin, async (req, res) => {
   }
 });
 
-articles.post("/archive/:id", requiresAdmin, async (req, res) => {
+articles.post('/archive/:id', requiresAdmin, async (req, res) => {
   // Copy an article to the archives table, then delete the article
   const id = parseInt(req.params.id);
   if (!id) {
-    res.status(400).send("Bad article ID");
+    res.status(400).send('Bad article ID');
     return;
   }
 
@@ -117,12 +117,12 @@ articles.post("/archive/:id", requiresAdmin, async (req, res) => {
   }
 });
 
-articles.post("/unpublish/:id", requiresAdmin, async (req, res) => {
+articles.post('/unpublish/:id', requiresAdmin, async (req, res) => {
   // Move an article to the drafts table, then delete the article
   // If there already exists a draft, send 409 so the client can delete it
   const id = parseInt(req.params.id);
   if (!id) {
-    res.status(400).send("Bad article ID");
+    res.status(400).send('Bad article ID');
     return;
   }
 

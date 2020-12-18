@@ -1,4 +1,5 @@
 <template>
+<h1>Redirecting</h1>
 </template>
 
 <script>
@@ -14,5 +15,5 @@ export default {
       return context.redirect(`/admin/draft/${draft_id}`);
     }
   }
-}
+};
 </script>

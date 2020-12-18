@@ -112,17 +112,17 @@
 
 <script>
 export default {
-  layout: "admin",
+  layout: 'admin',
   data() {
     return {
-      title: "",
-      category: "",
+      title: '',
+      category: '',
       tags: [],
       image: null,
-      author: "",
-      description: "",
-      content: "",
-      tab: "meta",
+      author: '',
+      description: '',
+      content: '',
+      tab: 'meta',
       publish_redirect: false,
     };
   },
@@ -147,7 +147,7 @@ export default {
     }
 
     const answer = window.confirm(
-      "Do you really want to leave? you have unsaved changes!"
+      'Do you really want to leave? you have unsaved changes!'
     );
     if (answer) {
       next();
@@ -178,18 +178,18 @@ export default {
       };
       await this.$axios
         .$put(`/api/admin/drafts/${id}`, body)
-        .then((res) =>
+        .then(() =>
           this.$buefy.toast.open({
-            message: "Draft saved",
-            type: "is-success",
+            message: 'Draft saved',
+            type: 'is-success',
             duration: 3000,
           })
         )
         .catch((e) => {
           console.log(e.stack);
           this.$buefy.toast.open({
-            message: "There was an error",
-            type: "is-danger",
+            message: 'There was an error',
+            type: 'is-danger',
             duration: 3000,
           });
         });

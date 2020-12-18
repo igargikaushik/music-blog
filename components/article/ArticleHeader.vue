@@ -12,12 +12,12 @@
 
 <script>
 export default {
-  name: "ArticleHeader",
+  name: 'ArticleHeader',
   props: {
     title: String,
     author: String,
     description: String,
     preview: Boolean,
   }
-}
+};
 </script>

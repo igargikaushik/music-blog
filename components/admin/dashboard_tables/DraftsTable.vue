@@ -72,10 +72,10 @@
 </template>
 
 <script>
-import date from "@/mixins/date.js";
+import date from '@/mixins/date.js';
 
 export default {
-  name: "DraftsTable",
+  name: 'DraftsTable',
   data() {
     return {
       total: 0,
@@ -89,7 +89,7 @@ export default {
       if (text) {
         this.$buefy.toast.open({
           message: text,
-          type: "is-success",
+          type: 'is-success',
           duration: 3000,
         });
       }
@@ -99,11 +99,11 @@ export default {
     async delete_draft(id) {
       await this.$axios
         .$delete(`/api/admin/drafts/${id}`)
-        .then(res => this.reload("Draft moved to trash"))
-        .catch((e) => {
+        .then(() => this.reload('Draft moved to trash'))
+        .catch(() => {
           this.$buefy.toast.open({
-            message: "There was an error",
-            type: "is-danger",
+            message: 'There was an error',
+            type: 'is-danger',
             duration: 3000,
           });
         });
@@ -111,7 +111,7 @@ export default {
   },
   async fetch() {
     this.total = await this.$axios
-      .$get("/api/admin/drafts/count")
+      .$get('/api/admin/drafts/count')
       .then((res) => res.count)
       .catch((e) => console.log(e.stack));
     this.drafts = await this.$axios

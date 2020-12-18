@@ -39,7 +39,7 @@
 
 <script>
 export default {
-  name: "ShareTags",
+  name: 'ShareTags',
   props: {
     category: String,
     tags: Array,

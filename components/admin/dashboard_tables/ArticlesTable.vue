@@ -94,10 +94,10 @@
 </template>
 
 <script>
-import date from "@/mixins/date.js";
+import date from '@/mixins/date.js';
 
 export default {
-  name: "ArticlesTable",
+  name: 'ArticlesTable',
   data() {
     return {
       total: 0,
@@ -111,7 +111,7 @@ export default {
       if (text) {
         this.$buefy.toast.open({
           message: text,
-          type: "is-success",
+          type: 'is-success',
           duration: 3000,
         });
       }
@@ -121,12 +121,12 @@ export default {
     async archive(id) {
       await this.$axios
         .$post(`/api/admin/articles/archive/${id}`)
-        .then(res => this.reload("Article moved to archives"))
+        .then(() => this.reload('Article moved to archives'))
         .catch((e) => {
           console.log(e.stack);
           this.$buefy.toast.open({
-            message: "There was an error",
-            type: "is-danger",
+            message: 'There was an error',
+            type: 'is-danger',
             duration: 3000,
           });
         });
@@ -134,23 +134,23 @@ export default {
     async unpublish(id, title) {
       await this.$axios
         .$post(`/api/admin/articles/unpublish/${id}`)
-        .then(res => this.reload("Article moved to drafts"))
+        .then(() => this.reload('Article moved to drafts'))
         .catch((e) => {
           if (e.response?.status === 409) {
             this.$buefy.dialog.alert({
-              title: "Conflict",
+              title: 'Conflict',
               message:
                 `The article "${title}" already has a draft. If you would like to unpublish the article, delete the existing draft. Aborting.`,
-              type: "is-danger",
+              type: 'is-danger',
               hasIcon: true,
-              ariaRole: "alertdialog",
+              ariaRole: 'alertdialog',
               ariaModal: true,
             });
           } else {
             console.log(e.stack);
             this.$buefy.toast.open({
-              message: "There was an error",
-              type: "is-danger",
+              message: 'There was an error',
+              type: 'is-danger',
               duration: 3000,
             });
           }
@@ -159,11 +159,11 @@ export default {
     async delete_article(id) {
       await this.$axios
         .$delete(`/api/admin/articles/${id}`)
-        .then(res => this.reload("Article moved to trash"))
-        .catch((e) => {
+        .then(() => this.reload('Article moved to trash'))
+        .catch(() => {
           this.$buefy.toast.open({
-            message: "There was an error",
-            type: "is-danger",
+            message: 'There was an error',
+            type: 'is-danger',
             duration: 3000,
           });
         });
@@ -173,7 +173,7 @@ export default {
     // TODO: Potentially save visited pages and maybe use store
     // Same for drafts
     this.total = await this.$axios
-      .$get("/api/admin/articles/count")
+      .$get('/api/admin/articles/count')
       .then((res) => res.count)
       .catch((e) => console.log(e.stack));
     this.articles = await this.$axios

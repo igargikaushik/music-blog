@@ -16,12 +16,12 @@
 
 <script>
 export default {
-  name: "ArticleMetaInput",
+  name: 'ArticleMetaInput',
   props: {
     label: String,
     value: String,
     textarea: Boolean
   }
-}
+};
 </script>
 
