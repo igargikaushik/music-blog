@@ -41,32 +41,25 @@ jest.mock('../../src/services/cloud_storage.js', () => {
 });
 
 describe('GET /api/storage/alt', () => {
-  it('should send 400 on empty query', async done => {
-    const response1 = await request.get('/api/storage/alt');
-    const response2 = await request.get('/api/storage/alt?file=');
-    expect(response1.status).toEqual(400);
-    expect(response2.status).toEqual(400);
-    done();
+  it('should send 400 on empty query', async () => {
+    return Promise.all([
+      request.get('/api/storage/alt').expect(400),
+      request.get('/api/storage/alt?file=').expect(400),
+    ]);
   });
 
   it('should send null on nonexistent file', async done => {
-    const response = await request.get(`/api/storage/alt?file=/static_files/${BAD_FILENAME}`);
-    expect(response.status).toEqual(200);
-    expect(response.body).toEqual({ alt: null });
-    done();
+    request.get(`/api/storage/alt?file=/static_files/${BAD_FILENAME}`)
+      .expect(200, { alt: null }, done);
   });
 
   it('should send alt if file has one', async done => {
-    const response = await request.get(`/api/storage/alt?file=/static_files/${GOOD_ALT_FILENAME}`);
-    expect(response.status).toEqual(200);
-    expect(response.body).toEqual({ alt: TEST_ALT });
-    done();
+    request.get(`/api/storage/alt?file=/static_files/${GOOD_ALT_FILENAME}`)
+      .expect(200, { alt: TEST_ALT }, done);
   });
 
   it('should send null if file has no alt', async done => {
-    const response = await request.get(`/api/storage/alt?file=/static_files/${GOOD_NO_ALT_FILENAME}`);
-    expect(response.status).toEqual(200);
-    expect(response.body).toEqual({ alt: null });
-    done();
+    request.get(`/api/storage/alt?file=/static_files/${GOOD_NO_ALT_FILENAME}`)
+      .expect(200, { alt: null }, done);
   });
 });
