@@ -28,14 +28,24 @@ passport.deserializeUser(function (obj, cb) {
   cb(null, obj);
 });
 
-const session_connection = require('connect-pg-simple')(session);
-const pg_session = session({
-  store: new session_connection({
+const pg_session_opts = {
+  secret: process.env.CLIENTSECRET, resave: true, saveUninitialized: true,
+  cookie: {},
+};
+
+if (process.env.NODE_ENV === 'production') {
+  pg_session_opts.cookie.secure = true;
+}
+
+if (process.env.NODE_ENV !== 'test') {
+  const session_connection = require('connect-pg-simple')(session);
+  pg_session_opts.store = new session_connection({
     pool: pool,
     tableName: 'session'
-  }),
-  secret: process.env.CLIENTSECRET, resave: true, saveUninitialized: true
-});
+  });
+}
+
+const pg_session = session(pg_session_opts);
 
 async function requiresAdmin(req, res, next) {
   if (req.user && req.user.admin)

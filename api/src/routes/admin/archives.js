@@ -32,7 +32,7 @@ const rename_query = 'UPDATE archives SET title = $2, slug = $3 WHERE id = $1;';
 archives.route('/')
   .all(requiresAdmin)
   .get(async (req, res) => {
-    const count = Math.max(req.query.count || 20, 120);
+    const count = Math.min(req.query.count || 20, 120);
     const page = req.query.page || 1;
     await pool
       .query(list_query, [count, count * (page - 1)])

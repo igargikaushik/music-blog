@@ -101,7 +101,7 @@ drafts.get('/article/:id', requiresAdmin, async (req, res) =>{
 drafts.route('/')
   .all(requiresAdmin)
   .get(async (req, res) => {
-    const count = Math.max(req.query.count || 20, 120);
+    const count = Math.min(req.query.count || 20, 120);
     const page = req.query.page || 1;
     await pool
       .query(list_query, [count, count * (page - 1)])

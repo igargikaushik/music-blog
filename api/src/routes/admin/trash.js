@@ -46,7 +46,7 @@ const delete_item_query = 'DELETE FROM trash WHERE id = $1;';
 trash.route('/')
   .all(requiresAdmin)
   .get(async (req, res) => {
-    const count = Math.max(req.query.count || 20, 120);
+    const count = Math.min(req.query.count || 20, 120);
     const page = req.query.page || 1;
     await pool
       .query(list_query, [count, count * (page - 1)])
