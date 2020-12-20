@@ -94,6 +94,7 @@ archives.put('/rename/:id', requiresAdmin, async (req, res) => {
     .then(db_res => db_res.rows);
   if (archives.length == 0) {
     res.status(404).send(`Archive with ID ${id} does not exist`);
+    return;
   }
 
   const new_title = req.body.title;
