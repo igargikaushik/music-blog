@@ -1,18 +1,12 @@
 const app = require('../../../src/server.js');
 const pool = require('../../../src/db/pool.js');
-const init_db = require('../../../src/db/init_db.js');
-const teardown_db = require('../../../src/db/teardown_db.js');
+const { count } = require('../../helpers.js');
+require('../../db_setup_teardown.js');
 const supertest = require('supertest');
 const request = supertest(app);
 
-const auth_path = '../../../src/middleware/auth.js';
-jest.mock(auth_path, () => (
-  {
-    ...(jest.requireActual(auth_path)),
-    requiresAdmin: jest.fn((_req, res) => res.status(403).send('Unauthorized')),
-  }
-));
-const auth = require(auth_path);
+const auth = require('../../../src/middleware/auth.js');
+jest.mock('../../../src/middleware/auth.js');
 
 async function insertDummyArchives(n) {
   let id_list = [];
@@ -24,55 +18,17 @@ async function insertDummyArchives(n) {
   return id_list;
 }
 
-function mockUnauthorized() {
-  auth.requiresAdmin.mockImplementation((_req, res) => res.status(403).send('Unauthorized'));
-}
-
-function mockAuthorized() {
-  auth.requiresAdmin.mockImplementation((_req, _res, next) => next());
-}
-
-async function archivesCount() {
-  return parseInt((await pool.query('SELECT COUNT(*) FROM archives;')).rows[0].count);
-}
-
-async function trashCount() {
-  return parseInt((await pool.query('SELECT COUNT(*) FROM trash;')).rows[0].count);
-}
-
-async function articlesCount() {
-  return parseInt((await pool.query('SELECT COUNT(*) FROM articles;')).rows[0].count);
-}
-
-beforeAll(async done => {
-  await teardown_db();
-  done();
-});
-
-beforeEach(async done => {
-  await init_db();
-  done();
-});
-
-afterEach(async done => {
-  await teardown_db();
-  auth.requiresAdmin.mockReset();
-  done();
-});
-
 describe('GET /api/admin/archives', () => {
   it('should send 403 for unauthorized access', async done => {
-    mockUnauthorized();
+    auth.__mockUnauthorized();
     request.get('/api/admin/archives').expect(403, done);
   });
 
   it('should send 200 for authorized access', async done => {
-    mockAuthorized();
     request.get('/api/admin/archives').expect(200, done);
   });
 
   it('should paginate properly', async done => {
-    mockAuthorized();
     await insertDummyArchives(30);
 
     const default_p1 = await request.get('/api/admin/archives');
@@ -90,40 +46,36 @@ describe('GET /api/admin/archives', () => {
 
 describe('DELETE /api/admin/archives/{id}', () => {
   it('should send 403 for unauthorized access', async done => {
-    mockUnauthorized();
+    auth.__mockUnauthorized();
     request.delete('/api/admin/archives/1').expect(403, done);
   });
 
   it('should send 400 for invalid ID', async done => {
-    mockAuthorized();
     request.delete('/api/admin/archives/fff').expect(400, done);
   });
 
   it('should send 500 for nonexistent archive', async done => {
-    mockAuthorized();
     request.delete('/api/admin/archives/1').expect(500, done);
   });
 
   it('should perform deletion workflow and send 200', async done => {
-    mockAuthorized();
     const [id] = await insertDummyArchives(1);
-    expect(await archivesCount()).toEqual(1);
-    expect(await trashCount()).toEqual(0);
+    expect(await count('archives')).toEqual(1);
+    expect(await count('trash')).toEqual(0);
     await request.delete(`/api/admin/archives/${id}`).expect(200);
-    expect(await archivesCount()).toEqual(0);
-    expect(await trashCount()).toEqual(1);
+    expect(await count('archives')).toEqual(0);
+    expect(await count('trash')).toEqual(1);
     done();
   });
 });
 
 describe('GET /api/admin/archives/count', () => {
   it('should send 403 for unauthorized access', async done => {
-    mockUnauthorized();
+    auth.__mockUnauthorized();
     request.get('/api/admin/archives/count').expect(403, done);
   });
 
   it('should send correct result', async done => {
-    mockAuthorized();
     await insertDummyArchives(30);
     request.get('/api/admin/archives/count').expect(200, { count: '30' }, done);
   });
@@ -131,28 +83,24 @@ describe('GET /api/admin/archives/count', () => {
 
 describe('PUT /api/admin/archives/rename/{id}', () => {
   it('should send 403 for unauthorized access', async done => {
-    mockUnauthorized();
+    auth.__mockUnauthorized();
     request.put('/api/admin/archives/rename/1').expect(403, done);
   });
 
   it('should send 400 for invalid ID', async done => {
-    mockAuthorized();
     request.put('/api/admin/archives/rename/fff').expect(400, done);
   });
 
   it('should send 404 for nonexistent archive', async done => {
-    mockAuthorized();
     request.put('/api/admin/archives/rename/1').expect(404, done);
   });
 
   it('should send 400 for missing title', async done => {
-    mockAuthorized();
     const [id] = await insertDummyArchives(1);
     request.put(`/api/admin/archives/rename/${id}`).expect(400, done);
   });
 
   it('should perform renaming workflow and send 200', async done => {
-    mockAuthorized();
     const [id] = await insertDummyArchives(1);
     const newTitle = 'new title';
     await request.put(`/api/admin/archives/rename/${id}`)
@@ -166,22 +114,19 @@ describe('PUT /api/admin/archives/rename/{id}', () => {
 
 describe('POST /api/admin/archives/republish/{id}', () => {
   it('should send 403 for unauthorized access', async done => {
-    mockUnauthorized();
+    auth.__mockUnauthorized();
     request.post('/api/admin/archives/republish/1').expect(403, done);
   });
 
   it('should send 400 for invalid ID', async done => {
-    mockAuthorized();
     request.post('/api/admin/archives/republish/fff').expect(400, done);
   });
 
   it('should send 500 for nonexistent archive', async done => {
-    mockAuthorized();
     request.post('/api/admin/archives/republish/1').expect(500, done);
   });
 
   it('should send 409 for conflicting article', async done => {
-    mockAuthorized();
     const testSlug = 'test-slug';
     const id = (await pool.query(`INSERT INTO
       archives(title, slug, author, description, creation_time, content, category)
@@ -194,13 +139,12 @@ describe('POST /api/admin/archives/republish/{id}', () => {
   });
 
   it('should perform republish workflow and send 200', async done => {
-    mockAuthorized();
     const [id] = await insertDummyArchives(1);
-    expect(await archivesCount()).toEqual(1);
-    expect(await articlesCount()).toEqual(0);
+    expect(await count('archives')).toEqual(1);
+    expect(await count('articles')).toEqual(0);
     await request.post(`/api/admin/archives/republish/${id}`).expect(200);
-    expect(await archivesCount()).toEqual(0);
-    expect(await articlesCount()).toEqual(1);
+    expect(await count('archives')).toEqual(0);
+    expect(await count('articles')).toEqual(1);
     done();
   });
 });
