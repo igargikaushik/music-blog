@@ -177,7 +177,7 @@ describe('DELETE /api/admin/trash/{id}', () => {
   it('should perform permanent deletion workflow and send 200', async done => {
     const [id] = await insertDummyTrash(1);
     expect(await count('trash')).toEqual(1);
-    await request.post(`/api/admin/trash/restore/${id}`).expect(200);
+    await request.delete(`/api/admin/trash/${id}`).expect(200);
     expect(await count('trash')).toEqual(0);
     done();
   });
