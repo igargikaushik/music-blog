@@ -1,6 +1,5 @@
 const pool = require('./pool.js');
 
-process.on('unhandledRejection', console.warn);
 async function init_sessions_table(client) {
   const create_query = `
     CREATE TABLE IF NOT EXISTS "session" (

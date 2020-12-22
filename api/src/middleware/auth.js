@@ -29,7 +29,7 @@ passport.deserializeUser(function (obj, cb) {
 });
 
 const pg_session_opts = {
-  secret: process.env.CLIENTSECRET, resave: true, saveUninitialized: true,
+  secret: process.env.CLIENTSECRET || 'secret', resave: true, saveUninitialized: true,
   cookie: {},
 };
 
