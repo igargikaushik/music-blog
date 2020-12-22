@@ -9,12 +9,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     
     services:
       postgres:
         image: postgres:11
+        env:
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
