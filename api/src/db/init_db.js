@@ -1,17 +1,20 @@
 const pool = require('./pool.js');
 
+process.on('unhandledRejection', console.warn);
 async function init_sessions_table(client) {
   const create_query = `
-    CREATE TABLE "session" (
+    CREATE TABLE IF NOT EXISTS "session" (
       "sid" varchar NOT NULL COLLATE "default",
       "sess" json NOT NULL,
       "expire" timestamp(6) NOT NULL
     )
     WITH (OIDS=FALSE);`;
+  const clear_query = 'ALTER TABLE "session" DROP CONSTRAINT IF EXISTS "session_pkey";';
   const pkey_query = 'ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;';
-  const index_query = 'CREATE INDEX "IDX_session_expire" ON "session" ("expire");';
+  const index_query = 'CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");';
 
   await client.query(create_query);
+  await client.query(clear_query);
   await client.query(pkey_query);
   await client.query(index_query);
 }
@@ -80,7 +83,7 @@ async function init_drafts_table(client) {
 
 async function init_articles_drafts_view(client) {
   const create_query = `
-    CREATE VIEW articles_drafts AS
+    CREATE OR REPLACE VIEW articles_drafts AS
       SELECT id, title, category, author, creation_time,
         COALESCE(update_time, creation_time) as modified_time,
         FALSE AS is_draft
