@@ -32,7 +32,7 @@ const rename_query = 'UPDATE archives SET title = $2, slug = $3 WHERE id = $1;';
 archives.route('/')
   .all(requiresAdmin)
   .get(async (req, res) => {
-    const count = Math.max(req.query.count || 20, 120);
+    const count = Math.min(req.query.count || 20, 120);
     const page = req.query.page || 1;
     await pool
       .query(list_query, [count, count * (page - 1)])
@@ -89,19 +89,20 @@ archives.put('/rename/:id', requiresAdmin, async (req, res) => {
     return;
   }
 
-  const archives = await pool
-    .query(id_select_query, [id])
-    .then(db_res => db_res.rows);
-  if (archives.length == 0) {
-    res.status(404).send(`Archive with ID ${id} does not exist`);
-  }
-
   const new_title = req.body.title;
   if (!new_title) {
     res.status(400).send('Invalid or missing title');
     return;
   }
   const new_slug = slugify(new_title);
+
+  const archives = await pool
+    .query(id_select_query, [id])
+    .then(db_res => db_res.rows);
+  if (archives.length == 0) {
+    res.status(404).send(`Archive with ID ${id} does not exist`);
+    return;
+  }
 
   await pool
     .query(rename_query, [id, new_title, new_slug])

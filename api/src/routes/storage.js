@@ -12,7 +12,7 @@ router.get('/alt', async (req, res) => {
   file_obj.get(function(err, file) {
     if (err) {
       if (err.code == 404) {
-        res.status(200).send({});
+        res.status(200).send({ alt: null });
       } else {
         res.status(err.code).send(err.stack);
       }

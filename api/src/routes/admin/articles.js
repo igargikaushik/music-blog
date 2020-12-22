@@ -39,7 +39,7 @@ articles.get('/count', requiresAdmin, async (req, res) => {
 });
 
 articles.get('/', requiresAdmin, async (req, res) => {
-  const count = Math.max(req.query.count || 20, 120);
+  const count = Math.min(req.query.count || 20, 120);
   const page = req.query.page || 1;
   await pool
     .query(articles_drafts_query, [count, count * (page - 1)])
