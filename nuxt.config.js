@@ -14,6 +14,12 @@ export default {
         content: 'Understand music with listening guides',
       }
     ],
+    link: [
+      {
+        rel: 'stylesheet',
+        href: 'https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css',
+      }
+    ],
   },
   modules: [
     ['nuxt-buefy', { css: false, defaultProgrammaticPromise: true }],
