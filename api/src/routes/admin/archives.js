@@ -89,6 +89,13 @@ archives.put('/rename/:id', requiresAdmin, async (req, res) => {
     return;
   }
 
+  const new_title = req.body.title;
+  if (!new_title) {
+    res.status(400).send('Invalid or missing title');
+    return;
+  }
+  const new_slug = slugify(new_title);
+
   const archives = await pool
     .query(id_select_query, [id])
     .then(db_res => db_res.rows);
@@ -96,13 +103,6 @@ archives.put('/rename/:id', requiresAdmin, async (req, res) => {
     res.status(404).send(`Archive with ID ${id} does not exist`);
     return;
   }
-
-  const new_title = req.body.title;
-  if (!new_title) {
-    res.status(400).send('Invalid or missing title');
-    return;
-  }
-  const new_slug = slugify(new_title);
 
   await pool
     .query(rename_query, [id, new_title, new_slug])

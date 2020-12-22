@@ -293,3 +293,31 @@ describe('POST /api/admin/drafts/publish/{id}', () => {
     done();
   });
 });
+
+describe('GET /api/admin/drafts/article/{id}', () => {
+  it('should send 403 for unauthorized access', async done => {
+    auth.__mockUnauthorized();
+    request.get('/api/admin/drafts/article/1').expect(403, done);
+  });
+
+  it('should send 400 for invalid ID', async done => {
+    request.get('/api/admin/drafts/article/fff').expect(400, done);
+  });
+
+  it('should send 404 for nonexistent article', async done => {
+    request.get('/api/admin/drafts/article/1').expect(404, done);
+  });
+
+  it('should retrieve existent draft and send 200', async done => {
+    const article_id = (await pool.query(`INSERT INTO
+      articles(title, slug, author, description, content, category)
+      VALUES('', '', '', '', '', '') RETURNING id;`))
+      .rows[0].id;
+    const draft_id = (await pool.query(`INSERT INTO
+      drafts(article_id, title, author, description, content, category)
+      VALUES($1, '', '', '', '', '') RETURNING id;`, [article_id]))
+      .rows[0].id;
+    request.get(`/api/admin/drafts/article/${article_id}`)
+      .expect(200, { id: draft_id }, done);
+  });
+});

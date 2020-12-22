@@ -92,7 +92,9 @@ describe('PUT /api/admin/archives/rename/{id}', () => {
   });
 
   it('should send 404 for nonexistent archive', async done => {
-    request.put('/api/admin/archives/rename/1').expect(404, done);
+    request.put('/api/admin/archives/rename/1')
+      .send({ title: 'new title' })
+      .expect(404, done);
   });
 
   it('should send 400 for missing title', async done => {

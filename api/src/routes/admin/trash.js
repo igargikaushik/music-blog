@@ -129,6 +129,7 @@ trash.put('/rename/:id', requiresAdmin, async (req, res) => {
     res.status(400).send('Bad item ID');
     return;
   }
+
   const new_title = req.body.title;
   if (!new_title) {
     res.status(400).send('Invalid or missing title');
