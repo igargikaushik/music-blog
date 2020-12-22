@@ -120,15 +120,14 @@ describe('POST /api/admin/trash/restore/{id}', () => {
       articles(title, slug, author, description, content, category)
       VALUES('article title', 'test-slug', '', '', '', '') RETURNING id;`))
       .rows[0].id;
-    const draft_id = (await pool.query(`INSERT INTO
+    await pool.query(`INSERT INTO
       drafts(article_id, title, author, description, content, category)
-      VALUES($1, 'draft title', '', '', '', '') RETURNING id;`, [article_id]))
-      .rows[0].id;
+      VALUES($1, 'draft title', '', '', '', '') RETURNING id;`, [article_id]);
     const trash_id = (await pool.query(`INSERT INTO
       trash(title, author, description, creation_time,
         content, category, doc_type, draft_article_id)
       VALUES('test slug', '', '', CURRENT_TIMESTAMP,
-        '', '', 'draft', $1) RETURNING id;`, [draft_id]))
+        '', '', 'draft', $1) RETURNING id;`, [article_id]))
       .rows[0].id;
     request.post(`/api/admin/trash/restore/${trash_id}`).expect(409, done);
   });

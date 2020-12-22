@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "node --trace-warnings node_modules/.bin/jest --detectOpenHandles --forceExit --runInBand --no-cache"
+    "test": "jest --detectOpenHandles --forceExit --globalSetup='./test/setup.js' --globalTeardown='./test/teardown.js'"
   },
   "jest": {
     "testEnvironment": "node",
