@@ -48,6 +48,9 @@ export default {
       articles: [],
     };
   },
+  watch: {
+    'page': '$fetch'
+  },
   async fetch() {
     this.total = await this.$axios
       .$get('/api/articles/count')

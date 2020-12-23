@@ -1,22 +1,13 @@
 <template>
-  <div class="article">
+  <div id="article-main" class="article">
     <section class="section">
       <div class="container">
-        <div v-if="$fetchState.pending" class="columns has-text-centered">
-          <div class="column"></div>
-          <div class="column has-text-centered">
-            <b-skeleton position="is-centered"></b-skeleton>
-            <b-skeleton position="is-centered" width="80%"></b-skeleton>
-            <b-skeleton position="is-centered" width="90%"></b-skeleton>
-          </div>
-          <div class="column"></div>
-        </div>
-        <ArticleHeader v-else :title="title" :author="author" :description="description" />
+        <ArticleHeader :title="article.title" :author="article.author" :description="article.description" />
         <div class="columns">
           <div class="column"></div>
           <div class="column is-three-quarters has-text-left">
-            <ArticleContent :content="content" />
-            <ShareTags :category="category" :tags="tags" />
+            <ArticleContent :content="article.content" />
+            <ShareTags :category="article.category" :tags="article.tags" />
           </div>
           <div class="column"></div>
         </div>
@@ -30,35 +21,26 @@ import ArticleContent from '@/components/article/ArticleContent.vue';
 import ArticleHeader from '@/components/article/ArticleHeader.vue';
 
 export default {
-  name: 'Home',
+  name: 'Article',
   components: {
     ArticleContent,
     ArticleHeader,
   },
-  data() {
-    return {
-      title: '',
-      author: '',
-      description: '',
-      category: '',
-      tags: [],
-      content: '',
-    };
-  },
-  async fetch() {
-    const slug = this.$route.params.slug;
-    const article = await this.$axios
-      .$get(`/api/articles/${slug}`)
+  async asyncData({ params, $axios }) {
+    const article = await $axios
+      .$get(`/api/articles/${params.slug}`)
       .catch((e) => console.log(e.stack));
-    for (const key in article) {
-      this[key] = article[key];
-    }
+    return { article };
   },
 };
 </script>
 
 <style scoped lang="scss">
 @import "~bulma/sass/utilities/initial-variables";
+
+#article-main {
+  flex-grow: 1;
+}
 
 #title-area {
   display: flex;

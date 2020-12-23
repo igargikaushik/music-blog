@@ -5,6 +5,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'home',
+};
+</script>
+
 <style scoped lang="scss">
 #home-container {
   min-height: calc(100vh - 68px);
