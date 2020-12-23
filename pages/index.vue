@@ -14,7 +14,6 @@
     </div>
     <b-pagination
       v-else
-      simple
       :per-page="per_page"
       order="is-centered"
       :total="total"
@@ -86,5 +85,10 @@ nav.sticky {
 
 body {
   padding-top: 0 !important;
+}
+
+.pagination {
+  max-width: 400px;
+  margin: auto;
 }
 </style>
