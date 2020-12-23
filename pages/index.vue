@@ -4,13 +4,10 @@
     <Hero />
     <TileContainer :articles="articles" />
     <div
-      v-if="$fetchState.pending"
+      v-if="loading"
       style="position: relative; height: 60px; margin-bottom: 1.5rem"
     >
-      <b-loading
-        :is-full-page="false"
-        v-model="$fetchState.pending"
-      ></b-loading>
+      <b-loading :is-full-page="false" v-model="loading"></b-loading>
     </div>
     <b-pagination
       v-else
@@ -28,50 +25,35 @@
 </template>
 
 <script>
-import NavBar from '@/components/header/NavBar.vue';
-import Hero from '@/components/header/Hero.vue';
-import TileContainer from '@/components/tiles/TileContainer.vue';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'Home',
   layout: 'home',
-  components: {
-    NavBar,
-    Hero,
-    TileContainer,
+  computed: {
+    ...mapState({
+      articles: 'articles',
+      loading: 'loading_articles',
+      total: 'articles_count',
+    }),
+  },
+  methods: {
+    ...mapActions(['getArticles', 'getArticlesCount']),
+  },
+  created() {
+    this.getArticlesCount();
+    this.getArticles({ page: this.page, per_page: this.per_page });
   },
   data() {
     return {
-      total: 0,
       page: 1,
       per_page: 12,
-      articles: [],
     };
   },
   watch: {
-    'page': '$fetch'
-  },
-  async fetch() {
-    this.total = await this.$axios
-      .$get('/api/articles/count')
-      .then((res) => res.count)
-      .catch((e) => console.log(e.stack));
-    await this.$axios
-      .$get(`/api/articles?page=${this.page}&count=${this.per_page}`)
-      .then(async articles => {
-        await Promise.all(articles.map(async article => {
-          if (article.image) {
-            await this.$axios
-              .$get(`/api/storage/alt?file=${article.image}`)
-              .then(res => {
-                if (res.alt) article.alt = `${res.alt}`;
-              })
-              .catch(() => {});
-          }
-        }));
-        this.articles = articles;
-      })
-      .catch((e) => console.log(e.stack));
+    page: function (val) {
+      this.getArticles({ page: val, per_page: this.per_page });
+    },
   },
 };
 </script>
@@ -83,7 +65,7 @@ export default {
 }
 
 nav.sticky {
-  background-color: #504A41 !important;
+  background-color: #504a41 !important;
 }
 
 body {
