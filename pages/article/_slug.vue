@@ -17,21 +17,25 @@
 </template>
 
 <script>
-import ArticleContent from '@/components/article/ArticleContent.vue';
-import ArticleHeader from '@/components/article/ArticleHeader.vue';
-
 export default {
   name: 'Article',
-  components: {
-    ArticleContent,
-    ArticleHeader,
-  },
-  async asyncData({ params, $axios }) {
+  async asyncData({ params, error, $axios }) {
     const article = await $axios
       .$get(`/api/articles/${params.slug}`)
-      .catch((e) => console.log(e.stack));
+      .catch(() => error({ statusCode: 404, message: 'Article not found' }));
     return { article };
   },
+  head() {
+    return {
+      title: `${this.article.title} - Classical For Everyone`,
+      meta: [
+        {
+          hid: 'description', name: 'description',
+          content: this.article.description
+        }
+      ]
+    };
+  }
 };
 </script>
 

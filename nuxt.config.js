@@ -80,5 +80,10 @@ export default {
         }
       ]
     ]
+  },
+  loading: {
+    color: '#828bf9',
+    height: '3px',
+    throttle: 100,
   }
 }

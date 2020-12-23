@@ -30,6 +30,12 @@ import { mapActions, mapState } from 'vuex';
 export default {
   name: 'Home',
   layout: 'home',
+  data() {
+    return {
+      page: 1,
+      per_page: 12,
+    };
+  },
   computed: {
     ...mapState({
       articles: 'articles',
@@ -43,12 +49,6 @@ export default {
   created() {
     this.getArticlesCount();
     this.getArticles({ page: this.page, per_page: this.per_page });
-  },
-  data() {
-    return {
-      page: 1,
-      per_page: 12,
-    };
   },
   watch: {
     page: function (val) {

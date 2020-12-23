@@ -195,6 +195,11 @@ export default {
         });
     },
   },
+  head() {
+    return {
+      title: `Edit - ${this.title} - Classical For Everyone`,
+    };
+  }
 };
 </script>
 
