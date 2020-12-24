@@ -130,7 +130,7 @@ export default {
     tile() {
       return {
         title: this.title,
-        imgSrc: this.image,
+        image: this.image,
         content: this.description,
         category: this.category,
         tags: this.tags,
@@ -195,6 +195,11 @@ export default {
         });
     },
   },
+  head() {
+    return {
+      title: `Edit - ${this.title} - Classical For Everyone`,
+    };
+  }
 };
 </script>
 

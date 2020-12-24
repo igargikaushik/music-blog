@@ -2,22 +2,58 @@
   <div class="home">
     <NavBar />
     <Hero />
-    <TileContainer />
+    <TileContainer :articles="articles" />
+    <div
+      v-if="loading"
+      style="position: relative; height: 60px; margin-bottom: 1.5rem"
+    >
+      <b-loading :is-full-page="false" v-model="loading"></b-loading>
+    </div>
+    <b-pagination
+      v-else
+      :per-page="per_page"
+      order="is-centered"
+      :total="total"
+      v-model="page"
+      aria-next-label="Next page"
+      aria-previous-label="Previous page"
+      aria-page-label="Page"
+      aria-current-label="Current page"
+    >
+    </b-pagination>
   </div>
 </template>
 
 <script>
-import NavBar from '@/components/header/NavBar.vue';
-import Hero from '@/components/header/Hero.vue';
-import TileContainer from '@/components/tiles/TileContainer.vue';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'Home',
   layout: 'home',
-  components: {
-    NavBar,
-    Hero,
-    TileContainer,
+  data() {
+    return {
+      page: 1,
+      per_page: 12,
+    };
+  },
+  computed: {
+    ...mapState({
+      articles: 'articles',
+      loading: 'loading_articles',
+      total: 'articles_count',
+    }),
+  },
+  methods: {
+    ...mapActions(['getArticles', 'getArticlesCount']),
+  },
+  created() {
+    this.getArticlesCount();
+    this.getArticles({ page: this.page, per_page: this.per_page });
+  },
+  watch: {
+    page: function (val) {
+      this.getArticles({ page: val, per_page: this.per_page });
+    },
   },
 };
 </script>
@@ -25,13 +61,19 @@ export default {
 <style scoped lang="scss">
 .home {
   margin-top: -68px;
+  flex-grow: 1;
 }
 
 nav.sticky {
-  background-color: #504A41 !important;
+  background-color: #504a41 !important;
 }
 
 body {
   padding-top: 0 !important;
+}
+
+.pagination {
+  max-width: 400px;
+  margin: auto;
 }
 </style>

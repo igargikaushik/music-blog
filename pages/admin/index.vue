@@ -45,6 +45,20 @@ export default {
       section_trash: false,
     };
   },
+  computed: {
+    current_section: function() {
+      if (this.section_articles) {
+        return 'Articles';
+      } else if (this.section_drafts) {
+        return 'Drafts';
+      } else if (this.section_archives) {
+        return 'Archives';
+      } else if (this.section_trash) {
+        return 'Trash';
+      }
+      return false;
+    }
+  },
   methods: {
     async logout() {
       await this.$axios
@@ -53,6 +67,11 @@ export default {
       this.$router.push('/');
     }
   },
+  head() {
+    return {
+      title: `Admin - ${this.current_section} - Classical For Everyone`,
+    };
+  }
 };
 </script>
 

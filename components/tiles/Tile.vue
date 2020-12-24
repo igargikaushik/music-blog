@@ -1,34 +1,34 @@
 <template>
-    <article class="article-tile column">
-      <div class="box">
-        <NuxtLink :to="'/article/' + slug" :event="disabled ? '' : 'click'">
-        <p class="is-size-5 title has-text-left mb-3">
-          {{ title }}
-        </p>
+  <article class="article-tile column">
+    <div class="box">
+      <NuxtLink :to="'/article/' + slug" :event="disabled ? '' : 'click'">
+      <p class="is-size-5 title has-text-left mb-3">
+        {{ title }}
+      </p>
 
-        <article v-if="!!imgSrc" class="media mb-1">
-          <figure class="media-left">
-            <p class="image is-128x128">
-              <img :src="imgSrc" :alt="alt" />
-            </p>
-          </figure>
-          <section class="media-content has-text-left">
-            {{ content }}
-          </section>
-        </article>
-
-        <section v-else class="has-text-left mb-1">
-          {{ content }}
+      <article v-if="image" class="media mb-1">
+        <figure class="media-left">
+          <p class="image is-128x128">
+            <img :src="image" :alt="alt" />
+          </p>
+        </figure>
+        <section class="media-content has-text-left">
+          {{ description }}
         </section>
-        </NuxtLink>
+      </article>
 
-        <hr class="my-1" />
-        <div id="tags" class="field is-grouped is-grouped-multiline">
-          <Tag category :text="category" class="mb-1" />
-          <Tag v-for="tag in tags" :key="tag" :text="tag" class="mb-1" />
-        </div>
+      <section v-else class="has-text-left mb-1">
+        {{ description }}
+      </section>
+      </NuxtLink>
+
+      <hr class="my-1" />
+      <div id="tags" class="field is-grouped is-grouped-multiline">
+        <Tag category :text="category" class="mb-1" />
+        <Tag v-for="tag in tags" :key="tag" :text="tag" class="mb-1" />
       </div>
-    </article>
+    </div>
+  </article>
 </template>
 
 <script>
@@ -37,8 +37,8 @@ export default {
   props: {
     title: String,
     slug: String,
-    imgSrc: { type: String, default: null },
-    content: String,
+    image: { type: String, default: null },
+    description: String,
     category: String,
     tags: Array,
     disabled: Boolean,
@@ -56,7 +56,16 @@ export default {
   height: 100%;
 }
 
-a { color: inherit; } 
+a {
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  section {
+    flex-grow: 1;
+  }
+} 
 
 .image {
   overflow: hidden;
