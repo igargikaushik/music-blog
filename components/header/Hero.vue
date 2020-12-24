@@ -16,9 +16,18 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "~bulma/sass/utilities/initial-variables";
 
+@media screen and (max-width: $tablet) {
+  .hero .blurred-background {
+    filter: blur(2px) !important;
+    -webkit-filter: blur(2px) !important;
+  }
+}
+</style>
+
+<style scoped lang="scss">
 .hero {
   position: relative;
   overflow: hidden;
@@ -44,13 +53,6 @@ export default {
     background-size: cover;
     background-position: center top;
     background-attachment: scroll;
-  }
-
-  @media screen and (max-width: $tablet) {
-    .blurred-background {
-      filter: blur(2px);
-      -webkit-filter: blur(2px);
-    }
   }
 }
 </style>

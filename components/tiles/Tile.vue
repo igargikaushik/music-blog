@@ -47,9 +47,18 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "~bulma/sass/utilities/initial-variables";
 
+@media screen and (min-width: $tablet) {
+  .article-tile .title {
+    font-size: 1.1em !important;
+    margin: 0;
+  }
+}
+</style>
+
+<style scoped lang="scss">
 .box {
   display: flex;
   flex-direction: column;
@@ -74,12 +83,5 @@ a {
 #tags {
   padding-top: 4px;
   margin-top: auto; // 4px;
-}
-
-@media screen and (min-width: $tablet) {
-  .title {
-    font-size: 1.1em !important;
-    margin: 0;
-  }
 }
 </style>

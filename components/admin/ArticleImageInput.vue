@@ -170,8 +170,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "~bulma/sass/utilities/initial-variables";
-
 .panel-heading {
   display: flex;
   align-items: center;
@@ -221,12 +219,6 @@ export default {
     display: inline-block;
     width: 2em;
     height: 2em;
-  }
-}
-
-@media screen and (max-width: $desktop) {
-  #drop-text {
-    font-size: 23px;
   }
 }
 </style>

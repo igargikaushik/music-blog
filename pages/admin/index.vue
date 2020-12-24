@@ -75,9 +75,27 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "~bulma/sass/utilities/initial-variables";
 
+@media screen and (min-width: $desktop) {
+  #dashboard-content {
+    overflow-x: hidden;
+  }
+}
+
+@media screen and (max-width: $tablet) {
+  #padded-content {
+    padding: 0.25rem;
+  }
+
+  .b-sidebar {
+    margin-right: 12px;
+  }
+}
+</style>
+
+<style scoped lang="scss">
 #admin-dashboard {
   display: flex;
   height: calc(100vh - 68px);
@@ -112,22 +130,6 @@ export default {
 
   tbody td {
     vertical-align: middle;
-  }
-}
-
-@media screen and (min-width: $desktop) {
-  #dashboard-content {
-    overflow-x: hidden;
-  }
-}
-
-@media screen and (max-width: $tablet) {
-  #padded-content {
-    padding: 0.25rem;
-  }
-
-  .b-sidebar {
-    margin-right: 12px;
   }
 }
 </style>

@@ -39,9 +39,17 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "~bulma/sass/utilities/initial-variables";
 
+@media screen and (max-width: $tablet) {
+  .column:empty {
+    display: none;
+  }
+}
+</style>
+
+<style scoped lang="scss">
 #article-main {
   flex-grow: 1;
 }
@@ -53,11 +61,5 @@ export default {
 
 .section {
   padding-top: 1.75rem;
-}
-
-@media screen and (max-width: $tablet) {
-  .column:empty {
-    display: none;
-  }
 }
 </style>
