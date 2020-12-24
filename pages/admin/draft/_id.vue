@@ -131,7 +131,7 @@ export default {
       return {
         title: this.title,
         image: this.image,
-        content: this.description,
+        description: this.description,
         category: this.category,
         tags: this.tags,
       };

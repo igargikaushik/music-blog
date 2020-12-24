@@ -5,6 +5,7 @@ const { passport, pg_session } = require('./middleware/auth.js');
 const app = express();
 
 // Sessions middleware
+app.set('trust proxy', 1);
 app.use(pg_session);
 app.use(passport.initialize());
 app.use(passport.session());
