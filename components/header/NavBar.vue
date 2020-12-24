@@ -2,7 +2,11 @@
   <b-navbar :mobile-burger="false" :class="[{sticky: scroll > 40}, {'on-home': $nuxt.$route.path == '/'}, 'is-fixed-top']">
     <template slot="brand">
       <b-navbar-item tag="NuxtLink" :to="{ path: '/' }">
-        <h1 class="title" style="color: white">LOGO</h1>
+        <img
+          id="navbar-logo"
+          src="/icon.png"
+          alt="Classical for Everyone Icon"
+        >
       </b-navbar-item>
     </template>
   </b-navbar>
@@ -33,10 +37,12 @@ export default {
 
 nav {
   background-color: #504A41;
+  height: 68px;
 }
 
 nav.on-home {
-  height: auto;
+  height: 68px;
+  min-height: 68px;
   background-color: transparent !important;
   opacity: 1.0;
   transition: height 0s 0.2s, background-color 0.2s ease-in-out, box-shadow 0.2s;
@@ -53,6 +59,15 @@ nav.on-home {
 }
 
 .navbar-item {
-  padding: 1rem 1.5rem;
+  padding: 0.7rem 0.7rem;
+  margin: 0.3rem 0.8rem;
+  background: white !important;
+  border-radius: 50%;
+
+  img {
+    width: 36px;
+    height: 36px;
+    max-height: unset;
+  }
 }
 </style>
