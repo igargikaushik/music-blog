@@ -146,8 +146,7 @@ async function init_trash_table(client) {
 
 async function init_db() {
   if (process.env.NODE_ENV !== 'test') {
-    console.log('Attempted database initialization while not testing. Aborting.');
-    return;
+    throw new Error('Attempted database initialization while not testing. Aborting.');
   }
 
   const client = await pool.connect();

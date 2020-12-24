@@ -1,5 +1,5 @@
 <template>
-  <section class="section">
+  <section class="tile-container section">
     <div class="container">
       <div class="columns is-multiline">
         <Tile v-for="(tile, i) in articles" :key="i" v-bind="tile" class="is-half-tablet is-half-desktop is-one-third-widescreen" />
@@ -22,11 +22,11 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "~bulma/sass/utilities/initial-variables";
 
 @media screen and (max-width: $tablet) {
-  .section {
+  .tile-container.section {
     padding-top: 12px;
     padding-bottom: 8px;
   }

@@ -32,21 +32,8 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "~bulma/sass/utilities/initial-variables";
-
-nav {
-  background-color: #504A41;
-  height: 68px;
-}
-
-nav.on-home {
-  height: 68px;
-  min-height: 68px;
-  background-color: transparent !important;
-  opacity: 1.0;
-  transition: height 0s 0.2s, background-color 0.2s ease-in-out, box-shadow 0.2s;
-}
 
 @media screen and (max-width: $tablet) {
   nav.on-home:not(.sticky) {
@@ -56,6 +43,21 @@ nav.on-home {
     overflow: hidden;
     transition: min-height 0s linear 0.2s, height 0s 0.2s, background-color 0.2s ease-in-out, opacity 0.2s;
   }
+}
+
+nav.on-home {
+  height: 68px;
+  min-height: 68px;
+  background-color: transparent !important;
+  opacity: 1.0;
+  transition: height 0s 0.2s, background-color 0.2s ease-in-out, box-shadow 0.2s;
+}
+</style>
+
+<style scoped lang="scss">
+nav {
+  background-color: #504A41;
+  height: 68px;
 }
 
 .navbar-item {
