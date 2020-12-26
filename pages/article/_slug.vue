@@ -7,6 +7,7 @@
           <div class="column"></div>
           <div class="column is-three-quarters has-text-left">
             <ArticleContent :content="article.content" />
+            <ListeningGuidePlayer />
             <ShareTags :category="article.category" :tags="article.tags" />
           </div>
           <div class="column"></div>
