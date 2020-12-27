@@ -15,6 +15,9 @@
             <li :class="{ 'is-active': tab == 'content' }">
               <a @click="tab = 'content'">Content</a>
             </li>
+            <li :class="{ 'is-active': tab == 'listening_guide' }">
+              <a @click="tab = 'listening_guide'">Listening Guide</a>
+            </li>
           </ul>
         </div>
       </template>
@@ -49,64 +52,9 @@
       </template>
     </b-navbar>
 
-    <section v-if="tab == 'meta'" class="section">
-      <div class="columns is-gapless is-fullheight">
-        <div class="column"></div>
-        <div class="column is-three-fifths">
-          <article class="column">
-            <div class="box has-text-left">
-              <ArticleMetaInput label="Title" v-model="title" />
-              <ArticleMetaInput label="Author" v-model="author" />
-              <ArticleMetaInput
-                textarea
-                label="Description"
-                v-model="description"
-              />
-              <ArticleImageInput v-model="image" />
-              <ArticleMetaInput label="Category" v-model="category" />
-              <b-taginput
-                v-model="tags"
-                ellipsis
-                :remove-on-keys="[]"
-                icon="label"
-                placeholder="Add a tag"
-                aria-close-label="Delete this tag"
-              >
-              </b-taginput>
-            </div>
-          </article>
-          <Tile disabled v-bind="tile" />
-        </div>
-        <div class="column"></div>
-      </div>
-    </section>
-
-    <section v-if="tab == 'content'" class="section">
-      <div class="columns is-gapless is-fullheight panes">
-        <div class="column content-editor">
-          <b-input
-            custom-class="content-input"
-            v-model="content"
-            type="textarea"
-            spellcheck="false"
-            autocapitalize="off"
-            autocomplete="off"
-            autocorrect="off"
-          ></b-input>
-        </div>
-        <div class="column has-text-left content-preview">
-          <ArticleHeader
-            preview
-            class="header"
-            :title="title"
-            :author="author"
-            :description="description"
-          />
-          <ArticleContent :content="content" />
-          <ShareTags :category="category" :tags="tags" />
-        </div>
-      </div>
-    </section>
+    <EditListeningGuide v-show="tab == 'listening_guide'" />
+    <EditDraftMeta v-if="tab == 'meta'" :title.sync="title" :category.sync="category" :description.sync="description" :tags.sync="tags" :image.sync="image" :author.sync="author" />
+    <EditDraftContent v-if="tab == 'content'" :content.sync="content" v-bind="{title, author, description, tags, category}" />
   </div>
 </template>
 
@@ -125,17 +73,6 @@ export default {
       tab: 'meta',
       publish_redirect: false,
     };
-  },
-  computed: {
-    tile() {
-      return {
-        title: this.title,
-        image: this.image,
-        description: this.description,
-        category: this.category,
-        tags: this.tags,
-      };
-    },
   },
   mounted: function () {
     this.publish_redirect = false;
@@ -204,64 +141,18 @@ export default {
 </script>
 
 <style lang="scss">
-.content-input,
-.content-input:hover,
-.content-input:active,
-.content-input:focus {
-  border: 0;
-  outline: 0;
-  resize: none;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-  height: 100%;
-  max-height: unset !important;
-}
+#edit-article {
+  position: absolute;
+  width: 100%;
 
-#edit-article nav {
-  z-index: 1;
+  nav {
+    z-index: 1;
+  }
 }
 </style>
 
 <style scoped lang="scss">
 .section {
   padding: 0;
-}
-
-.header {
-  margin-top: 0;
-}
-
-.article-tile {
-  max-width: 29.2em;
-}
-
-.content-editor {
-  border-right: 2px solid #f5f5f5;
-}
-
-.content-preview {
-  margin-top: 16px;
-}
-
-.panes {
-  min-height: calc(100vh - 68px * 2);
-  padding: 0 8px;
-}
-
-.content-editor {
-  min-height: calc(100vh - 68px * 2);
-  display: flex;
-  flex-flow: column;
-}
-
-.control,
-.content {
-  height: 100%;
-}
-
-.md-body {
-  margin: 8px;
-  margin-bottom: 1.5rem;
-  height: auto;
 }
 </style>

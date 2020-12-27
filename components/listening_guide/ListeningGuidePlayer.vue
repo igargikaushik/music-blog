@@ -27,8 +27,8 @@
 </template>
 
 <script>
-
 export default {
+  name: 'ListeningGuidePlayer',
   data() {
     return {
       player: null,
@@ -148,6 +148,7 @@ export default {
     },
     seekTo(time) {
       if (this.player) {
+        this.current_time = time;
         this.player.seekTo(time);
         this.player.playVideo();
       }
