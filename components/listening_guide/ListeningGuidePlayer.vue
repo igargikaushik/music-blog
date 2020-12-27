@@ -40,37 +40,44 @@ export default {
           type: 'Sheet music', entries: [
             { id: 0, name: 'Kimiko Ishizaka', video_id: 'nPHIZw7HZq4', end_time: 156,
               timestamps: [0, 18, 35, 44, 48, 66, 70, 79, 83, 92, 101, 110, 136, 141] },
+            { id: 1, name: 'Gerubach (Harpsichord performed by Kenneth Gilbert)', video_id: 'HlXDJhLeShg', start_time: 71, end_time: 202,
+              timestamps: [71, 86, 100, 107, 111, 125, 128, 135, 139, 146, 153, 160, 181, 185] },
+            { id: 2, name: 'Paul Barton', video_id: '_3qnL9ddHuw', start_time: 8, end_time: 129,
+              timestamps: [8, 22, 36, 42, 45, 58, 62, 68, 71, 78, 84, 91, 111, 115] },
           ]
         },
         {
           type: 'Live', entries: [
-            { id: 1, name: 'Lang Lang', video_id: 'gVah1cr3pU0', start_time: 10,
-              timestamps: [10, 25, 40, 47, 51, 65, 69, 76, 80, 87, 95, 102, 124, 128 ] },
-            { id: 2, name: 'András Schiff', video_id: 'kLSz55UXOLU', start_time: 9, end_time: 110 },
+            { id: 3, name: 'Lang Lang', video_id: 'gVah1cr3pU0', start_time: 10,
+              timestamps: [10, 25, 40, 47, 51, 65, 69, 76, 80, 87, 95, 102, 124, 128] },
+            { id: 4, name: 'András Schiff', video_id: 'kLSz55UXOLU', start_time: 9, end_time: 110,
+              timestamps: [9, 20, 32, 36, 39, 50, 53, 59, 61, 67, 73, 78, 95, 98] },
           ],
         },
         {
           type: 'Visualizer', entries: [
-            { id: 3, name: 'Rousseau', video_id: 'frxT2qB1POQ', end_time: 143 },
-            { id: 4, name: 'Smalin', video_id: '3RBgy9q8wFg' },
+            { id: 5, name: 'Rousseau', video_id: 'frxT2qB1POQ', end_time: 143,
+              timestamps: [0, 19, 33, 41, 44, 59, 63, 71, 75, 82, 90, 98, 120, 124] },
+            { id: 6, name: 'Smalin', video_id: '3RBgy9q8wFg',
+              timestamps: [0, 23, 40, 48, 52, 70, 74, 83, 88, 97, 106, 115, 141, 146] },
           ],
         },
       ],
       table_data: [
-        { time: 0, description: 'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord' },
-        { time: 18, description: 'Tension builds with slight dissonance. Notice how the bars alternate between wide intervals with high notes and narrow, consonant intervals' },
-        { time: 35, description: 'Several chords are played a C on top, acting as a pivot for a new key: G major' },
-        { time: 44, description: 'A tranquil moment on the tonic chord of the new key' },
-        { time: 48, description: 'Quickly interrupted by an unstable diminished chord with the same bottom note. Unsettled chords create tension, but the consonant high notes shine through' },
-        { time: 66, description: 'The dissonance lands on a new home chord of F, but dissonant base notes make it feel shaky' },
-        { time: 70, description: 'The F chord smoothly transitions to D minor, beginning a progression back into C major' },
-        { time: 79, description: 'A return to the same notes from the beginning, but an octave lower' },
-        { time: 83, description: 'The C chord turns dominant, leading back to a beautiful F major seventh chord' },
-        { time: 92, description: 'Similarly, the F chord becomes a diminished chord, leading us through several dissonant chords' },
-        { time: 101, description: 'A pedal G resonates in the bass while chords progress above' },
-        { time: 110, description: 'The top note of each chord slowly rises and descends in steps, staying on the suspenseful F note for two bars at a time' },
-        { time: 136, description: 'The pedal leads to an unexpectedly dominant C chord' },
-        { time: 141, description: 'A totally new theme breaks the pattern, creating a cadence over a C pedal, finally landing on a C chord' },
+        { description: 'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord' },
+        { description: 'Tension builds with slight dissonance. Notice how the bars alternate between wide intervals with high notes and narrow, consonant intervals' },
+        { description: 'Several chords are played a C on top, acting as a pivot for a new key: G major' },
+        { description: 'A tranquil moment on the tonic chord of the new key' },
+        { description: 'Quickly interrupted by an unstable diminished chord with the same bottom note. Unsettled chords create tension, but the consonant high notes shine through' },
+        { description: 'The dissonance lands on a new home chord of F, but dissonant base notes make it feel shaky' },
+        { description: 'The F chord smoothly transitions to D minor, beginning a progression back into C major' },
+        { description: 'A return to the same notes from the beginning, but an octave lower' },
+        { description: 'The C chord turns dominant, leading back to a beautiful F major seventh chord' },
+        { description: 'Similarly, the F chord becomes a diminished chord, leading us through several dissonant chords' },
+        { description: 'A pedal G resonates in the bass while chords progress above' },
+        { description: 'The top note of each chord slowly rises and descends in steps, staying on the suspenseful F note for two bars at a time' },
+        { description: 'The pedal leads to an unexpectedly dominant C chord' },
+        { description: 'A totally new theme breaks the pattern, creating a cadence over a C pedal, finally landing on a C chord' },
       ],
     };
   },
@@ -110,25 +117,17 @@ export default {
   methods: {
     updatePlayerVideo() {
       if (this.player) {
-        this.player.loadVideoByUrl({
-          mediaContentUrl: this.getVideoUrl(this.current_video),
-          startSeconds: this.current_video.start_time || 0,
+        this.player.cueVideoById({
+          videoId: this.current_video.video_id,
+          startSeconds: this.current_video.start_time,
           endSeconds: this.current_video.end_time,
         });
       }
     },
-    getVideoUrl(video) {
-      const id = video.video_id;
-      const start = video.start_time ? `&start=${video.start_time}` : '';
-      const end = video.end_time ? `&end=${video.end_time}` : '';
-      return `https://www.youtube.com/embed/${id}?enablejsapi=1${start}${end}`;
-    },
     setTime() {
-      console.log(this.player.getCurrentTime());
       this.current_time = Math.round(this.player.getCurrentTime());
     },
     watchTime(event) {
-      console.log(window.YT);
       if (!window || !window.YT) return;
       if (event.data == window.YT.PlayerState.PLAYING) {
         if (this.time_interval === null) {
@@ -167,22 +166,35 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-#guide-player-container {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 51%;
-}
-</style>
-
 <style lang="scss">
+@import "~bulma/sass/utilities/initial-variables";
+
+@media screen and (max-width: $tablet) {
+  #listening-guide-container table {
+    margin-top: 16px; 
+
+    td:before {
+      display: none;
+    }
+
+    td {
+      text-align: left;
+    }
+  }
+}
+
 tr.current-row {
   background-color: #f7f7f7 !important;
 }
 
-#listening-guide-container table {
-  border: none; 
+#listening-guide-container {
+  table {
+    border: none; 
+  }
+
+ .select {
+    margin-bottom: 4px;
+  }
 }
 
 #guide-player {
@@ -191,5 +203,14 @@ tr.current-row {
   width: 100%;
   height: 100%;
   left: 0; top: 0;
+}
+</style>
+
+<style scoped lang="scss">
+#guide-player-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 51%;
 }
 </style>
