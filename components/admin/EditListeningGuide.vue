@@ -49,7 +49,8 @@
               <b-dropdown aria-role="list" position="is-bottom-left">
                 <b-icon slot="trigger" icon="dots-vertical"></b-icon>
                 <b-dropdown-item
-                  aria-role="listitem">
+                  aria-role="listitem"
+                  @click="renameType(props.row.name)">
                   Rename
                 </b-dropdown-item>
               </b-dropdown>
@@ -275,6 +276,27 @@ export default {
     },
     deleteVideo(index) {
       this.videos.splice(index, 1);
+    },
+    async renameType(name) {
+      const index = this.table_data.findIndex((group) => group.name === name);
+      if (index === -1) return;
+      const { result } = await this.$buefy.dialog.prompt({
+        message: `To what would you like to rename the type "${name}"?`,
+        inputAttrs: {
+          placeholder: 'e.g. Sheet music',
+        },
+        type: 'is-success',
+        trapFocus: true,
+      });
+
+      if (result) {
+        this.table_data[index].items.map((item) => {
+          this.videos[item.index].type = result;
+        });
+        this.$buefy.toast.open({ message: 'Type renamed', type: 'is-success', duration: 3000, });
+      } else {
+        this.$buefy.toast.open({ message: 'Canceled rename', type: 'is-danger', duration: 3000 });
+      }
     },
   },
   watch: {
