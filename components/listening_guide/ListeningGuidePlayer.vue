@@ -93,7 +93,12 @@ export default {
           events: {
             'onReady': this.updatePlayerVideo,
             'onStateChange': this.watchTime,
-          }
+          },
+          playerVars: { 
+            'enablejsapi': 1,
+            'origin': window.location.origin,
+            'host': `${window.location.protocol}//www.youtube.com`,
+          },
         });
       };
     }
