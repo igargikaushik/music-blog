@@ -35,31 +35,35 @@
             field="actions"
             label=""
           >
-          <template v-slot:header>
-            <b-button type="is-success" icon-left="plus"
-              @click="show_new_video_modal = true">
-              New
-            </b-button>
-          </template>
+            <template v-slot:header>
+              <b-button type="is-success" icon-left="plus"
+                @click="show_new_video_modal = true">
+                New
+              </b-button>
+            </template>
 
-          <template v-slot="props">
-            <span class="buttons">
-              <b-button size="is-small" icon-left="arrow-up"></b-button>
-              <b-button size="is-small" icon-left="arrow-down"></b-button>
-              <b-dropdown aria-role="list" position="is-bottom-left">
-                <b-icon slot="trigger" icon="dots-vertical"></b-icon>
-                <b-dropdown-item
-                  aria-role="listitem"
-                  @click="renameType(props.row.name)">
-                  Rename
-                </b-dropdown-item>
-              </b-dropdown>
-            </span>
-          </template>
+            <template v-slot="props">
+              <span class="buttons">
+                <b-button size="is-small" icon-left="arrow-up"
+                  :disabled="props.index === 0"
+                  @click="moveType(props.row.name, -1)"></b-button>
+                <b-button size="is-small" icon-left="arrow-down"
+                  :disabled="props.index >= table_data.length - 1"
+                  @click="moveType(props.row.name, 1)"></b-button>
+                <b-dropdown aria-role="list" position="is-bottom-left">
+                  <b-icon slot="trigger" icon="dots-vertical"></b-icon>
+                  <b-dropdown-item
+                    aria-role="listitem"
+                    @click="renameType(props.row.name)">
+                    Rename
+                  </b-dropdown-item>
+                </b-dropdown>
+              </span>
+            </template>
           </b-table-column>
 
           <template slot="detail" slot-scope="props">
-            <tr v-for="item in props.row.items" :key="`${props.row.name}-${item.index}`">
+            <tr v-for="(item, index) in props.row.items" :key="`${props.row.name}-${item.index}`">
               <td></td>
               <td class="has-text-left">{{ item.name }}</td>
               <td>
@@ -69,8 +73,12 @@
               </td>
               <td>
                 <span class="buttons">
-                  <b-button size="is-small" icon-left="arrow-up"></b-button>
-                  <b-button size="is-small" icon-left="arrow-down"></b-button>
+                  <b-button size="is-small" icon-left="arrow-up"
+                    :disabled="index === 0"
+                    @click="moveVideo(props.row.name, index, -1)"></b-button>
+                  <b-button size="is-small" icon-left="arrow-down"
+                    :disabled="index >= props.row.items.length - 1"
+                    @click="moveVideo(props.row.name, index, 1)"></b-button>
                   <b-dropdown aria-role="list" position="is-bottom-left">
                     <b-icon slot="trigger" icon="dots-vertical"></b-icon>
                     <b-dropdown-item
@@ -278,7 +286,7 @@ export default {
       this.videos.splice(index, 1);
     },
     async renameType(name) {
-      const index = this.table_data.findIndex((group) => group.name === name);
+      const index = this.table_data.findIndex((type) => type.name === name);
       if (index === -1) return;
       const { result } = await this.$buefy.dialog.prompt({
         message: `To what would you like to rename the type "${name}"?`,
@@ -297,6 +305,28 @@ export default {
       } else {
         this.$buefy.toast.open({ message: 'Canceled rename', type: 'is-danger', duration: 3000 });
       }
+    },
+    moveVideo(type, type_index, direction) {
+      const index = this.table_data.findIndex(group => group.name === type);
+      if (index === -1) return;
+
+      // Reorder the pointer indices of the tabular data,
+      // then update the actual video list to reflect the change
+      let table_indices = this.table_data.map(group => group.items.map(item => item.index));
+      const move_index = table_indices[index].splice(type_index, 1)[0];
+      table_indices[index].splice(type_index + direction, 0, move_index);
+      this.videos = table_indices.flat()
+        .map(video_index => this.videos[video_index]);
+    },
+    moveType(type, direction) {
+      const index = this.table_data.findIndex(group => group.name === type);
+      if (index === -1) return;
+
+      let table_indices = this.table_data.map(group => group.items.map(item => item.index));
+      const type_indices = table_indices.splice(index, 1)[0];
+      table_indices.splice(index + direction, 0, type_indices);
+      this.videos = table_indices.flat()
+        .map(video_index => this.videos[video_index]);
     },
   },
   watch: {
