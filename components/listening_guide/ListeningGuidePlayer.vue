@@ -13,6 +13,7 @@
     <b-table
       :data="table_data"
       :row-class="getRowClass"
+      :mobile-cards="false"
       bordered>
       <b-table-column field="time" label="Time" v-slot="props">
         <a @click.prevent="seekTo(current_video.timestamps[props.index]);">

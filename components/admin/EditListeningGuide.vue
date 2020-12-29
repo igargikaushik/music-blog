@@ -8,6 +8,7 @@
           detailed
           custom-detail-row
           :mobile-cards="false"
+          :row-class="(row) => (selected_index !== null && videos[selected_index].type === row.name) && 'selected-video'"
           detail-key="name">
           <b-table-column
             field="name"
@@ -63,9 +64,14 @@
           </b-table-column>
 
           <template slot="detail" slot-scope="props">
-            <tr v-for="(item, index) in props.row.items" :key="`${props.row.name}-${item.index}`">
+            <tr v-for="(item, index) in props.row.items" :key="`${props.row.name}-${item.index}`"
+              :class="{ 'selected-video': item.index === selected_index }">
               <td></td>
-              <td class="has-text-left">{{ item.name }}</td>
+              <td class="has-text-left">
+                <a @click="selected_index = item.index">
+                  {{ item.name }}
+                </a>
+                </td>
               <td>
                 <span :class="['tag', item.complete ? 'is-success' : 'is-danger']">
                   {{ item.complete ? 'All set' : 'Missing' }}
@@ -98,6 +104,37 @@
               </td>
             </tr>
           </template>
+        </b-table>
+
+        <h2 v-if="selected_index !== null" class="subtitle has-text-center my-2">Editing "{{ videos[selected_index].name }}"</h2>
+        <b-table
+          :data="descriptions_data"
+          :mobile-cards="true"
+          class="descriptions-editor"
+          bordered>
+          <b-table-column field="section" label="Head" v-slot="props">
+            <div class="field">
+              <b-checkbox v-model="props.row.is_section">
+              </b-checkbox>
+            </div>
+          </b-table-column>
+          <b-table-column field="time" label="Time" v-slot="props">
+            <b-field>
+              <b-input
+                v-if="selected_index !== null"
+                :value="formattedTimestamps[props.index]"
+                required
+                lazy
+                :icon-right="null"
+                @input="(value) => updateTimestamp(value, props.index)"
+                validation-message="Invalid time"
+                pattern="(?:(\d{1,2}):)?(\d{1,2}):(\d{2})">
+              </b-input>
+            </b-field>
+          </b-table-column>
+          <b-table-column field="description" label="Description" width="75%" v-slot="props">
+            <textarea class="textarea" rows="1" v-model="props.row.description" />
+          </b-table-column>
         </b-table>
       </div>
       <div class="column has-text-left listening-guide-preview">
@@ -192,6 +229,7 @@ export default {
       new_type: '',
       new_start_time: '',
       new_end_time: '',
+      selected_index: null,
       videos: [
         { name: 'Kimiko Ishizaka', video_id: 'nPHIZw7HZq4',
           type: 'Sheet music', end_time: 156,
@@ -203,21 +241,21 @@ export default {
           type: 'Live', start_time: 10,
           timestamps: [null, 25, null, null, null, null, null, null, null, null, null, null, null, null] },
       ],
-      descriptions: [
-        'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord',
-        'Tension builds with slight dissonance. Notice how the bars alternate between wide intervals with high notes and narrow, consonant intervals',
-        'Several chords are played a C on top, acting as a pivot for a new key: G major',
-        'A tranquil moment on the tonic chord of the new key',
-        'Quickly interrupted by an unstable diminished chord with the same bottom note. Unsettled chords create tension, but the consonant high notes shine through',
-        'The dissonance lands on a new home chord of F, but dissonant base notes make it feel shaky',
-        'The F chord smoothly transitions to D minor, beginning a progression back into C major',
-        'A return to the same notes from the beginning, but an octave lower',
-        'The C chord turns dominant, leading back to a beautiful F major seventh chord',
-        'Similarly, the F chord becomes a diminished chord, leading us through several dissonant chords',
-        'A pedal G resonates in the bass while chords progress above',
-        'The top note of each chord slowly rises and descends in steps, staying on the suspenseful F note for two bars at a time',
-        'The pedal leads to an unexpectedly dominant C chord',
-        'A totally new theme breaks the pattern, creating a cadence over a C pedal, finally landing on a C chord',
+      descriptions_data: [
+        { is_section: false, description: 'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord', },
+        { is_section: false, description: 'Tension builds with slight dissonance. Notice how the bars alternate between wide intervals with high notes and narrow, consonant intervals', },
+        { is_section: false, description: 'Several chords are played a C on top, acting as a pivot for a new key: G major', },
+        { is_section: false, description: 'A tranquil moment on the tonic chord of the new key', },
+        { is_section: false, description: 'Quickly interrupted by an unstable diminished chord with the same bottom note. Unsettled chords create tension, but the consonant high notes shine through', },
+        { is_section: false, description: 'The dissonance lands on a new home chord of F, but dissonant base notes make it feel shaky', },
+        { is_section: false, description: 'The F chord smoothly transitions to D minor, beginning a progression back into C major', },
+        { is_section: false, description: 'A return to the same notes from the beginning, but an octave lower', },
+        { is_section: false, description: 'The C chord turns dominant, leading back to a beautiful F major seventh chord', },
+        { is_section: false, description: 'Similarly, the F chord becomes a diminished chord, leading us through several dissonant chords', },
+        { is_section: false, description: 'A pedal G resonates in the bass while chords progress above', },
+        { is_section: false, description: 'The top note of each chord slowly rises and descends in steps, staying on the suspenseful F note for two bars at a time', },
+        { is_section: false, description: 'The pedal leads to an unexpectedly dominant C chord', },
+        { is_section: false, description: 'A totally new theme breaks the pattern, creating a cadence over a C pedal, finally landing on a C chord', },
       ],
       types: [],
       table_data: [],
@@ -234,18 +272,14 @@ export default {
       this.show_new_video_modal = false;
     },
     addVideo() {
-      const getSeconds = (time_str) => time_str.split(':')
-        .reduce((acc,time) => (60 * acc) + +time);
-      const trySeconds = (time_str) => time_str
-        ? getSeconds(time_str) : undefined;
       const timestamps = this.videos[this.editing_video]?.timestamps
-        || new Array(this.descriptions.length).fill(null);
+        || new Array(this.descriptions_data.length).fill(null);
       const new_video = {
         name: this.new_name,
         video_id: this.new_video_id,
         type: this.new_type,
-        start_time: trySeconds(this.new_start_time),
-        end_time: trySeconds(this.new_end_time),
+        start_time: this.getSeconds(this.new_start_time),
+        end_time: this.getSeconds(this.new_end_time),
         timestamps,
       };
       if (this.editing_video !== null) {
@@ -259,27 +293,13 @@ export default {
       this.$refs.table.toggleDetails(row);
     },
     editVideo(index) {
-      const formatTime = (secs) => {
-        const sec_num = parseInt(secs, 10);
-        const hours = Math.floor(sec_num / 3600);
-        const minutes = Math.floor(sec_num / 60) % 60;
-        const seconds = sec_num % 60;
-
-        return [hours, minutes, seconds]
-          .map(v => v < 10 ? '0' + v : v)
-          .filter((v,i) => v !== '00' || i > 0)
-          .join(':');
-      };
-      const tryFormatTime = (secs) =>
-        secs ? formatTime(secs) : '';
-
       this.editing_video = index;
       const existing = this.videos[this.editing_video];
       this.new_name = existing.name || '';
       this.new_video_id = existing.video_id || '';
       this.new_type = existing.type || '';
-      this.new_start_time = tryFormatTime(existing.start_time),
-      this.new_end_time = tryFormatTime(existing.end_time),
+      this.new_start_time = this.formatTime(existing.start_time),
+      this.new_end_time = this.formatTime(existing.end_time),
       this.show_new_video_modal = true;
     },
     deleteVideo(index) {
@@ -315,8 +335,9 @@ export default {
       let table_indices = this.table_data.map(group => group.items.map(item => item.index));
       const move_index = table_indices[index].splice(type_index, 1)[0];
       table_indices[index].splice(type_index + direction, 0, move_index);
-      this.videos = table_indices.flat()
-        .map(video_index => this.videos[video_index]);
+      const new_indices = table_indices.flat();
+      if (this.selected_index !== null) this.selected_index = new_indices.indexOf(this.selected_index);
+      this.videos = new_indices.map(video_index => this.videos[video_index]);
     },
     moveType(type, direction) {
       const index = this.table_data.findIndex(group => group.name === type);
@@ -325,9 +346,33 @@ export default {
       let table_indices = this.table_data.map(group => group.items.map(item => item.index));
       const type_indices = table_indices.splice(index, 1)[0];
       table_indices.splice(index + direction, 0, type_indices);
-      this.videos = table_indices.flat()
-        .map(video_index => this.videos[video_index]);
+      const new_indices = table_indices.flat();
+      if (this.selected_index !== null) this.selected_index = new_indices.indexOf(this.selected_index);
+      this.videos = new_indices.map(video_index => this.videos[video_index]);
     },
+    updateTimestamp(value, index) {
+      if(!/(?:(\d{1,2}):)?(\d{1,2}):(\d{2})/.test(value)) return;
+      let copy = this.videos[this.selected_index];
+      copy.timestamps[index] = this.getSeconds(value);
+      this.$set(this.videos, this.selected_index, copy);
+    },
+    formatTime(secs) {
+      if (secs === undefined || secs === null) return '';
+
+      const sec_num = parseInt(secs, 10);
+      const hours = Math.floor(sec_num / 3600);
+      const minutes = Math.floor(sec_num / 60) % 60;
+      const seconds = sec_num % 60;
+
+      return [hours, minutes, seconds]
+        .map(v => v < 10 ? '0' + v : v)
+        .filter((v,i) => v !== '00' || i > 0)
+        .join(':');
+    },
+    getSeconds(time_str) {
+      if (!time_str) return null;
+      return time_str.split(':').reduce((acc,time) => (60 * acc) + +time);
+    }
   },
   watch: {
     videos: {
@@ -336,7 +381,7 @@ export default {
         for (const [index, video] of val.entries()) {
           const { type, name, timestamps } = video;
           const complete =
-            (timestamps.length == this.descriptions.length)
+            (timestamps.length == this.descriptions_data.length)
             && !timestamps.includes(null);
           videos_by_type[type] = (videos_by_type[type] || []).concat([{ index, name, complete }]);
         }
@@ -358,7 +403,11 @@ export default {
           .toLowerCase()
           .indexOf(this.new_type.toLowerCase()) >= 0;
       });
-    }
+    },
+    formattedTimestamps() {
+      return this.videos[this.selected_index].timestamps
+        .map(this.formatTime);
+    },
   }
 
 };
@@ -383,6 +432,10 @@ export default {
   .icon.is-small {
     font-size: 1.3em;
   }
+
+  tr.selected-video {
+    background: #f0f0f0;
+  }
 }
 
 #edit-article {
@@ -390,6 +443,22 @@ export default {
     overflow: visible;
 
     .is-horizontal .field-label {
+      display: none;
+    }
+  }
+}
+
+.descriptions-editor {
+  .tooltip-trigger {
+    cursor: pointer !important;
+  }
+
+  .control.has-icons-right {
+    input {
+      padding-right: inherit;
+    }
+
+    .icon.has-text-danger {
       display: none;
     }
   }
