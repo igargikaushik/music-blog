@@ -10,21 +10,59 @@
     <div id="guide-player-container">
       <div id="guide-player" v-if="videos && videos.length > 0"></div>
     </div>
-    <b-table
-      v-if="videos && videos.length > 0"
-      :data="descriptions"
-      :row-class="getRowClass"
-      :mobile-cards="false"
-      bordered>
-      <b-table-column field="time" label="Time" v-slot="props">
-        <a @click.prevent="seekTo(current_video.timestamps[props.index]);">
-          {{ formatTime(current_video.timestamps[props.index]) }}
-        </a>
-      </b-table-column>
-      <b-table-column field="description" label="Description" v-slot="props">
-        {{ props.row.description }}
-      </b-table-column>
-    </b-table>
+
+    <div v-if="videos && videos.length > 0">
+      <b-table
+        v-if="descriptions.some(x => x.is_section)"
+        :data="grouped_descriptions"
+        ref="table"
+        detailed
+        custom-detail-row
+        :row-class="getGroupClass"
+        :mobile-cards="false"
+        bordered
+        detail-key="index">
+        <b-table-column field="time" label="Time" v-slot="props">
+          <a @click.prevent="seekTo(current_video.timestamps[props.row.index]);">
+            {{ formatTime(current_video.timestamps[props.row.index]) }}
+          </a>
+        </b-table-column>
+        <b-table-column field="description" label="Description" v-slot="props">
+          {{ props.row.description }}
+        </b-table-column>
+
+        <template slot="detail" slot-scope="props">
+          <tr v-for="entry in props.row.entries" :key="`${props.row.index}-${entry.index}`"
+            :class="getRowClass(props.row, entry.index)">
+            <td></td>
+            <td>
+              <a @click.prevent="seekTo(current_video.timestamps[entry.index]);">
+                {{ formatTime(current_video.timestamps[entry.index]) }}
+              </a>
+            </td>
+            <td>
+              {{ entry.description }}
+            </td>
+          </tr>
+        </template>
+      </b-table>
+
+      <b-table
+        v-else
+        :data="descriptions"
+        :row-class="getRowClass"
+        :mobile-cards="false"
+        bordered>
+        <b-table-column field="time" label="Time" v-slot="props">
+          <a @click.prevent="seekTo(current_video.timestamps[props.index]);">
+            {{ formatTime(current_video.timestamps[props.index]) }}
+          </a>
+        </b-table-column>
+        <b-table-column field="description" label="Description" v-slot="props">
+          {{ props.row.description }}
+        </b-table-column>
+      </b-table>
+    </div>
   </div>
 </template>
 
@@ -73,6 +111,26 @@ export default {
         .flatMap(group => group.entries)
         .find(entry => entry.id == this.video_selected);
     },
+    grouped_descriptions() {
+      const section_indices = [...this.descriptions.keys()].filter(i => this.descriptions[i].is_section);
+      if (section_indices.length === 0) return this.descriptions;
+
+      const desc_indexed = this.descriptions.map((description, i) => {
+        return { description: description.description, index: i };
+      });
+
+      return section_indices.map((_val, i) => {
+        const section_start = section_indices[i];
+        const section_end = section_indices[i+1] || desc_indexed.length;
+        return {
+          ...desc_indexed[section_start],
+          entries: desc_indexed.slice(section_indices[i] + 1, section_end)
+        };
+      });
+    },
+    sections() {
+      return [...this.descriptions.entries()].filter(desc => desc[1].is_section);
+    },
   },
   watch: {
     current_video(new_video, old_video) {
@@ -96,11 +154,13 @@ export default {
     },
     setTime() {
       this.current_time = Math.round(this.player.getCurrentTime());
+      this.openActiveSection();
     },
     watchTime(event) {
       if (!window || !window.YT) return;
       if (event.data == window.YT.PlayerState.PLAYING) {
         if (this.time_interval === null) {
+          this.setTime();
           this.time_interval = setInterval(this.setTime, 1000);
         }
       } else if ([window.YT.PlayerState.PAUSED,
@@ -110,18 +170,25 @@ export default {
         this.time_interval = null;
       }
     },
-    formatTime(time) {
-      if (time === null || time === undefined) return '';
-      const hour = Math.floor(time / (60*60));
-      const minute = Math.floor(time / 60);
-      const second = Math.floor(time % 60).toString().padStart(2, '0');
-      return ((hour > 0) ? `${hour}:` : '') + `${minute}:${second}`;
+    formatTime(secs) {
+      if (secs === undefined || secs === null) return '';
+
+      const sec_num = parseInt(secs, 10);
+      const hours = Math.floor(sec_num / 3600);
+      const minutes = Math.floor(sec_num / 60) % 60;
+      const seconds = sec_num % 60;
+
+      return [hours, minutes, seconds]
+        .map(v => v < 10 ? '0' + v : v)
+        .filter((v,i) => v !== '00' || i > 0)
+        .join(':');
     },
     seekTo(time) {
       if (this.player) {
         this.current_time = time;
         this.player.seekTo(time);
         this.player.playVideo();
+        this.openActiveSection();
       }
     },
     getRowClass(row, index) {
@@ -133,7 +200,25 @@ export default {
       } else {
         return undefined;
       }
-    }
+    },
+    getGroupClass(row, index) {
+      if (!this.current_time) return undefined;
+      const this_group_time = this.current_video.timestamps[this.grouped_descriptions[index].index];
+      const next_group_time = this.current_video.timestamps[this.grouped_descriptions[index+1]?.index]
+        || Infinity;
+      if (this_group_time <= this.current_time && this.current_time < next_group_time) {
+        return 'current-row';
+      } else {
+        return undefined;
+      }
+    },
+    openActiveSection() {
+      if (!this.current_time) return undefined;
+      const section = this.sections.find(section => {
+        return (Math.abs(this.current_video.timestamps[section[0]] - this.current_time)) <= 1;
+      });
+      if (section !== undefined) this.$refs.table.openDetailRow({ index: section[0] });
+    },
   }
 };
 </script>
