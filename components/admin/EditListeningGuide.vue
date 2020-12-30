@@ -132,13 +132,48 @@
               </b-input>
             </b-field>
           </b-table-column>
-          <b-table-column field="description" label="Description" width="75%" v-slot="props">
+          <b-table-column field="description" label="Description" width="70%" v-slot="props">
             <textarea class="textarea" rows="1" v-model="props.row.description" />
           </b-table-column>
+          <b-table-column
+            field="actions"
+            label=""
+          >
+            <template v-slot="props">
+              <b-dropdown aria-role="list" position="is-bottom-left">
+                <b-icon slot="trigger" icon="dots-vertical"></b-icon>
+                <b-dropdown-item
+                  aria-role="listitem"
+                  @click="addDescription(props.index, -1)">
+                  Add row above
+                </b-dropdown-item>
+                <b-dropdown-item
+                  aria-role="listitem"
+                  @click="addDescription(props.index, 1)">
+                  Add row below
+                </b-dropdown-item>
+                <ConfirmButton
+                  verb="delete"
+                  kind="description"
+                  :title="(props.row.description.length > 40) ? props.row.description.substr(0, 20) + '&hellip;' : props.row.description"
+                  text="Delete"
+                  @confirm="deleteDescription(props.index)"
+                />
+              </b-dropdown>
+            </template>
+          </b-table-column>
+          <template slot="footer">
+            <a class="has-text-centered" @click="addDescription(descriptions_data.length - 1, 1)">
+              + Add description
+            </a>
+        </template>
         </b-table>
       </div>
       <div class="column has-text-left listening-guide-preview">
-        <ListeningGuidePlayer />
+        <ListeningGuidePlayer v-if="videos.length > 0" :videos="player_videos" />
+        <div v-else>
+          <h1 class="title has-text-centered">Add a video to preview player</h1>
+        </div>
       </div>
     </div>
 
@@ -231,7 +266,7 @@ export default {
       new_end_time: '',
       selected_index: null,
       videos: [
-        { name: 'Kimiko Ishizaka', video_id: 'nPHIZw7HZq4',
+        /* { name: 'Kimiko Ishizaka', video_id: 'nPHIZw7HZq4',
           type: 'Sheet music', end_time: 156,
           timestamps: [0, 18, 35, 44, 48, 66, 70, 79, 83, 92, 101, 110, 136, 141] },
         { name: 'Gerubach (Harpsichord | Kenneth Gilbert)', video_id: 'HlXDJhLeShg',
@@ -239,10 +274,10 @@ export default {
           timestamps: [71, 86, 100, 107, 111, 125, 128, 135, 139, 146, 153, 160, 181, 185] },
         { name: 'Lang Lang', video_id: 'gVah1cr3pU0',
           type: 'Live', start_time: 10,
-          timestamps: [null, 25, null, null, null, null, null, null, null, null, null, null, null, null] },
+          timestamps: [null, 25, null, null, null, null, null, null, null, null, null, null, null, null] }, */
       ],
       descriptions_data: [
-        { is_section: false, description: 'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord', },
+        /* { is_section: false, description: 'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord', },
         { is_section: false, description: 'Tension builds with slight dissonance. Notice how the bars alternate between wide intervals with high notes and narrow, consonant intervals', },
         { is_section: false, description: 'Several chords are played a C on top, acting as a pivot for a new key: G major', },
         { is_section: false, description: 'A tranquil moment on the tonic chord of the new key', },
@@ -255,7 +290,7 @@ export default {
         { is_section: false, description: 'A pedal G resonates in the bass while chords progress above', },
         { is_section: false, description: 'The top note of each chord slowly rises and descends in steps, staying on the suspenseful F note for two bars at a time', },
         { is_section: false, description: 'The pedal leads to an unexpectedly dominant C chord', },
-        { is_section: false, description: 'A totally new theme breaks the pattern, creating a cadence over a C pedal, finally landing on a C chord', },
+        { is_section: false, description: 'A totally new theme breaks the pattern, creating a cadence over a C pedal, finally landing on a C chord', }, */
       ],
       types: [],
       table_data: [],
@@ -286,6 +321,7 @@ export default {
         Object.assign(this.videos[this.editing_video], new_video);
       } else {
         this.videos.push(new_video);
+        this.selected_index = this.videos.length - 1;
       }
       this.closeModal();
     },
@@ -372,23 +408,42 @@ export default {
     getSeconds(time_str) {
       if (!time_str) return null;
       return time_str.split(':').reduce((acc,time) => (60 * acc) + +time);
+    },
+    addDescription(index, direction) {
+      const splice_index = index + ((direction == 1) ? 1 : 0);
+      this.descriptions_data.splice(splice_index, 0, { is_section: false, description: '' });
+      this.videos.forEach((_video, index) => {
+        this.videos[index].timestamps.splice(splice_index, 0, null);
+      });
+    },
+    deleteDescription(index) {
+      this.descriptions_data.splice(index, 1);
+      this.videos.forEach((_video, index) => {
+        this.videos[index].timestamps.splice(index, 1);
+      });
     }
   },
   watch: {
     videos: {
       handler(val) {
         const videos_by_type = {};
+        const player_videos_by_type = {};
         for (const [index, video] of val.entries()) {
-          const { type, name, timestamps } = video;
+          const { type, name, timestamps, video_id, start_time, end_time } = video;
           const complete =
             (timestamps.length == this.descriptions_data.length)
             && !timestamps.includes(null);
           videos_by_type[type] = (videos_by_type[type] || []).concat([{ index, name, complete }]);
+          player_videos_by_type[type] = (player_videos_by_type[type] || [])
+            .concat([{ id: index, name, video_id, start_time, end_time, timestamps }]);
         }
 
         this.types = Object.keys(videos_by_type);
         this.table_data = this.types.map(name => {
           return { name, items: videos_by_type[name] };
+        });
+        this.player_videos = this.types.map(name => {
+          return { type: name, entries: player_videos_by_type[name] };
         });
       },
       immediate: true,

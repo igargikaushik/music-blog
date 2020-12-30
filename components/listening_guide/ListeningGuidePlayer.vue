@@ -8,9 +8,10 @@
       </optgroup>
     </b-select>
     <div id="guide-player-container">
-      <div id="guide-player"></div>
+      <div id="guide-player" v-if="videos && videos.length > 0"></div>
     </div>
     <b-table
+      v-if="videos && videos.length > 0"
       :data="table_data"
       :row-class="getRowClass"
       :mobile-cards="false"
@@ -30,13 +31,16 @@
 <script>
 export default {
   name: 'ListeningGuidePlayer',
+  props: {
+    videos: Array,
+  },
   data() {
     return {
       player: null,
       current_time: 0,
       time_interval: null,
       video_selected: 0,
-      videos: [
+      /* videos: [
         {
           type: 'Sheet music', entries: [
             { id: 0, name: 'Kimiko Ishizaka', video_id: 'nPHIZw7HZq4', end_time: 156,
@@ -63,7 +67,7 @@ export default {
               timestamps: [0, 23, 40, 48, 52, 70, 74, 83, 88, 97, 106, 115, 141, 146] },
           ],
         },
-      ],
+      ], */
       table_data: [
         { description: 'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord' },
         { description: 'Tension builds with slight dissonance. Notice how the bars alternate between wide intervals with high notes and narrow, consonant intervals' },
@@ -106,7 +110,9 @@ export default {
   },
   computed: {
     current_video() {
-      return this.videos
+      const placeholder = [{ type: '.', entries: [{ id: 0, name: '.', video_id: 'nPHIZw7HZq4', timestamps: [] }] }];
+      const list = (this.videos && this.videos.length > 0) ? this.videos : placeholder;
+      return list
         .flatMap(group => group.entries)
         .find(entry => entry.id == this.video_selected);
     },
@@ -147,6 +153,7 @@ export default {
       }
     },
     formatTime(time) {
+      if (time === null || time === undefined) return '';
       const hour = Math.floor(time / (60*60));
       const minute = Math.floor(time / 60);
       const second = Math.floor(time % 60).toString().padStart(2, '0');
