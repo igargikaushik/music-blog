@@ -170,7 +170,7 @@
         </b-table>
       </div>
       <div class="column has-text-left listening-guide-preview">
-        <ListeningGuidePlayer v-if="videos.length > 0" :videos="player_videos" />
+        <ListeningGuidePlayer v-if="videos.length > 0" :videos="player_videos" :descriptions="descriptions_data" />
         <div v-else>
           <h1 class="title has-text-centered">Add a video to preview player</h1>
         </div>
@@ -265,33 +265,8 @@ export default {
       new_start_time: '',
       new_end_time: '',
       selected_index: null,
-      videos: [
-        /* { name: 'Kimiko Ishizaka', video_id: 'nPHIZw7HZq4',
-          type: 'Sheet music', end_time: 156,
-          timestamps: [0, 18, 35, 44, 48, 66, 70, 79, 83, 92, 101, 110, 136, 141] },
-        { name: 'Gerubach (Harpsichord | Kenneth Gilbert)', video_id: 'HlXDJhLeShg',
-          type: 'Sheet music', start_time: 71, end_time: 202,
-          timestamps: [71, 86, 100, 107, 111, 125, 128, 135, 139, 146, 153, 160, 181, 185] },
-        { name: 'Lang Lang', video_id: 'gVah1cr3pU0',
-          type: 'Live', start_time: 10,
-          timestamps: [null, 25, null, null, null, null, null, null, null, null, null, null, null, null] }, */
-      ],
-      descriptions_data: [
-        /* { is_section: false, description: 'The piece immediately begins with a repeated pattern: Arpeggios each repeated twice. The first four bars progress very simply, starting and ending on the C major chord', },
-        { is_section: false, description: 'Tension builds with slight dissonance. Notice how the bars alternate between wide intervals with high notes and narrow, consonant intervals', },
-        { is_section: false, description: 'Several chords are played a C on top, acting as a pivot for a new key: G major', },
-        { is_section: false, description: 'A tranquil moment on the tonic chord of the new key', },
-        { is_section: false, description: 'Quickly interrupted by an unstable diminished chord with the same bottom note. Unsettled chords create tension, but the consonant high notes shine through', },
-        { is_section: false, description: 'The dissonance lands on a new home chord of F, but dissonant base notes make it feel shaky', },
-        { is_section: false, description: 'The F chord smoothly transitions to D minor, beginning a progression back into C major', },
-        { is_section: false, description: 'A return to the same notes from the beginning, but an octave lower', },
-        { is_section: false, description: 'The C chord turns dominant, leading back to a beautiful F major seventh chord', },
-        { is_section: false, description: 'Similarly, the F chord becomes a diminished chord, leading us through several dissonant chords', },
-        { is_section: false, description: 'A pedal G resonates in the bass while chords progress above', },
-        { is_section: false, description: 'The top note of each chord slowly rises and descends in steps, staying on the suspenseful F note for two bars at a time', },
-        { is_section: false, description: 'The pedal leads to an unexpectedly dominant C chord', },
-        { is_section: false, description: 'A totally new theme breaks the pattern, creating a cadence over a C pedal, finally landing on a C chord', }, */
-      ],
+      videos: [],
+      descriptions_data: [],
       types: [],
       table_data: [],
     };
