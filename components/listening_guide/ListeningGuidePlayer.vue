@@ -169,7 +169,13 @@ export default {
       if (!window || !window.YT) return;
       if (event.data == window.YT.PlayerState.PLAYING) {
         if (this.time_interval === null) {
-          this.setTime();
+          if (this.play_and_seek) {
+            this.player.seekTo(this.current_time);
+            this.play_and_seek = false;
+            this.openActiveSection();
+          } else  {
+            this.setTime();
+          }
           this.time_interval = setInterval(this.setTime, 1000);
         }
       } else if ([window.YT.PlayerState.PAUSED,
@@ -196,7 +202,10 @@ export default {
       if (this.player) {
         this.current_time = time;
         this.player.seekTo(time);
-        this.player.playVideo();
+        if (this.player.getPlayerState() !== window.YT.PlayerState.PLAYING) {
+          this.play_and_seek = true;
+          this.player.playVideo();
+        }
         this.openActiveSection();
       }
     },
