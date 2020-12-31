@@ -14,16 +14,16 @@ const article_slug_query = `SELECT slug FROM articles
   WHERE slug IN (SELECT slug FROM archives WHERE id = $1);`;
 
 const republish_query = `INSERT INTO
-  articles(title, slug, author, description, creation_time, update_time, content, category, tags, image)
-  SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image
+  articles(title, slug, author, description, creation_time, update_time, content, category, tags, image, listening_guide)
+  SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image, listening_guide
   FROM archives
   WHERE id = $1;`;
 const delete_archive_query = 'DELETE FROM archives WHERE id = $1;';
 const trash_query = `INSERT INTO
   trash(title, author, description, creation_time, update_time,
-    content, category, tags, image, doc_type)
+    content, category, tags, image, listening_guide, doc_type)
   SELECT title, author, description, creation_time, update_time,
-    content, category, tags, image, 'article'
+    content, category, tags, image, listening_guide, 'article'
   FROM archives
   WHERE id = $1;`;
 

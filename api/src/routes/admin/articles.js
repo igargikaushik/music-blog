@@ -11,18 +11,18 @@ const articles_drafts_query = `SELECT
   LIMIT $1 OFFSET $2;`;
 
 const trash_query = `INSERT INTO
-  trash(title, author, description, creation_time, update_time, content, category, tags, image, doc_type)
-  SELECT title, author, description, creation_time, update_time, content, category, tags, image, 'article'
+  trash(title, author, description, creation_time, update_time, content, category, tags, image, listening_guide, doc_type)
+  SELECT title, author, description, creation_time, update_time, content, category, tags, image, listening_guide, 'article'
   FROM articles
   WHERE id = $1;`;
 const archive_query = `INSERT INTO
-  archives(title, slug, author, description, creation_time, update_time, content, category, tags, image)
-  SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image
+  archives(title, slug, author, description, creation_time, update_time, content, category, tags, image, listening_guide)
+  SELECT title, slug, author, description, creation_time, update_time, content, category, tags, image, listening_guide
   FROM articles
   WHERE id = $1;`;
 const unpublish_query = `INSERT INTO
-  drafts(title, author, description, content, category, tags, image)
-  SELECT title, author, description, content, category, tags, image
+  drafts(title, author, description, content, category, tags, image, listening_guide)
+  SELECT title, author, description, content, category, tags, image, listening_guide
   FROM articles
   WHERE id = $1;`;
 const delete_article_query = 'DELETE FROM articles WHERE id = $1;';

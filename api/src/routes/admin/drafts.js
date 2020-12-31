@@ -65,7 +65,7 @@ const update_publish_query = `UPDATE articles
 
 const trash_query = `INSERT INTO
   trash(title, author, description, creation_time, update_time,
-    content, category, tags, image, listening_guide doc_type, draft_article_id)
+    content, category, tags, image, listening_guide, doc_type, draft_article_id)
   SELECT title, author, description, creation_time, modified_time,
     content, category, tags, image, listening_guide, 'draft', article_id
   FROM drafts
