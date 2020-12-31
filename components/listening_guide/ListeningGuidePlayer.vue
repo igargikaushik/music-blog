@@ -11,7 +11,7 @@
       <div id="guide-player" v-if="videos && videos.length > 0"></div>
     </div>
 
-    <div v-if="videos && videos.length > 0">
+    <div v-if="videos && videos.length > 0 && descriptions && descriptions.length > 0">
       <b-table
         v-if="descriptions.some(x => x.is_section)"
         :data="grouped_descriptions"
@@ -81,26 +81,33 @@ export default {
       video_selected: 0,
     };
   },
-  beforeMount () {
+  mounted() {
     if (process.browser) {
       var tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      window.onYouTubeIframeAPIReady = () => {
-        this.player = new window.YT.Player('guide-player', {
-          events: {
-            'onReady': this.updatePlayerVideo,
-            'onStateChange': this.watchTime,
-          },
-          playerVars: { 
-            'enablejsapi': 1,
-            'origin': window.location.origin,
-            'host': `${window.location.protocol}//www.youtube.com`,
-          },
-        });
+       
+      let player_params = {
+        events: {
+          'onReady': this.updatePlayerVideo,
+          'onStateChange': this.watchTime,
+        },
+        playerVars: { 
+          'enablejsapi': 1,
+          'origin': window.location.origin,
+          'host': `${window.location.protocol}//www.youtube.com`,
+        },
       };
+      window.onYouTubeIframeAPIReady = () => {
+        this.player = new window.YT.Player('guide-player', player_params);
+      };
+
+      // Fixes initialization after the API has already been loaded
+      // For example, after loading a player, then leaving and returning to a page
+      if (window.YT && !this.player) {
+        this.player = new window.YT.Player('guide-player', player_params);
+      }
     }
   },
   computed: {
@@ -134,7 +141,9 @@ export default {
   },
   watch: {
     current_video(new_video, old_video) {
-      if (new_video.video_id === old_video.video_id) return;
+      if (new_video.video_id === old_video.video_id
+        && new_video.start_time === old_video.start_time
+        && new_video.end_time === old_video.end_time) return;
       clearInterval(this.time_interval);
       this.time_interval = null;
       if (this.player) {

@@ -44,6 +44,7 @@
                 category,
                 tags,
                 image,
+                listening_guide: get_listening_guide(),
               }"
               @redirect="publish_redirect = true"
             />
@@ -52,7 +53,7 @@
       </template>
     </b-navbar>
 
-    <EditListeningGuide v-show="tab == 'listening_guide'" />
+    <EditListeningGuide v-show="tab == 'listening_guide'" :videos.sync="videos" :descriptions.sync="descriptions"_/>
     <EditDraftMeta v-if="tab == 'meta'" :title.sync="title" :category.sync="category" :description.sync="description" :tags.sync="tags" :image.sync="image" :author.sync="author" />
     <EditDraftContent v-if="tab == 'content'" :content.sync="content" v-bind="{title, author, description, tags, category}" />
   </div>
@@ -70,6 +71,8 @@ export default {
       author: '',
       description: '',
       content: '',
+      videos: [],
+      descriptions: [],
       tab: 'meta',
       publish_redirect: false,
     };
@@ -94,14 +97,21 @@ export default {
   },
   async fetch() {
     const id = this.$route.params.id;
-    const draft = await this.$axios
+    const {listening_guide, ...rest} = await this.$axios
       .$get(`/api/admin/drafts/${id}`)
       .catch((e) => console.log(e.stack));
-    for (const key in draft) {
-      this[key] = draft[key];
+    for (const key in rest) {
+      this[key] = rest[key];
     }
+    this.videos = listening_guide?.videos || [];
+    this.descriptions = listening_guide?.descriptions || [];
   },
   methods: {
+    get_listening_guide() {
+      return (this.videos.length > 0)
+        ? { videos: this.videos, descriptions: this.descriptions }
+        : null;
+    },
     async save() {
       const id = this.$route.params.id;
       const body = {
@@ -112,6 +122,7 @@ export default {
         category: this.category,
         tags: this.tags,
         image: this.image,
+        listening_guide: this.get_listening_guide(),
       };
       await this.$axios
         .$put(`/api/admin/drafts/${id}`, body)

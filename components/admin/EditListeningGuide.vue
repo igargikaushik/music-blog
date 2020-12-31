@@ -108,7 +108,7 @@
 
         <h2 v-if="selected_index !== null" class="subtitle has-text-center my-2">Editing "{{ videos[selected_index].name }}"</h2>
         <b-table
-          :data="descriptions_data"
+          :data="descriptions"
           :mobile-cards="true"
           class="descriptions-editor"
           bordered>
@@ -163,14 +163,14 @@
             </template>
           </b-table-column>
           <template slot="footer">
-            <a class="has-text-centered" @click="addDescription(descriptions_data.length - 1, 1)">
+            <a class="has-text-centered" @click="addDescription(descriptions.length - 1, 1)">
               + Add description
             </a>
         </template>
         </b-table>
       </div>
       <div class="column has-text-left listening-guide-preview">
-        <ListeningGuidePlayer v-if="videos.length > 0" :videos="player_videos" :descriptions="descriptions_data" />
+        <ListeningGuidePlayer v-if="videos.length > 0" :videos="player_videos" :descriptions="descriptions" />
         <div v-else>
           <h1 class="title has-text-centered">Add a video to preview player</h1>
         </div>
@@ -255,6 +255,10 @@
 <script>
 export default {
   name: 'EditListeningGuide',
+  props: {
+    videos: Array,
+    descriptions: Array,
+  },
   data() {
     return {
       show_new_video_modal: false,
@@ -265,8 +269,6 @@ export default {
       new_start_time: '',
       new_end_time: '',
       selected_index: null,
-      videos: [],
-      descriptions_data: [],
       types: [],
       table_data: [],
     };
@@ -283,7 +285,7 @@ export default {
     },
     addVideo() {
       const timestamps = this.videos[this.editing_video]?.timestamps
-        || new Array(this.descriptions_data.length).fill(null);
+        || new Array(this.descriptions.length).fill(null);
       const new_video = {
         name: this.new_name,
         video_id: this.new_video_id,
@@ -386,15 +388,15 @@ export default {
     },
     addDescription(index, direction) {
       const splice_index = index + ((direction == 1) ? 1 : 0);
-      this.descriptions_data.splice(splice_index, 0, { is_section: false, description: '' });
+      this.descriptions.splice(splice_index, 0, { is_section: false, description: '' });
       this.videos.forEach((_video, index) => {
         this.videos[index].timestamps.splice(splice_index, 0, null);
       });
     },
     deleteDescription(index) {
-      this.descriptions_data.splice(index, 1);
-      this.videos.forEach((_video, index) => {
-        this.videos[index].timestamps.splice(index, 1);
+      this.descriptions.splice(index, 1);
+      this.videos.forEach((_video, video_index) => {
+        this.videos[video_index].timestamps.splice(index, 1);
       });
     }
   },
@@ -406,7 +408,7 @@ export default {
         for (const [index, video] of val.entries()) {
           const { type, name, timestamps, video_id, start_time, end_time } = video;
           const complete =
-            (timestamps.length == this.descriptions_data.length)
+            (timestamps.length == this.descriptions.length)
             && !timestamps.includes(null);
           videos_by_type[type] = (videos_by_type[type] || []).concat([{ index, name, complete }]);
           player_videos_by_type[type] = (player_videos_by_type[type] || [])
