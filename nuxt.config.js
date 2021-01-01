@@ -58,6 +58,7 @@ export default {
     injected: true,
     html: true,
     use: [
+      '../plugins/markdown-it-target-blank',
       ['markdown-it-table-of-contents',
         {
           containerClass: "box markdown-toc",
