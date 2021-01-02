@@ -4,7 +4,7 @@ const pool = require('../db/pool.js');
 const list_query = `SELECT
   title, slug, author, description, creation_time, category, tags, image
   FROM articles
-  ORDER BY creation_time
+  ORDER BY creation_time DESC
   LIMIT $1 OFFSET $2;`;
 const total_query = 'SELECT COUNT(*) FROM articles;';
 

@@ -53,11 +53,12 @@ export default {
     '/static_files': {target: 'https://storage.googleapis.com/classical-for-everyone.appspot.com/static', pathRewrite: {'^/static_files/': ''}},
   },
   css: [{ src: 'assets/styles.scss', lang: 'scss' }],
-  plugins: [ { src: '@/plugins/vue-shortkey.js', mode: 'client' }],
+  plugins: [ { src: '@/plugins/vue-shortkey.js', mode: 'client' } ],
   markdownit: {
     injected: true,
     html: true,
     use: [
+      '../plugins/markdown-it-target-blank',
       ['markdown-it-table-of-contents',
         {
           containerClass: "box markdown-toc",

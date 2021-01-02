@@ -23,7 +23,7 @@ export default {
     display: none;
   }
 
-  h1::before {
+  h1::before, h2::before {
     content: '';
     display: block;
     height:      75px;

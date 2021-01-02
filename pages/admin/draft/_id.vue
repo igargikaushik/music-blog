@@ -15,6 +15,9 @@
             <li :class="{ 'is-active': tab == 'content' }">
               <a @click="tab = 'content'">Content</a>
             </li>
+            <li :class="{ 'is-active': tab == 'listening_guide' }">
+              <a @click="tab = 'listening_guide'">Listening Guide</a>
+            </li>
           </ul>
         </div>
       </template>
@@ -41,6 +44,7 @@
                 category,
                 tags,
                 image,
+                listening_guide: get_listening_guide(),
               }"
               @redirect="publish_redirect = true"
             />
@@ -49,64 +53,9 @@
       </template>
     </b-navbar>
 
-    <section v-if="tab == 'meta'" class="section">
-      <div class="columns is-gapless is-fullheight">
-        <div class="column"></div>
-        <div class="column is-three-fifths">
-          <article class="column">
-            <div class="box has-text-left">
-              <ArticleMetaInput label="Title" v-model="title" />
-              <ArticleMetaInput label="Author" v-model="author" />
-              <ArticleMetaInput
-                textarea
-                label="Description"
-                v-model="description"
-              />
-              <ArticleImageInput v-model="image" />
-              <ArticleMetaInput label="Category" v-model="category" />
-              <b-taginput
-                v-model="tags"
-                ellipsis
-                :remove-on-keys="[]"
-                icon="label"
-                placeholder="Add a tag"
-                aria-close-label="Delete this tag"
-              >
-              </b-taginput>
-            </div>
-          </article>
-          <Tile disabled v-bind="tile" />
-        </div>
-        <div class="column"></div>
-      </div>
-    </section>
-
-    <section v-if="tab == 'content'" class="section">
-      <div class="columns is-gapless is-fullheight panes">
-        <div class="column content-editor">
-          <b-input
-            custom-class="content-input"
-            v-model="content"
-            type="textarea"
-            spellcheck="false"
-            autocapitalize="off"
-            autocomplete="off"
-            autocorrect="off"
-          ></b-input>
-        </div>
-        <div class="column has-text-left content-preview">
-          <ArticleHeader
-            preview
-            class="header"
-            :title="title"
-            :author="author"
-            :description="description"
-          />
-          <ArticleContent :content="content" />
-          <ShareTags :category="category" :tags="tags" />
-        </div>
-      </div>
-    </section>
+    <EditListeningGuide v-show="tab == 'listening_guide'" :videos.sync="videos" :descriptions.sync="descriptions"_/>
+    <EditDraftMeta v-if="tab == 'meta'" :title.sync="title" :category.sync="category" :description.sync="description" :tags.sync="tags" :image.sync="image" :author.sync="author" />
+    <EditDraftContent v-if="tab == 'content'" :content.sync="content" v-bind="{title, author, description, tags, category}" />
   </div>
 </template>
 
@@ -122,20 +71,11 @@ export default {
       author: '',
       description: '',
       content: '',
+      videos: [],
+      descriptions: [],
       tab: 'meta',
       publish_redirect: false,
     };
-  },
-  computed: {
-    tile() {
-      return {
-        title: this.title,
-        image: this.image,
-        content: this.description,
-        category: this.category,
-        tags: this.tags,
-      };
-    },
   },
   mounted: function () {
     this.publish_redirect = false;
@@ -157,14 +97,21 @@ export default {
   },
   async fetch() {
     const id = this.$route.params.id;
-    const draft = await this.$axios
+    const {listening_guide, ...rest} = await this.$axios
       .$get(`/api/admin/drafts/${id}`)
       .catch((e) => console.log(e.stack));
-    for (const key in draft) {
-      this[key] = draft[key];
+    for (const key in rest) {
+      this[key] = rest[key];
     }
+    this.videos = listening_guide?.videos || [];
+    this.descriptions = listening_guide?.descriptions || [];
   },
   methods: {
+    get_listening_guide() {
+      return (this.videos.length > 0)
+        ? { videos: this.videos, descriptions: this.descriptions }
+        : null;
+    },
     async save() {
       const id = this.$route.params.id;
       const body = {
@@ -175,6 +122,7 @@ export default {
         category: this.category,
         tags: this.tags,
         image: this.image,
+        listening_guide: this.get_listening_guide(),
       };
       await this.$axios
         .$put(`/api/admin/drafts/${id}`, body)
@@ -204,64 +152,18 @@ export default {
 </script>
 
 <style lang="scss">
-.content-input,
-.content-input:hover,
-.content-input:active,
-.content-input:focus {
-  border: 0;
-  outline: 0;
-  resize: none;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-  height: 100%;
-  max-height: unset !important;
-}
+#edit-article {
+  position: absolute;
+  width: 100%;
 
-#edit-article nav {
-  z-index: 1;
+  nav {
+    z-index: 1;
+  }
 }
 </style>
 
 <style scoped lang="scss">
 .section {
   padding: 0;
-}
-
-.header {
-  margin-top: 0;
-}
-
-.article-tile {
-  max-width: 29.2em;
-}
-
-.content-editor {
-  border-right: 2px solid #f5f5f5;
-}
-
-.content-preview {
-  margin-top: 16px;
-}
-
-.panes {
-  min-height: calc(100vh - 68px * 2);
-  padding: 0 8px;
-}
-
-.content-editor {
-  min-height: calc(100vh - 68px * 2);
-  display: flex;
-  flex-flow: column;
-}
-
-.control,
-.content {
-  height: 100%;
-}
-
-.md-body {
-  margin: 8px;
-  margin-bottom: 1.5rem;
-  height: auto;
 }
 </style>

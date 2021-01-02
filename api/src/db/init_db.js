@@ -51,7 +51,8 @@ async function init_articles_table(client) {
       content VARCHAR NOT NULL,
       category VARCHAR NOT NULL,
       tags VARCHAR[],
-      image VARCHAR
+      image VARCHAR,
+      listening_guide JSONB
     );`;
 
   await client.query(create_query);
@@ -71,6 +72,7 @@ async function init_drafts_table(client) {
       category VARCHAR NOT NULL,
       tags VARCHAR[],
       image VARCHAR,
+      listening_guide JSONB,
       CONSTRAINT fk_article
         FOREIGN KEY (article_id) 
         REFERENCES articles (id)
@@ -111,7 +113,8 @@ async function init_archives_table(client) {
       content VARCHAR NOT NULL,
       category VARCHAR NOT NULL,
       tags VARCHAR[],
-      image VARCHAR
+      image VARCHAR,
+      listening_guide JSONB
     );`;
 
   await client.query(create_query);
@@ -137,6 +140,7 @@ async function init_trash_table(client) {
       category VARCHAR NOT NULL,
       tags VARCHAR[],
       image VARCHAR,
+      listening_guide JSONB,
       doc_type DOCUMENT_TYPE NOT NULL,
       draft_article_id INTEGER
     );`;

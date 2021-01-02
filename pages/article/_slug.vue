@@ -7,6 +7,8 @@
           <div class="column"></div>
           <div class="column is-three-quarters has-text-left">
             <ArticleContent :content="article.content" />
+            <ListeningGuidePlayer v-if="article.listening_guide && article.listening_guide.videos"
+              v-bind="article.listening_guide" />
             <ShareTags :category="article.category" :tags="article.tags" />
           </div>
           <div class="column"></div>
@@ -23,6 +25,17 @@ export default {
     const article = await $axios
       .$get(`/api/articles/${params.slug}`)
       .catch(() => error({ statusCode: 404, message: 'Article not found' }));
+    if (article.listening_guide?.videos) {
+      const player_videos_by_type = {};
+      for (const [index, video] of article.listening_guide.videos.entries()) {
+        const { type, name, timestamps, video_id, start_time, end_time } = video;
+        player_videos_by_type[type] = (player_videos_by_type[type] || [])
+          .concat([{ id: index, name, video_id, start_time, end_time, timestamps }]);
+      }
+      article.listening_guide.videos = Object.keys(player_videos_by_type).map(name => {
+        return { type: name, entries: player_videos_by_type[name] };
+      });
+    }
     return { article };
   },
   head() {

@@ -20,12 +20,12 @@ const article_slug_query = `SELECT slug FROM articles
   WHERE slug = $1 AND ($2::INTEGER IS NULL OR id != $2::INTEGER);`;
 
 const new_draft_query = `INSERT INTO
-  drafts(article_id, title, author, description, content, category, tags, image)
-  VALUES(NULL, '', '', '', '', '', ARRAY[]::VARCHAR[], '')
+  drafts(article_id, title, author, description, content, category, tags, image, listening_guide)
+  VALUES(NULL, '', '', '', '', '', ARRAY[]::VARCHAR[], '', NULL)
   RETURNING id;`;
 const transfer_query = `INSERT INTO
-  drafts(article_id, title, author, description, content, category, tags, image)
-  SELECT id, title, author, description, content, category, tags, image
+  drafts(article_id, title, author, description, content, category, tags, image, listening_guide)
+  SELECT id, title, author, description, content, category, tags, image, listening_guide
   FROM articles
   WHERE id = $1
   ON CONFLICT DO NOTHING;`;
@@ -42,32 +42,32 @@ const redirect_query = `INSERT INTO
 const redirect_cascade_query = 'UPDATE redirects SET to_slug = $1 WHERE to_slug = $2;';
 const publish_archive_query = `INSERT INTO
   archives(title, slug, author, description, creation_time,
-    update_time, content, category, tags, image)
+    update_time, content, category, tags, image, listening_guide)
   SELECT title, slug, author, description, creation_time,
-    update_time, content, category, tags, image
+    update_time, content, category, tags, image, listening_guide
   FROM articles
   WHERE id = $1`;
 
 const save_query = `UPDATE drafts
   SET title = $2, author = $3, description = $4,
-    modified_time = CURRENT_TIMESTAMP,
-    content = $5, category = $6, tags = $7, image = $8
+    modified_time = CURRENT_TIMESTAMP, content = $5,
+    category = $6, tags = $7, image = $8, listening_guide = $9
   WHERE id = $1
   RETURNING *;`;
 const initial_publish_query = `INSERT INTO
-  articles(title, slug, author, description, content, category, tags, image)
-  VALUES($1, $2, $3, $4, $5, $6, $7, $8);`;
+  articles(title, slug, author, description, content, category, tags, image, listening_guide)
+  VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);`;
 const update_publish_query = `UPDATE articles
   SET title = $2, slug = $3, author = $4,
-    description = $5, update_time = CURRENT_TIMESTAMP,
-    content = $6, category = $7, tags = $8, image = $9
+    description = $5, update_time = CURRENT_TIMESTAMP, content = $6,
+    category = $7, tags = $8, image = $9, listening_guide = $10
     WHERE id = $1;`;
 
 const trash_query = `INSERT INTO
   trash(title, author, description, creation_time, update_time,
-    content, category, tags, image, doc_type, draft_article_id)
+    content, category, tags, image, listening_guide, doc_type, draft_article_id)
   SELECT title, author, description, creation_time, modified_time,
-    content, category, tags, image, 'draft', article_id
+    content, category, tags, image, listening_guide, 'draft', article_id
   FROM drafts
   WHERE id = $1;`;
 const delete_draft_query = 'DELETE FROM drafts WHERE id = $1;';
@@ -133,9 +133,9 @@ drafts.route('/:id')
       return;
     }
 
-    const {title, author, description, content, category, tags, image} = req.body;
+    const {title, author, description, content, category, tags, image, listening_guide} = req.body;
     await pool
-      .query(save_query, [id, title, author, description, content, category, tags, image])
+      .query(save_query, [id, title, author, description, content, category, tags, image, listening_guide])
       .then(() => res.status(200).send())
       .catch(e => res.status(500).send(e.stack));
   })
@@ -212,7 +212,8 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
       throw new Error(`Draft with ID ${id} does not exist`);
     }
     const draft = drafts[0];
-    const {title, author, description, content, category, tags, image} = ('title' in req.body) ? req.body : draft;
+    const {title, author, description, content, category, tags, image, listening_guide}
+      = ('title' in req.body) ? req.body : draft;
     const slug = slugify(title);
 
     const conflicts = await client
@@ -238,11 +239,11 @@ drafts.post('/publish/:id', requiresAdmin, async (req, res) => {
       await client.query(publish_archive_query, [draft.article_id]);
 
       await client.query(update_publish_query,
-        [draft.article_id, title, slug, author, description, content, category, tags, image]);
+        [draft.article_id, title, slug, author, description, content, category, tags, image, listening_guide]);
     } else {
       // Otherwise, make a new one
       await client.query(initial_publish_query,
-        [title, slug, author, description, content, category, tags, image]);
+        [title, slug, author, description, content, category, tags, image, listening_guide]);
     }
 
     // Finally, delete the draft

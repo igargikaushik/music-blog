@@ -22,16 +22,16 @@ const draft_article_id_query = `SELECT drafts.id, articles.title
 
 const restore_article_query = `INSERT INTO
   articles(title, slug, author, description, creation_time,
-    update_time, content, category, tags, image)
+    update_time, content, category, tags, image, listening_guide)
   SELECT title, $2, author, description, creation_time,
-    update_time, content, category, tags, image
+    update_time, content, category, tags, image, listening_guide
   FROM trash
   WHERE id = $1;`;
 const restore_draft_query = `INSERT INTO
   drafts(title, author, description, creation_time,
-    modified_time, content, category, tags, image, article_id)
+    modified_time, content, category, tags, image, listening_guide, article_id)
   SELECT title, author, description, creation_time,
-    update_time, content, category, tags, image,
+    update_time, content, category, tags, image, listening_guide,
     CASE
       WHEN EXISTS (SELECT id FROM articles WHERE id = draft_article_id)
         THEN draft_article_id
