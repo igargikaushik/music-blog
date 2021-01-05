@@ -21,10 +21,21 @@
 <script>
 export default {
   name: 'Article',
-  async asyncData({ params, error, $axios }) {
+  async asyncData({ params, redirect, error, $axios }) {
     const article = await $axios
       .$get(`/api/articles/${params.slug}`)
-      .catch(() => error({ statusCode: 404, message: 'Article not found' }));
+      .catch(async () => {});
+    if (!article) {
+      const response = await $axios
+        .get(`/api/redirect/${params.slug}`)
+        .catch((e) => console.log(e.stack));
+      if ('to_slug' in response.data) {
+        return redirect(301, `/article/${response.data.to_slug}`);
+      } else {
+        return error({ statusCode: 404, message: 'Article not found' });
+      }
+    }
+
     if (article.listening_guide?.videos) {
       const player_videos_by_type = {};
       for (const [index, video] of article.listening_guide.videos.entries()) {
