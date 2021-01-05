@@ -9,7 +9,8 @@
             <ArticleContent :content="article.content" />
             <ListeningGuidePlayer v-if="article.listening_guide && article.listening_guide.videos"
               v-bind="article.listening_guide" />
-            <ShareTags :category="article.category" :tags="article.tags" />
+            <ShareTags :category="article.category" :tags="article.tags"
+              :title="article.title" :description="article.description" />
           </div>
           <div class="column"></div>
         </div>

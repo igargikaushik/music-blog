@@ -4,21 +4,45 @@
       <div class="box">
         <strong class="title is-5">Share:</strong>
         <br />
-        <font-awesome-icon
-          size="3x"
-          :icon="['fab', 'twitter-square']"
-          class="has-text-info mr-3"
-        />
-        <font-awesome-icon
-          size="3x"
-          :icon="['fab', 'facebook-square']"
-          class="has-text-info mr-3"
-        />
-        <font-awesome-icon
-          size="3x"
-          :icon="['fab', 'reddit-square']"
-          class="has-text-info mr-3"
-        />
+        <ShareNetwork network="twitter"
+          :url="url"
+          :title="title"
+          :description="description"
+          :quote="description"
+          :hashtags="hashtags"
+        >
+          <font-awesome-icon
+            size="3x"
+            :icon="['fab', 'twitter-square']"
+            class="has-text-info mr-3"
+          />
+        </ShareNetwork>
+        <ShareNetwork network="facebook"
+          :url="url"
+          :title="title"
+          :description="description"
+          :quote="description"
+          :hashtags="hashtags"
+        >
+          <font-awesome-icon
+            size="3x"
+            :icon="['fab', 'facebook-square']"
+            class="has-text-info mr-3"
+          />
+        </ShareNetwork>
+        <ShareNetwork network="reddit"
+          :url="url"
+          :title="title"
+          :description="description"
+          :quote="description"
+          :hashtags="hashtags"
+        >
+          <font-awesome-icon
+            size="3x"
+            :icon="['fab', 'reddit-square']"
+            class="has-text-info mr-3"
+          />
+        </ShareNetwork>
       </div>
     </div>
 
@@ -43,6 +67,14 @@ export default {
   props: {
     category: String,
     tags: Array,
+    title: String,
+    description: String,
+  },
+  data() {
+    return {
+      hashtags: 'classicalmusic,music,classical',
+      url: `https://classical-for-everyone.ue.r.appspot.com${this.$route.fullPath}`,
+    };
   },
 };
 </script>
