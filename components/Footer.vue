@@ -2,7 +2,7 @@
   <footer class="footer">
     <div class="content has-text-centered">
       <p>
-        <strong class="is-4">© 2020 Henry Sloan</strong>
+        <strong class="is-4">© 2021 Henry Sloan</strong>
       </p>
     </div>
   </footer>

@@ -3,9 +3,9 @@ types.setTypeParser(1114, str => str); // Return timestamps without processing
 
 const env = process.env.NODE_ENV;
 var host = null;
-if (env == 'test') {
+if (env == 'test' || env == 'development') {
   host = 'localhost';
-} else if (env == 'production' || env == 'development') {
+} else if (env == 'production') {
   host = process.env.PGHOST;
 } else {
   console.error('NODE_ENV not in {production, development, test}. Not setting database hostname.');

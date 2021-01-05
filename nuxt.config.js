@@ -31,6 +31,7 @@ export default {
     '@nuxtjs/proxy',
     '@nuxtjs/axios',
     '@nuxtjs/markdownit',
+    'vue-social-sharing/nuxt',
     ['nuxt-fontawesome', {
       imports: [
         {
