@@ -30,7 +30,7 @@ export default {
       const response = await $axios
         .get(`/api/redirect/${params.slug}`)
         .catch((e) => console.log(e.stack));
-      if ('to_slug' in response.data) {
+      if (response?.data?.to_slug) {
         return redirect(301, `/article/${response.data.to_slug}`);
       } else {
         return error({ statusCode: 404, message: 'Article not found' });
