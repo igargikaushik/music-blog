@@ -2,7 +2,8 @@
   <div id="article-main" class="article">
     <section class="section">
       <div class="container">
-        <ArticleHeader :title="article.title" :author="article.author" :description="article.description" />
+        <ArticleHeader :id="article.id" :title="article.title"
+          :author="article.author" :description="article.description" />
         <div class="columns">
           <div class="column"></div>
           <div class="column is-three-quarters has-text-left">
