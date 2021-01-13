@@ -12,7 +12,9 @@ export default {
         hid: 'description',
         name: 'description',
         content: 'Understand music with listening guides',
-      }
+      },
+      { hid: 'twitter:image', name: 'twitter:image', content: '/icon.png', },
+      { hid: 'og:image', name: 'og:image', content: '/icon.png', },
     ],
     link: [
       {

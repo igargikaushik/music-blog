@@ -58,6 +58,50 @@ export default {
         {
           hid: 'description', name: 'description',
           content: this.article.description
+        },
+        {
+          hid: 'twitter:card', name: 'twitter:card',
+          content: 'summary'
+        },
+        {
+          hid: 'twitter:site', name: 'twitter:site',
+          content: '@classicalevery1'
+        },
+        {
+          hid: 'twitter:title', name: 'twitter:title',
+          content: this.article.title
+        },
+        {
+          hid: 'twitter:description', name: 'twitter:description',
+          content: this.article.description
+        },
+        {
+          hid: 'twitter:image', name: 'twitter:image',
+          content: `https://www.classicalforeveryone.com${encodeURI(this.article.image)}`
+        },
+        {
+          hid: 'twitter:image:alt', name: 'twitter:image:alt',
+          content: this.article.title
+        },
+        {
+          hid: 'og:title', property: 'og:title',
+          content: this.article.title
+        },
+        {
+          hid: 'og:description', property: 'og:description',
+          content: this.article.description
+        },
+        {
+          hid: 'og:image', property: 'og:image',
+          content: `https://www.classicalforeveryone.com${encodeURI(this.article.image)}`
+        },
+        {
+          hid: 'og:image:secure_url', property: 'og:image:secure_url',
+          content: `https://www.classicalforeveryone.com${encodeURI(this.article.image)}`
+        },
+        {
+          hid: 'og:image:alt', property: 'og:image:alt',
+          content: this.article.title
         }
       ]
     };
