@@ -1,5 +1,6 @@
 # Classical for Everyone
 ## Goal
+Classical for Everyone is a music blog meant to make classical accessible for everyone. It seeks to use approachable writing, good design, and interactive tools to make listening fun and enlightening. 
 
 ## Features
 ### Landing page
