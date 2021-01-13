@@ -9,6 +9,14 @@
         >
       </b-navbar-item>
     </template>
+    <template v-if="$store.state.user && $store.state.user.admin" slot="end">
+      <b-navbar-item
+        tag="NuxtLink" :to="{ path: '/admin' }">
+        <div class="buttons">
+          <button class="button is-light">Admin</button>
+        </div>
+      </b-navbar-item>
+    </template>
   </b-navbar>
 </template>
 
@@ -60,7 +68,11 @@ nav {
   height: 68px;
 }
 
-.navbar-item {
+.navbar-end a.navbar-item:hover {
+  background-color: unset;
+}
+
+.navbar-brand .navbar-item {
   padding: 0.7rem 0.7rem;
   margin: 0.3rem 0.8rem;
   background: white !important;

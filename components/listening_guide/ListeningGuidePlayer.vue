@@ -258,6 +258,10 @@ export default {
   }
 }
 
+#listening-guide-container table {
+  margin-bottom: 12px;
+}
+
 tr.current-row {
   background-color: #f7f7f7 !important;
 }

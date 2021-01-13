@@ -10,6 +10,7 @@
           :description="description"
           :quote="description"
           :hashtags="hashtags"
+          twitter-user="classicalevery1"
         >
           <font-awesome-icon
             size="3x"
@@ -73,7 +74,7 @@ export default {
   data() {
     return {
       hashtags: 'classicalmusic,music,classical',
-      url: `https://classical-for-everyone.ue.r.appspot.com${this.$route.fullPath}`,
+      url: `https://www.classicalforeveryone.com${this.$route.fullPath}`,
     };
   },
 };

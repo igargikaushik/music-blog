@@ -6,7 +6,7 @@ const pool = require('../db/pool.js');
 // Login redirects to and from Google auth service
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 passport.use(new GoogleStrategy({
-  clientID: '1081413117266-1egpnvljjqu6lnsiafjhfv0fovqak1p5.apps.googleusercontent.com',
+  clientID: process.env.GOOGLE_CLIENTID || '123',
   clientSecret: process.env.CLIENTSECRET,
   callbackURL: '/api/admin/auth/callback',
   scope: ['profile'],

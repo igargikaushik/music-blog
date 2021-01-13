@@ -22,7 +22,8 @@
           :description="description"
         />
         <ArticleContent :content="content" />
-        <ShareTags :category="category" :tags="tags" />
+        <ShareTags :category="category" :tags="tags"
+          :title="title" :description="description" />
       </div>
     </div>
   </section>
